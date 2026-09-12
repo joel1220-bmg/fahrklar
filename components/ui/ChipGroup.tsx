@@ -44,6 +44,72 @@ export function ChipGroup<T extends string>({
   );
 }
 
+/** Multi-select chips: empty selection allowed; click toggles membership. */
+export function MultiChipGroup<T extends string>({
+  legend,
+  value,
+  onChange,
+  options,
+  help,
+  unknownLabel,
+}: {
+  legend: string;
+  value: T[];
+  onChange: (v: T[]) => void;
+  options: { value: T; label: string }[];
+  help?: string;
+  /** Clears selection (empty = all / assumed). Selected when value is empty. */
+  unknownLabel?: string;
+}) {
+  const toggle = (v: T) => {
+    if (value.includes(v)) onChange(value.filter((x) => x !== v));
+    else onChange([...value, v]);
+  };
+
+  const unknownSelected = value.length === 0;
+
+  return (
+    <fieldset className="min-w-0">
+      <legend className="serif text-lg text-paper">{legend}</legend>
+      <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label={legend}>
+        {options.map((o) => {
+          const selected = value.includes(o.value);
+          return (
+            <button
+              key={o.value}
+              type="button"
+              aria-pressed={selected}
+              onClick={() => toggle(o.value)}
+              className={`min-h-11 rounded-full border px-3.5 text-sm transition-colors ${
+                selected
+                  ? "border-gold bg-gold text-graphite"
+                  : "border-graphite-line bg-graphite-card text-paper hover:border-gold-dim"
+              }`}
+            >
+              {o.label}
+            </button>
+          );
+        })}
+        {unknownLabel ? (
+          <button
+            type="button"
+            aria-pressed={unknownSelected}
+            onClick={() => onChange([])}
+            className={`min-h-11 rounded-full border px-3.5 text-sm transition-colors ${
+              unknownSelected
+                ? "border-gold bg-gold text-graphite"
+                : "border-graphite-line bg-graphite-card text-paper hover:border-gold-dim"
+            }`}
+          >
+            {unknownLabel}
+          </button>
+        ) : null}
+      </div>
+      {help ? <p className="mt-2 text-sm text-muted">{help}</p> : null}
+    </fieldset>
+  );
+}
+
 export function Field({
   label,
   hint,

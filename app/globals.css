@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-graphite: #1a1c1e;
+  --color-graphite-soft: #242628;
+  --color-graphite-card: #2a2d30;
+  --color-graphite-line: #3a3e42;
+  --color-gold: #d4a84b;
+  --color-gold-dim: #a6853f;
+  --color-paper: #ebe6dc;
+  --color-muted: #9a9590;
+  --color-assumed: #6b6762;
+  --color-ink: #ebe6dc;
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-serif: Georgia, "Times New Roman", ui-serif, serif;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--color-graphite);
+  color: var(--color-ink);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+h1,
+h2,
+h3,
+.serif {
+  font-family: var(--font-serif), ui-serif, Georgia, serif;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 3px;
+}
+
+.skip-link {
+  position: absolute;
+  left: 0.75rem;
+  top: -3rem;
+  z-index: 50;
+  background: var(--color-gold);
+  color: var(--color-graphite);
+  padding: 0.5rem 0.75rem;
+}
+.skip-link:focus {
+  top: 0.75rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white;
+    color: black;
+  }
+}
+
+input[type="range"] {
+  accent-color: var(--color-gold);
+}
+
+input,
+select {
+  color-scheme: dark;
+}

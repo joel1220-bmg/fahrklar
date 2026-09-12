@@ -36,53 +36,59 @@ OUT_DIR = ROOT / "public" / "models"
 # ---------------------------------------------------------------------------
 
 BODY_DIMS: dict[str, dict] = {
-    # ID.3-class (generic): short L, tall greenhouse, short rear overhang
+    # ID.3-class (generic): compact L, cab-forward, upright greenhouse, short rear OH
     "hatch": {
-        "L": 4.10,
-        "W": 1.80,
+        "L": 4.22,
+        "W": 1.81,
         "H": 1.56,
-        "wheelbase": 2.60,
+        "wheelbase": 2.72,
         "wheel_r": 0.33,
-        "hood_len": 0.85,
-        "rear_overhang": 0.55,
-        "roof_h": 0.58,
-        "belt_h": 0.72,
-        "nose_drop": 0.28,
-        "windshield_rake": 0.55,
-        "rear_glass_rake": 0.35,
-        "roof_flat": 1.15,
-    },
-    # Model-3-class (generic): longer L, longer hood/rear, lower roof
-    "sedan": {
-        "L": 4.60,
-        "W": 1.85,
-        "H": 1.44,
-        "wheelbase": 2.85,
-        "wheel_r": 0.32,
-        "hood_len": 1.10,
-        "rear_overhang": 0.95,
-        "roof_h": 0.48,
-        "belt_h": 0.68,
-        "nose_drop": 0.32,
-        "windshield_rake": 0.70,
-        "rear_glass_rake": 0.75,
-        "roof_flat": 0.95,
-    },
-    # EV3/Y-class (generic): mid L, higher ride, taller cabin
-    "crossover": {
-        "L": 4.40,
-        "W": 1.90,
-        "H": 1.62,
-        "wheelbase": 2.70,
-        "wheel_r": 0.34,
-        "hood_len": 0.95,
-        "rear_overhang": 0.70,
+        "hood_len": 0.78,
+        "rear_overhang": 0.48,
         "roof_h": 0.62,
-        "belt_h": 0.78,
+        "belt_h": 0.70,
         "nose_drop": 0.26,
-        "windshield_rake": 0.60,
-        "rear_glass_rake": 0.45,
-        "roof_flat": 1.20,
+        "windshield_rake": 0.48,
+        "rear_glass_rake": 0.32,
+        "roof_flat": 1.28,
+        "ride": "low",
+        "deck": "hatch",
+    },
+    # Model-3-class (generic): longer L/WB, longer hood/deck, lower sleek roof
+    "sedan": {
+        "L": 4.68,
+        "W": 1.85,
+        "H": 1.42,
+        "wheelbase": 2.92,
+        "wheel_r": 0.32,
+        "hood_len": 1.18,
+        "rear_overhang": 1.05,
+        "roof_h": 0.44,
+        "belt_h": 0.66,
+        "nose_drop": 0.34,
+        "windshield_rake": 0.78,
+        "rear_glass_rake": 0.85,
+        "roof_flat": 0.88,
+        "ride": "low",
+        "deck": "sedan",
+    },
+    # EV3-class (generic): mid L, taller stance, high belt, boxier upright cabin
+    "crossover": {
+        "L": 4.35,
+        "W": 1.92,
+        "H": 1.66,
+        "wheelbase": 2.72,
+        "wheel_r": 0.35,
+        "hood_len": 0.88,
+        "rear_overhang": 0.62,
+        "roof_h": 0.68,
+        "belt_h": 0.82,
+        "nose_drop": 0.24,
+        "windshield_rake": 0.52,
+        "rear_glass_rake": 0.38,
+        "roof_flat": 1.30,
+        "ride": "high",
+        "deck": "crossover",
     },
 }
 
@@ -112,17 +118,16 @@ def _extrude(profile: list[tuple[float, float]], width: float) -> trimesh.Trimes
     return m
 
 
+def _floor_y(d: dict) -> float:
+    """Ride height above ground (wheel radius + body clearance)."""
+    return d["wheel_r"] + (0.14 if d.get("ride") == "high" else 0.08)
+
+
 def _side_profile(d: dict) -> list[tuple[float, float]]:
     """Side silhouette: X forward+, Y up+. Origin at length center, Y=0 ground."""
     L = d["L"]
     half = L / 2
-    wr = d["wheel_r"]
-    # Crossover gets higher floor (ride height) via larger wheel + belt
-    ride_extra = 0.06 if d["rear_overhang"] == 0.70 and d["L"] == 4.40 else (
-        0.04 if d["L"] >= 4.4 and d["H"] >= 1.55 else 0.0
-    )
-    # Explicit: use H and belt to distinguish crossover ride
-    floor_y = wr + (0.12 if d["H"] >= 1.58 else 0.08)
+    floor_y = _floor_y(d)
     belt = floor_y + d["belt_h"]
     roof = min(belt + d["roof_h"], d["H"] - 0.02)
 
@@ -135,8 +140,24 @@ def _side_profile(d: dict) -> list[tuple[float, float]]:
 
     nose_tip_y = floor_y + d["nose_drop"] * 0.35
     hood_y = belt - 0.04
-    is_sedan = d["rear_overhang"] > 0.8
-    rear_meet_y = belt * (0.55 if is_sedan else 0.88)
+    deck = d.get("deck", "hatch")
+    is_sedan = deck == "sedan"
+    # Hatch: short upright rear; crossover: boxier higher rear meet; sedan: low deck
+    if is_sedan:
+        rear_meet_y = belt * 0.55
+        rear_drop_x = 0.28
+        rear_drop_y = belt * 0.48
+        rear_glass_meet = rear_meet_y
+    elif deck == "crossover":
+        rear_meet_y = belt * 0.94
+        rear_drop_x = 0.10
+        rear_drop_y = belt * 0.78
+        rear_glass_meet = belt * 0.96
+    else:
+        rear_meet_y = belt * 0.88
+        rear_drop_x = 0.08
+        rear_drop_y = belt * 0.72
+        rear_glass_meet = belt * 0.92
 
     pts = [
         (nose_x, nose_tip_y),
@@ -145,8 +166,8 @@ def _side_profile(d: dict) -> list[tuple[float, float]]:
         (hood_end, belt),
         (ws_top, roof),
         (roof_rear, roof),
-        (rear_glass_bot, rear_meet_y if is_sedan else belt * 0.92),
-        (tail_x + (0.25 if is_sedan else 0.08), belt * (0.5 if is_sedan else 0.72)),
+        (rear_glass_bot, rear_glass_meet),
+        (tail_x + rear_drop_x, rear_drop_y),
         (tail_x, floor_y + 0.10),
         (tail_x + 0.06, floor_y),
         (nose_x - 0.18, floor_y),
@@ -162,8 +183,7 @@ def _side_profile(d: dict) -> list[tuple[float, float]]:
 def _glass_profile(d: dict) -> list[tuple[float, float]]:
     L = d["L"]
     half = L / 2
-    wr = d["wheel_r"]
-    floor_y = wr + (0.12 if d["H"] >= 1.58 else 0.08)
+    floor_y = _floor_y(d)
     belt = floor_y + d["belt_h"]
     roof = min(belt + d["roof_h"], d["H"] - 0.02)
     glass_bot = belt + 0.05
@@ -204,7 +224,7 @@ def build_car_scene(body: str) -> trimesh.Scene:
         print(f"  warn: glass profile skipped ({exc})")
 
     wr = d["wheel_r"]
-    floor_y = wr + (0.12 if d["H"] >= 1.58 else 0.08)
+    floor_y = _floor_y(d)
     belt = floor_y + d["belt_h"]
     roof = min(belt + d["roof_h"], d["H"] - 0.02)
     half = d["L"] / 2

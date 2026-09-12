@@ -654,11 +654,13 @@ export function ResultView({
         <p className="text-muted">Mit diesen Angaben finden wir gerade kein Auto.</p>
       ) : null}
 
-      <aside className="rounded-2xl border border-gold/40 bg-graphite-card p-5">
-        <p className="text-xs uppercase tracking-[0.14em] text-gold">Nächster Schritt</p>
-        <p className="mt-2 text-base text-paper">{COPY.morningStep}</p>
-        <p className="mt-3 text-xs text-muted">{COPY.notCertified}</p>
-      </aside>
+      {/* The "Nächster Schritt" card is hidden for now, by request. It asked the
+          reader to go and note where they could charge — a homework assignment
+          handed out before they have understood what they are looking at. The
+          copy survives in COPY.morningStep; bring the card back once the result
+          itself answers "what should I expect?" well enough that a next step
+          reads as a natural move rather than an interruption. */}
+      <p className="text-xs text-muted">{COPY.notCertified}</p>
     </div>
   );
 }

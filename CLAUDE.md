@@ -10,6 +10,25 @@ The whole product is one claim: **we tell you what we do not know.** Every
 number is a range, every assumed value is marked as assumed. A screen that
 prints a confident single figure has broken the product, not just the design.
 
+## Who this is for
+
+Someone who has **never owned an electric car** and does not know what to
+expect. They are not comparing trim levels; they are trying to find out whether
+this works for their life at all, and which handful of models are worth a closer
+look. **Long distance is the thing they are anxious about** — that is where the
+fear lives and where the laboratory figure misleads most.
+
+Two consequences that outrank any design preference:
+
+- **Explain, do not just display.** A figure the reader cannot interpret is
+  worse than no figure: it looks like information and carries none. "77 kWh"
+  means nothing to a beginner; "reicht im Winter für rund 300 km Autobahn"
+  does. Where a technical term is unavoidable, the sentence that explains it
+  travels with it.
+- **The answer to "what should I expect?" comes before the answer to "which
+  car?"** Someone who leaves knowing what a winter Autobahn trip actually looks
+  like has been served, even if they pick no car at all.
+
 ---
 
 ## Layout

@@ -2,7 +2,7 @@
 
 Struktur von energiefluss, 12.09.2026. Nicht umbauen. Nur Alltagssprache.
 
-Sechs Fragen, ein Morgen-Schritt. Sie-Form. Kein Verkauf.
+Fünf Fragen im Intake, Autobahn-Check erst nach Autowahl. Sie-Form. Kein Verkauf.
 
 WLTP-Satz (überall gleich):
 > Prüfstand (WLTP) ist ein Laborwert — nicht Ihre Autobahn- oder Alltagsreichweite.
@@ -13,16 +13,15 @@ WLTP-Satz (überall gleich):
 | --- | --- | --- |
 | 1 | Alltag / Familie / Lange Autobahnfahrten / Alles etwas | — |
 | 2 | normaler Tag, hin und zurück, km-Feld | „Normaler Tag km“ als Legende |
-| 3 | Welche Langstrecke … durchspielen? | „Preset“ |
-| 4 | Für welchen Monat soll die Reichweite gelten? | — |
-| 5 | Wo können Sie das Auto laden? | — |
-| 6 | Kaufpreis, nicht Leasingrate | „Neupreis-Spanne“ als Legende |
+| 3 | Welche Form soll das Auto haben? (Mehrfach: Kleinwagen / Limousine / SUV) | „Body“ / „Preset“ |
+| 4 | Wo können Sie das Auto laden? | — |
+| 5 | Kaufpreis, nicht Leasingrate | „Neupreis-Spanne“ als Legende |
 
 Eine Wortänderung, gleicher Slot: Chip **Lange Autobahn** → **Lange Autobahnfahrten** (sonst klingt der Chip wie ein Straßenname).
 
-Langstrecke-Chips (Labels; IDs gehören Reichweite): Selten oder nie · Hamburg – München · Berlin – Köln · Stuttgart – Berlin · Weiß ich nicht.
+Form-Chips (Labels; IDs gehören Filter): Kleinwagen · Limousine · SUV. Mehrere gehen. Leer = alle Formen, markiert angenommen.
 
-Monat: native Auswahl Januar–Dezember, Default = aktueller Monat. Keine 12 Chips.
+Monat und Langstrecke/Strecke gehören **nicht** ins Intake — nur in den Autobahn-Check neben dem gewählten Auto.
 
 Weiß ich nicht / noch unklar an jedem Slot, der unsicher sein darf. Leer = Annahme + Markierung.
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { computeRange, computeTrip, tempFactor } from "./range";
+import { computeRange, computeTrip, computeTripPlan, tempFactor, tempFactorCharge, tripLegs } from "./range";
 import type { Car } from "./types";
 
 const base: Car = {
@@ -50,10 +50,10 @@ describe("computeRange winter vs summer", () => {
 });
 
 describe("computeTrip", () => {
-  it("needs stop when rangeMid * 0.85 < routeKm", () => {
-    const short = computeTrip(500, 400);
+  it("needs stop when firstLeg (SoC window) < routeKm", () => {
+    const short = computeTrip(500, 350);
     expect(short.needsStop).toBe(false);
-    const long = computeTrip(400, 790);
+    const long = computeTrip(400, 400);
     expect(long.needsStop).toBe(true);
     expect(long.stopAfterKm).not.toBeNull();
   });
@@ -61,5 +61,95 @@ describe("computeTrip", () => {
   it("no stop when mid range covers trip with buffer", () => {
     const t = computeTrip(900, 575);
     expect(t.needsStop).toBe(false);
+  });
+});
+
+describe("computeTripPlan", () => {
+  it("300 km needs fewer stops than 800 km", () => {
+    const rangeMid = 350;
+    const short = computeTripPlan(base, rangeMid, 300, 120);
+    const long = computeTripPlan(base, rangeMid, 800, 120);
+    expect(short.stops.length).toBeLessThan(long.stops.length);
+    expect(long.stops.length).toBeGreaterThan(0);
+  });
+
+  it("winter month (shorter range / colder charge) means more stops or longer total than summer", () => {
+    const winterRange = computeRange(base, -0.5, 120, 0.9, 2);
+    const summerRange = computeRange(base, 18.5, 120, 0.9, 2);
+    const tripKm = 700;
+    const winter = computeTripPlan(base, winterRange.midKm, tripKm, 120, 0.9, undefined, undefined, -0.5);
+    const summer = computeTripPlan(base, summerRange.midKm, tripKm, 120, 0.9, undefined, undefined, 18.5);
+    const worse =
+      winter.stops.length > summer.stops.length ||
+      winter.totalMin > summer.totalMin;
+    expect(worse).toBe(true);
+  });
+
+  it("120 vs 140 speed: higher speed shortens drive but may change total", () => {
+    const range120 = computeRange(base, 15, 120, 0.9, 2);
+    const range140 = computeRange(base, 15, 140, 0.9, 2);
+    const p120 = computeTripPlan(base, range120.midKm, 500, 120);
+    const p140 = computeTripPlan(base, range140.midKm, 500, 140);
+    expect(p120.driveMin).toBeGreaterThan(p140.driveMin);
+  });
+
+  it("stop minutes include 8 min overhead in display value", () => {
+    const plan = computeTripPlan(base, 200, 500, 120);
+    expect(plan.stops.length).toBeGreaterThan(0);
+    for (const s of plan.stops) {
+      expect(s.minutes).toBeGreaterThan(8);
+      expect(s.afterKm).toBeGreaterThan(0);
+    }
+    expect(plan.extraMin).toBe(plan.chargeMin + plan.stops.length * 8);
+    expect(plan.totalMin).toBe(plan.driveMin + plan.extraMin);
+  });
+});
+
+describe("computeTripPlan Ladezeit / Ladekurve handoff", () => {
+  it("firstLeg = range100*(startSoc-0.10); later = range100*0.70", () => {
+    const rangeMid = 400;
+    const startSoc = 0.9;
+    const { firstLeg, laterLeg } = tripLegs(rangeMid, startSoc);
+    const plan = computeTripPlan(base, rangeMid, 900, 120, startSoc);
+    expect(plan.usableLeg).toBe(Math.round(firstLeg));
+    expect(plan.stops[0]!.afterKm).toBe(Math.round(firstLeg));
+    expect(plan.stops.length).toBeGreaterThan(1);
+    expect(plan.stops[1]!.afterKm).toBe(Math.round(firstLeg + laterLeg));
+  });
+});
+
+describe("tempFactorCharge", () => {
+  it("warm ~1; colder lowers avgKw factor when preconditioned", () => {
+    expect(tempFactorCharge(20, true)).toBeCloseTo(1, 2);
+    expect(tempFactorCharge(0, true)).toBeCloseTo(0.9, 2);
+    expect(tempFactorCharge(0, false)).toBeCloseTo(0.65, 2);
+    expect(tempFactorCharge(-7, true)).toBeCloseTo(0.85, 2);
+    expect(tempFactorCharge(0, false)).toBeLessThan(tempFactorCharge(0, true));
+  });
+});
+
+describe("avgKwSpanForCar catalog", () => {
+  it("Ioniq 5 mid is ~175, not peak×0.55", async () => {
+    const { avgKwSpanForCar } = await import("./charge");
+    const ioniq = { ...base, id: "hyundai-ioniq5", dcPeakKw: 235 };
+    const span = avgKwSpanForCar(ioniq);
+    expect(span.mid).toBe(175);
+    expect(span.mid).not.toBe(Math.round(235 * 0.55));
+  });
+});
+
+describe("computeTripPlan charge temperature", () => {
+  it("colder outdoorC lengthens stop minutes at same range", () => {
+    const warm = computeTripPlan(base, 250, 600, 120, 0.9, undefined, undefined, 20);
+    const cold = computeTripPlan(base, 250, 600, 120, 0.9, undefined, undefined, -7);
+    expect(warm.stops.length).toBe(cold.stops.length);
+    expect(cold.stops[0]!.minutes).toBeGreaterThan(warm.stops[0]!.minutes);
+    expect(cold.extraMin).toBeGreaterThan(warm.extraMin);
+  });
+
+  it("outdoorC 20 vs 25 stays near warm", () => {
+    const a = computeTripPlan(base, 250, 600, 120, 0.9, undefined, undefined, 20);
+    const b = computeTripPlan(base, 250, 600, 120, 0.9, undefined, undefined, 22);
+    expect(Math.abs(a.stops[0]!.minutes - b.stops[0]!.minutes)).toBeLessThanOrEqual(1);
   });
 });

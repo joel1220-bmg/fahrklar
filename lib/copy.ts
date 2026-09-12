@@ -24,14 +24,41 @@ export const COPY = {
   qDayPlaceholder: "z. B. 50",
   qDayUnknownChip: "Weiß ich nicht",
 
+  qBody: "Welche Form soll das Auto haben?",
+  qBodyHint: "Mehrere gehen. Ohne Angabe zeigen wir alle Formen.",
+  qBodyEmpty: "Ohne Angabe zeigen wir alle Formen.",
+
   qLong: "Welche Langstrecke sollen wir grob durchspielen?",
   qLongHint:
     "Größtenteils Autobahn. Ein Ladehalt nur, wenn er nötig wäre — keine Zusage.",
   qLongEmpty: "Ohne Angabe spielen wir keine Langstrecke durch.",
 
-  qMonth: "Für welchen Monat soll die Reichweite gelten?",
+  qTrip: "Wie weit soll die Autobahnfahrt ungefähr sein?",
+  qTripHint: "Regler in Kilometern. Monat und Tempo ändern die Zeit.",
+  qTripEmpty: "Ohne Strecke bleibt die Karte leer.",
+
+  tripDrive: "Fahrt",
+  tripCharge: "Laden extra",
+  tripTotal: "Gesamt",
+  dismissCar: "Passt nicht",
+
+  autobahnTitle: "Autobahn-Check",
+  autobahnHint: "Drei Autos nebeneinander, sortiert nach Stopps. Orientierung, kein Navi.",
+  compareStops: "Ladestopps",
+  compareTotal: "Gesamt",
+  spanNote: "Spanne darunter: vorsichtig bis günstig.",
+  pickCarFirst:
+    "Tippen Sie ein Auto an — dann erscheint der Autobahn-Check daneben.",
+  qSpeed: "Welches Tempo auf der Autobahn?",
+  qStart: "Wie voll ist das Auto am Start?",
+  qStartHint: "Voll ist der übliche Start. Weniger voll heißt oft ein früherer erster Stopp.",
+  tableWhen: "Gilt für diesen Monat und diesen Start — nicht für jedes Wetter.",
+  chargeWindow: "Unterwegs von etwa 10 auf 80 Prozent — nicht die Werbe-Ladegeschwindigkeit.",
+  precondAssumed: "Wir rechnen damit, dass das Auto an der Säule schon warm ist. Sonst dauert der Stopp im Winter oft länger.",
+
+  qMonth: "Für welchen Monat rechnen wir Reichweite und Ladestopps?",
   qMonthHint:
-    "Im Winter (Heizung an) ist die Reichweite oft spürbar kürzer als im Sommer.",
+    "Im Winter ist die Fahrt oft kürzer und der Stopp an der Säule oft länger.",
   qMonthEmpty: "Ohne Angabe nehmen wir den aktuellen Monat.",
 
   qCharge: "Wo können Sie das Auto laden?",
@@ -47,6 +74,10 @@ export const COPY = {
   morningStep:
     "Morgen: auf Ihrem üblichen Weg notieren, wo Sie laden könnten — Steckdose oder Wallbox zu Hause, sonst eine Säule. Das bleibt bei Ihnen, kein Upload.",
 
+  skipCheck: "Sie dürfen das auch weglassen.",
+  skipTrip: "Autobahnfahrt weglassen",
+  compareTitle: "Ihre Wahl + zwei Alternativen",
+
   submit: "Passende Autos ansehen",
   editQuestions: "Angaben ändern",
   reset: "Entwurf löschen",
@@ -58,6 +89,13 @@ export const USE_CHIP = {
   family: "Familie",
   highway: "Lange Autobahnfahrten",
   mixed: "Alles etwas",
+} as const;
+
+export const BODY_CHIP = {
+  hatch: "Kleinwagen",
+  compact: "Kompakt",
+  sedan: "Limousine",
+  crossover: "SUV oder Crossover",
 } as const;
 
 export const LONG_CHIP = {

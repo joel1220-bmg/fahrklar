@@ -4,6 +4,16 @@ Stand: 12.09.2026. Sie-Form. Kein Verkauf, kein Leasing. Zahlen kommen nie aus e
 
 Ton wie Haus-Coach: kurz, konkret, Unsicherheit sichtbar. Jargon nur mit Klappe daneben.
 
+> **Status (copy-guard-Audit, 12.09.2026):** `intake-lock.md`, gleiches Datum,
+> ist die neuere, engere Struktur ("energiefluss") und geht bei Widerspruch
+> vor. Von der Struktur hier sind überholt: die PLZ-Frage, Tagesstrecke als
+> Chips (jetzt km-Feld), Budget als Chips (jetzt Slider), und die
+> Priorität-Frage (Abschnitt 8) — alle vier stehen nicht mehr im Intake. Ton,
+> WLTP-Übersetzungspflicht, Zahlenformat und "Weiß ich nicht überall" gelten
+> unverändert. Der Nutzung-Frage (Abschnitt 2) `unknown`-Chip unten ist
+> weiterhin richtig — genau der ist der Implementierung verloren gegangen;
+> siehe `intake-lock.md` und den Kommentar über `USE_CHIP` in `lib/copy.ts`.
+
 ## Regeln (nicht in der UI zeigen)
 
 - WLTP nie als Alltagsreichweite. Immer übersetzen: „Prüfstand (WLTP) … — Laborwert, nicht Alltag.“
@@ -27,11 +37,29 @@ Ton wie Haus-Coach: kurz, konkret, Unsicherheit sichtbar. Jargon nur mit Klappe 
 
 **underCta:** Kein Verkauf, kein Leasing-Vergleich. Orientierung zum Kauf eines Neuwagens — Spannen, keine Zusage.
 
-**landingTileUse / Body:** Alltag zuerst. · Wenige Fragen zu Weg, Laden und Platz. Weiß ich nicht ist immer erlaubt.
+**landingTileUse / Body:** Alltag zuerst. · Wenige Fragen zu Weg, Laden und Platz. „Weiß ich nicht“ ist immer erlaubt.
 
-**landingTileRange / Body:** Reichweite als Spanne. · Prüfstand (WLTP) übersetzen wir. Im Alltag, auf der Autobahn und im Winter ist es oft weniger.
+**landingTileRange / Body:** Reichweite als Spanne. · Wir rechnen mit Autobahn, Tempo und Kälte — nicht mit dem Prüfstand. Deshalb eine Spanne, kein Punktwert.
 
-**landingTilePrice / Body:** Kaufpreis grob. · Listenpreis als Spanne. Keine Leasingrate, die den Preis versteckt.
+**landingTilePrice / Body:** Kaufpreis grob. · Listenpreis als Orientierung. Keine Leasingrate, die den Preis versteckt.
+
+<!-- Aligned 12.09.2026 (copy-guard) to LANDING_TILES in lib/copy.ts, the
+     implemented and current version: quotes added around "Weiß ich nicht",
+     and the range tile no longer re-paraphrases WLTP a third way (the one
+     WLTP-Satz above already covers it; a second, different WLTP wording next
+     to it undercuts "überall gleich"). app/page.tsx still hardcodes its own
+     TILES array carrying the old wording below the quote fix and never
+     imports LANDING_TILES — that file is outside copy-guard's ownership; see
+     the copy-guard audit report. -->
+
+<details>
+<summary>Historisch (vor 12.09.2026, zum Vergleich)</summary>
+
+- landingTileUse / Body: Alltag zuerst. · Wenige Fragen zu Weg, Laden und Platz. Weiß ich nicht ist immer erlaubt.
+- landingTileRange / Body: Reichweite als Spanne. · Prüfstand (WLTP) übersetzen wir. Im Alltag, auf der Autobahn und im Winter ist es oft weniger.
+- landingTilePrice / Body: Kaufpreis grob. · Listenpreis als Spanne. Keine Leasingrate, die den Preis versteckt.
+
+</details>
 
 ---
 
@@ -192,7 +220,13 @@ Beispiele:
 - Für Ihren Alltag in 80xxx — Pendeln, Laden zu Hause. 4 Autos in der engeren Auswahl. Orientierung, keine Zusage.
 - Für Ihren Alltag — Nutzung angenommen (typischer Alltag), Laden noch unklar. 6 Autos in einer weiteren Auswahl. Orientierung, keine Zusage.
 
-**wltpAlways:** Prüfstand (WLTP) ist ein Laborwert unter genormten Bedingungen — nicht Ihre Alltagsreichweite.
+**wltpAlways:** Prüfstand (WLTP) ist ein Laborwert — nicht Ihre Autobahn- oder Alltagsreichweite.
+
+<!-- Aligned 12.09.2026 (copy-guard) to the WLTP-Satz in intake-lock.md, which
+     is "überall gleich" — this line had drifted ("unter genormten
+     Bedingungen" added, "Autobahn- oder" dropped) from both the lock and the
+     implementation (lib/copy.ts COPY.wltpAlways), which already used the
+     lock's wording correctly. -->
 
 **rangeHeroLabel:** Alltag grob
 

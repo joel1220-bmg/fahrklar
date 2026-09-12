@@ -3,8 +3,29 @@
 /** One source for the chip that every uncertain question must offer. */
 const UNKNOWN = "Weiß ich nicht";
 
+/**
+ * Known gap (copy-guard audit, 12.09.2026): `USE_CHIP` below has no
+ * "unknown" entry, and `UseCase` (`lib/engine/types.ts`) has no "unknown"
+ * member either — so the Nutzung question is the one place in the intake
+ * with no affirmative "Weiß ich nicht". `copy-v1.md`'s original qUse table
+ * had `unknown | Weiß ich nicht`; that got lost, not deliberately dropped.
+ * Fixing it needs `UseCase` to gain the member (engine), `QuestionForm.tsx`
+ * / `ControlBar.tsx` to render it (advisor-ux), and this file to add
+ * `unknown: UNKNOWN` to `USE_CHIP` — in one commit, per CLAUDE.md's "a new
+ * variant means every consumer changes together" trap. Do not add the key
+ * here alone; an untyped "unknown" UseCase reaching the engine is a crash,
+ * not a feature.
+ */
+
 export const COPY = {
   // --- Landing -----------------------------------------------------------
+  // eyebrow, landingLead and LANDING_TILES below are not wired into
+  // app/page.tsx — it hardcodes the same eyebrow ("Fahrklar"), the same
+  // heading text, and its own local `TILES` array instead of importing
+  // LANDING_TILES. The hardcoded TILES has drifted: its second tile still
+  // carries the pre-audit WLTP paraphrase and lost the „…“ quotes around
+  // "Weiß ich nicht". Found in the 12.09.2026 copy-guard audit; app/page.tsx
+  // is outside this file's ownership, so left for whoever owns it to rewire.
   eyebrow: "Fahrklar",
   landingLead:
     "Ein neues E-Auto, das zu Ihrem Alltag passt — mit ehrlicher Reichweite, nicht mit Prüfstandszahlen.",
@@ -30,6 +51,14 @@ export const COPY = {
   qDayHint: "Kilometer, grob reicht. „Weiß ich nicht“ ist erlaubt.",
   qDayEmpty: "Ohne Angabe nehmen wir 50 km an und markieren das.",
   qDayPlaceholder: "z. B. 50",
+  /**
+   * The single "Weiß ich nicht" chip label, reused wherever a question
+   * offers it — despite the name, not day-specific: QuestionForm.tsx and
+   * ControlBar.tsx also use it for the Form (Body) multi-chip group's
+   * unknown toggle. Keep this the one constant; do not add a second
+   * `unknownChip`-style duplicate (one existed here and sat unused — removed
+   * in the 12.09.2026 copy-guard pass).
+   */
   qDayUnknownChip: UNKNOWN,
 
   qBody: "Welche Form soll das Auto haben?",
@@ -94,21 +123,39 @@ export const COPY = {
   loading: "Einen Moment …",
 
   // --- Ergebnis-Kopf -----------------------------------------------------
+  // NB: resultEyebrow and resultOrientation are not wired into ResultView.tsx
+  // yet — it currently hardcodes "Erste Auswahl" and its own results-count
+  // sentence inline (see copy-guard audit, 12.09.2026). Kept here as the
+  // source of truth for whoever wires it up; do not let the hardcoded copy
+  // in the component drift from these.
   resultEyebrow: "Erste Auswahl",
   resultOrientation: "Orientierung, keine Zusage.",
+  // assumedTag / enteredTag: not currently rendered anywhere. ControlBar.tsx
+  // marks an assumed value with italics + colour only (COPY.assumedBanner
+  // explains the convention once, in prose) — no per-value text tag. Kept in
+  // case a screen-reader-visible tag turns out to be needed; flag to the
+  // quality agent's accessibility audit (backlog #2) rather than reviving
+  // silently.
   assumedTag: "Angenommen",
   enteredTag: "Eingegeben",
-  unknownChip: UNKNOWN,
 
   // --- Preis -------------------------------------------------------------
   priceFoot: "Listenpreis, oft ohne Rabatt. Kein Leasing.",
+  // Not wired: ResultView.tsx:163 hardcodes "Teurer Ausreißer (Budget offen)"
+  // on the car card instead of reading this. Same claim, different wording —
+  // pick one and reference it (copy-guard audit, 12.09.2026).
   priceOutlier: "Teurer Ausreißer — Sie haben kein Budget gesetzt.",
 
   // --- Leerzustände -------------------------------------------------------
   emptyCatalog:
     "Mit diesen Angaben finden wir gerade kein neues E-Auto in der engeren Auswahl.",
+  // "Weiß ich nicht" only names an actual option on the Form question
+  // (MultiChipGroup's unknown toggle). Kaufpreis has no chip of that name —
+  // its unknown affordance is the "offen lassen" link — so this text must
+  // not promise a "Weiß ich nicht" that a reader loosening the price won't
+  // find. Reworded 12.09.2026 (copy-guard audit) to cover both truthfully.
   emptyCatalogHelp:
-    "Lockern Sie Kaufpreis oder Form — oder wählen Sie „Weiß ich nicht“. Dann zeigen wir eine vorsichtige, weitere Auswahl und markieren sie.",
+    "Lockern Sie Kaufpreis oder Form — oder lassen Sie eine Antwort offen. Dann zeigen wir eine vorsichtige, weitere Auswahl und markieren sie.",
 } as const;
 
 /** Landing tiles. Title and body, in the order they stand on the page. */

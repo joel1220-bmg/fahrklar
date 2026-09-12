@@ -133,13 +133,23 @@ export function computeTrip(rangeMid: number, routeKm: number): TripCore {
 /**
  * Legs from SoC window (Ladekurve): range100 = rangeKm/startSoc,
  * first = range100*(startSoc-0.10), later = range100*0.70 (10→80).
+ *
+ * The floor here must match computeRange's floor (0.10, the reserve the rest
+ * of the product calls "10 %") - it used to be clamped to 0.15 instead, which
+ * for any raw startSoc in [0.10, 0.15) silently computed the first leg against
+ * a bigger battery fraction than computeRange actually used for `rangeKm`,
+ * i.e. the two functions disagreed about what "the start charge" was. At
+ * exactly 0.10 (a value the input schema explicitly allows - the reserve
+ * line itself) that mismatch was largest. The `Math.max(1, ...)` below already
+ * guards the true degenerate case (starting at or under the reserve means the
+ * first leg is ~0 km), so raising the soc floor above 0.10 was never needed.
  */
 export function tripLegs(rangeKm: number, startSoc: number): {
   range100: number;
   firstLeg: number;
   laterLeg: number;
 } {
-  const soc = Math.max(0.15, Math.min(1, startSoc));
+  const soc = Math.max(0.1, Math.min(1, startSoc));
   const range100 = rangeKm / soc;
   return {
     range100,

@@ -25,6 +25,17 @@ export interface Car {
   heatPump: boolean;
   colorHex: string;
   asOf: string;
+  /** Set when a figure on this car looks internally inconsistent and needs
+   *  checking against a primary source before go-live. Never invent a fix -
+   *  widen the doubt here instead. */
+  notes?: string;
+}
+
+/** File-level provenance carried by every seed JSON under data/**. */
+export interface CatalogMeta {
+  asOf: string;
+  disclaimer: string;
+  confidence: string;
 }
 
 export interface RouteDef {
@@ -39,6 +50,8 @@ export interface RouteDef {
 export interface ClimateMonths {
   asOf: string;
   note: string;
+  disclaimer?: string;
+  confidence?: string;
   months: Record<string, number>;
 }
 

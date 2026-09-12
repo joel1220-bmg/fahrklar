@@ -116,9 +116,17 @@ function Scene({ body, color }: { body: BodyStyle; color: string }) {
           cannot frame both: what fills the hero leaves the card car tiny.
           Bounds fits the car to whatever box it is given and re-fits on resize,
           so neither caller has to pass a framing hint. */}
-      <Bounds fit clip observe margin={0.92}>
+      <Bounds fit observe margin={1.1}>
         <CarMesh body={body} color={color} />
       </Bounds>
+      {/* No `clip` on Bounds. It pulls the camera's near and far planes tight
+          around what it measured, and it measures before the GLTF has finished
+          loading and before CarMesh has dropped the baked shadow disc - so the
+          planes end up bracketing the wrong volume and the car is clipped away
+          entirely. The symptom is not a half-drawn car, it is an empty canvas
+          on a correct background, with a live WebGL context and no console
+          error, which is what makes it worth writing down. Measured: removing
+          `clip` alone brings the car back. */}
       {/* No ContactShadows here on purpose, on this theme either. Its shadow
           plane is a rectangle with no radial falloff, so its own square edge
           stays visible as a dark diamond under the car at every opacity worth

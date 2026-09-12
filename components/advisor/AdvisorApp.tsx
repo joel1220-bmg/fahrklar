@@ -22,6 +22,15 @@ export function AdvisorApp() {
   const [dismissedIds, setDismissedIds] = useState<string[]>([]);
   const [hydrated, setHydrated] = useState(false);
 
+  /*
+   * Reading localStorage has to happen after mount, not during render: the
+   * server has no such store, so using it while rendering would make the first
+   * client render disagree with the server HTML. That is exactly the shape
+   * react-hooks/set-state-in-effect warns about, and exactly the case where it
+   * is the correct thing to do — so the rule is disabled here, deliberately,
+   * rather than the effect being contorted to hide from it.
+   */
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     const rem = loadRemember();
     setRememberState(rem);
@@ -29,6 +38,7 @@ export function AdvisorApp() {
     if (saved) setDraft(saved);
     setHydrated(true);
   }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     if (!hydrated) return;
@@ -42,13 +52,15 @@ export function AdvisorApp() {
     return evaluation.results.filter((r) => !dismissed.has(r.car.id)).slice(0, 3);
   }, [evaluation.results, dismissedIds]);
 
-  // If selected car scrolls out of the visible slice (e.g. filter change), clear selection
-  useEffect(() => {
-    if (phase !== "result") return;
-    if (selectedId && !visible.some((r) => r.car.id === selectedId)) {
-      setSelectedId(null);
-    }
-  }, [visible, phase, selectedId]);
+  /*
+   * A selection only counts while the car is still on screen — change a filter
+   * and the chosen car can drop out of the visible three. That is derived
+   * state, so it is derived here during render rather than corrected afterwards
+   * in an effect: an effect would render one frame with a selection pointing at
+   * a car that is no longer shown.
+   */
+  const activeId =
+    selectedId && visible.some((r) => r.car.id === selectedId) ? selectedId : null;
 
   const onRemember = (on: boolean) => {
     setRememberState(on);
@@ -96,7 +108,7 @@ export function AdvisorApp() {
           resolved={evaluation.resolved}
           assumptions={evaluation.assumptions}
           results={visible}
-          selectedId={selectedId}
+          selectedId={activeId}
           onSelect={setSelectedId}
           onDismiss={onDismiss}
           onEdit={() => setPhase("form")}

@@ -1,5 +1,7 @@
 {
   "asOf": "2026-09-12",
+  "disclaimer": "Vereinfachte Stützpunkt-Polylinien für die Kartenanzeige und die Routenlänge, keine amtliche Routenführung. km-Angabe ist die angenommene Autobahn-Reisestrecke, keine Live-Navigation.",
+  "confidence": "seed - Streckenlängen plausibel, Polylinien nicht gegen eine echte Navigationsroute geprüft.",
   "routes": [
     {
       "id": "hamMuc",

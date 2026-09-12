@@ -1,6 +1,8 @@
 {
   "asOf": "2026-09-12",
   "note": "Typische mittlere Außentemperatur Deutschland (Orientierung, kein Ortswert).",
+  "disclaimer": "Grobe Monatsmittel für ganz Deutschland, keine Messreihe und kein Ortswert. Nicht als Wettervorhersage verwenden; dient nur dazu, die Reichweite auf eine plausible Jahreszeit-Temperatur zu beziehen.",
+  "confidence": "seed - orientierende Schätzwerte, nicht gegen eine DWD-Klimareihe geprüft.",
   "months": {
     "1": -0.5,
     "2": 0.5,

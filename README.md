@@ -23,7 +23,7 @@ npm-Scripts sind Windows-tauglich (kein `VAR=1 cmd`).
 | Pfad | Inhalt |
 | --- | --- |
 | `/` | Landing — Showroom + drei Kacheln |
-| `/berater` | Fragen → Ergebnis → Feinschliff |
+| `/berater` | Fragen → Ergebnis mit sichtbarer Kontrollleiste (ehemals „Feinschliff“-Schublade — entfernt, siehe `docs/backlog.md` #1) |
 | `/datenschutz` | Platzhalter |
 | `/impressum` | Platzhalter |
 
@@ -35,4 +35,4 @@ npm-Scripts sind Windows-tauglich (kein `VAR=1 cmd`).
 
 ## Technik
 
-Next.js App Router, TypeScript, Tailwind 4, react-three-fiber, Zod, Vitest. CSP, System-Fonts, Sie-Form, localStorage nur mit Opt-in. Copy-Lock: `lib/copy.ts`.
+Next.js App Router, TypeScript, Tailwind 4, react-three-fiber, Zod, Vitest. CSP, System-Fonts, Sie-Form, localStorage nur mit Opt-in. Copy-Lock: `lib/copy.ts` und `lib/engine/labels.ts`, gebunden an `intake-lock.md` und `ladekurve-lock.md`.

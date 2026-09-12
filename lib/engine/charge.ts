@@ -18,6 +18,30 @@ export type KwSpan = { low: number; mid: number; high: number };
  * holds, several mids here are conservative and every trip plan overstates the
  * time at the charger.
  *
+ * Extended 12.09.2026 while checking backlog #12/#13 - the same conservatism
+ * is confirmed on one more entry and suspected, unconfirmed, on several others:
+ *
+ * - `kia-ev3` (78.1 kWh usable, 128 kW peak): this table's mid of 80 kW yields
+ *   ~41 min for 10->80 %, but Kia's own published figure for the 81.4 kWh Long
+ *   Range pack is ~29-31 min, implying ~106-109 kW average (83-85 % of peak,
+ *   not 63 %). CONFIRMED conservative - sourced against Kia's spec sheet and
+ *   independent charging-time calculators, 12.09.2026.
+ * - `byd-seal` was checked too and is NOT conservative: independent sources put
+ *   its 10->80 % at 35-37 min, in line with (if anything slightly faster than)
+ *   this table's mid of 103 kW / ~34 min. Do not "fix" it.
+ * - `bmw-ix1`, `cupra-born`, `renault-5`, `opel-corsa`, `byd-dolphin` sit at the
+ *   same 57-63 % of peak as the two confirmed-conservative entries above
+ *   (`skoda-elroq` 57 %, `kia-ev3` 63 %) - suspicious by pattern, but UNCHECKED
+ *   against a source. `volvo-ex30` is also unchecked and worth a second look in
+ *   the other direction: at 59 % of peak it is not out of line with the rest of
+ *   the table, but has not been verified either.
+ * - The 57-63 % clustering across most of the table's non-confirmed entries is
+ *   itself suspicious: it sits close to the untouched-car FALLBACK_TYPICAL
+ *   ratio below (0.55) rather than looking like a per-car sourced figure, which
+ *   is consistent with most of this table never having been checked against a
+ *   manufacturer number in the first place - only `hyundai-ioniq5` (75 %) and
+ *   `byd-seal` (69 %) stand out as plausibly real per-car data.
+ *
  * Do not "fix" these from memory. Check 10->80 % times against the
  * manufacturer or a measured test, then derive avg kW as
  * (usableKwh * 0.7) / (minutes / 60), and record the source.

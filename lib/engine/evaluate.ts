@@ -21,7 +21,11 @@ import type {
   UseCase,
 } from "./types";
 
-const cars = carsJson as Car[];
+// cars.de.json moved from a bare array to { meta, cars } so it can carry
+// asOf/disclaimer/confidence at the file level (see CatalogMeta). Accept
+// both shapes so an old cached copy of the file never breaks the build.
+const cars = ((carsJson as { cars?: Car[] }).cars ??
+  (carsJson as unknown as Car[])) as Car[];
 const climate = climateJson as { months: Record<string, number> };
 const routes = (routesJson as unknown as { routes: RouteDef[] }).routes;
 
@@ -59,8 +63,8 @@ export function resolveDraft(draft: Draft): ResolvedInput {
   const bodies = Array.isArray(draft.bodies) ? draft.bodies : [];
   const bodiesAssumed = bodies.length === 0;
 
-  const tripKm =
-    draft.tripKm !== null && draft.tripKm >= 80 ? draft.tripKm : draft.tripKm;
+  // tripKm is passed through unchanged; tripActive (below) is the only gate.
+  const tripKm = draft.tripKm;
   const tripActive = tripKm !== null && tripKm >= 80;
 
   const nowMonth = new Date().getMonth() + 1;

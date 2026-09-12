@@ -10,10 +10,10 @@ Status: `offen` · `läuft` · `fertig` · `blockiert`
 
 | # | Aufgabe | Besitzer | Status |
 |---|---|---|---|
-| 1 | ControlBar in ResultView + AdvisorApp einhängen; alte Lesekacheln entfernen | advisor-ux | offen |
-| 2 | Erst-Audit: Kontrast, Tastatur, 390 px, Datenehrlichkeit | quality | offen |
-| 3 | Copy gegen `intake-lock.md` und `copy-v1.md` prüfen | copy-guard | offen |
-| 4 | Helles Studio-Licht im Showroom wiederherstellen (lag im Scratchpad) | showroom | offen |
+| 1 | ControlBar in ResultView + AdvisorApp einhängen; alte Lesekacheln entfernen | advisor-ux | **fertig** |
+| 2 | Erst-Audit: Kontrast, Tastatur, 390 px, Datenehrlichkeit | quality | offen (Agent am Limit gestorben) |
+| 3 | Copy gegen `intake-lock.md` und `copy-v1.md` prüfen | copy-guard | teilweise |
+| 4 | Helles Studio-Licht im Showroom wiederherstellen (lag im Scratchpad) | showroom | **fertig** |
 
 ## Welle 2 — Das Ergebnis als Daten lesbar machen
 
@@ -21,7 +21,7 @@ Status: `offen` · `läuft` · `fertig` · `blockiert`
 |---|---|---|---|
 | 5 | Reichweiten-Spanne als Balken statt als Text | advisor-ux | offen |
 | 6 | Tabellen-Umschalter nach SMARD-Vorbild („Tabelle anzeigen") | advisor-ux | offen |
-| 7 | Balken-, Spur- und Markierungs-Tokens für Datenvisualisierung | design-system | offen |
+| 7 | Balken-, Spur- und Markierungs-Tokens für Datenvisualisierung | design-system | teilweise (`Num.tsx`) |
 | 8 | Auto-Karten: Auswahl, Verwerfen und Vergleich schärfen | advisor-ux | offen |
 
 ## Welle 3 — Substanz
@@ -29,9 +29,9 @@ Status: `offen` · `läuft` · `fertig` · `blockiert`
 | # | Aufgabe | Besitzer | Status |
 |---|---|---|---|
 | 9 | `compact` bekommt eigene Maße und einen Generator-Eintrag | showroom | offen |
-| 10 | Reichweiten-Modell prüfen: Tempo, Temperatur, Verbrauch | engine | offen |
-| 11 | Ladekurve gegen `ladekurve-lock.md` prüfen | engine | offen |
-| 12 | Seed-Zahlen in `data/**` belegen oder als ungeprüft markieren | engine | offen |
+| 10 | Reichweiten-Modell prüfen: Tempo, Temperatur, Verbrauch | engine | **fertig** (Luftdichte ergänzt) |
+| 11 | Ladekurve gegen `ladekurve-lock.md` prüfen | engine | **fertig** (Stopps nach Bedarf) |
+| 12 | Seed-Zahlen in `data/**` belegen oder als ungeprüft markieren | engine | offen — `AVG_KW_10_80` markiert |
 | 13 | Testlücken schließen (Grenzfälle, leere Auswahl, Extremwerte) | engine | offen |
 
 ## Welle 4 — Schliff
@@ -47,9 +47,9 @@ Status: `offen` · `läuft` · `fertig` · `blockiert`
 
 | # | Aufgabe | Besitzer | Status |
 |---|---|---|---|
-| 18 | `verify` Skript: tsc + Tests + Build + Screenshot-Vergleich | — (Integration) | offen |
+| 18 | `verify.ps1`: tsc + Tests + Lint + Build | — (Integration) | **fertig** |
 | 19 | Screenshot-Regression für alle Routen, 390 px und 1280 px | quality | offen |
-| 20 | `CLAUDE.md` fürs Projekt: Grenzen, Schleife, Fallen | — (Integration) | offen |
+| 20 | `CLAUDE.md` fürs Projekt: Grenzen, Schleife, Fallen | — (Integration) | **fertig** |
 
 ---
 
@@ -70,4 +70,17 @@ Status: `offen` · `läuft` · `fertig` · `blockiert`
 - `1d9e26b` — Build repariert: offener Ternär in `ResultView`, fehlende
   `compact`-Karosserie. `/berater` lieferte vorher HTTP 500.
 - `581a6ed` — Helles Theme mit SMARD-Blau
-- `f2afc17` — `ControlBar.tsx` geschrieben, noch nicht eingehängt
+- `f2afc17` — `ControlBar.tsx` geschrieben
+- `7edbc45` — `verify.ps1` und Projekt-`CLAUDE.md`
+- `8b11506` — Welle 1, soweit sie vor dem Sitzungslimit kam. Sechs Agenten
+  starben am Limit; vier hatten brauchbare Teilarbeit abgelegt.
+- `9155273` — Winter-Ladeplanung. Aus einer Nutzerkritik an einer 840-km-
+  Dezemberfahrt: Ladestopps luden pauschal 70 % des Akkus statt nach Bedarf
+  (44 Minuten 12 km vor dem Ziel), und die Kaltluftdichte fehlte im Verbrauch
+  ganz. 65 Tests.
+
+## Nächster Halt
+
+Welle 1 ist nicht abgeschlossen — das Audit (#2) kam gar nicht zum Zug, Copy
+(#3) und Datenvisualisierungs-Tokens (#7) nur halb. Die laufen zuerst, bevor
+Welle 2 startet.

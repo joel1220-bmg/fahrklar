@@ -13,6 +13,7 @@ import type {
 } from "@/lib/engine/types";
 import { sortForCompare, tripTotalMid } from "@/lib/advisor/compare";
 import { GermanyMap } from "@/components/showroom/GermanyMap";
+import { ControlBar } from "./ControlBar";
 
 type Props = {
   draft: Draft;
@@ -61,6 +62,16 @@ export function ResultView({
   const tripActive = draft.tripKm !== null && draft.tripKm >= 80;
   const monthSliderVal = draft.month ?? resolved.month;
 
+  // The engine already decided what was taken from the reader and what it had
+  // to assume; the control bar only needs that verdict keyed by control.
+  const assumedBy = useMemo(
+    () =>
+      Object.fromEntries(
+        assumptions.map((a) => [a.key, a.assumed]),
+      ) as Record<string, boolean>,
+    [assumptions],
+  );
+
   const compareCols = useMemo(
     () => (tripActive ? sortForCompare(results) : []),
     [tripActive, results],
@@ -68,6 +79,15 @@ export function ResultView({
 
   return (
     <div className="space-y-10">
+      {/* The inputs stay on screen and stay editable: every control carries its
+          own value, and changing one redraws everything below it at once. */}
+      <ControlBar
+        draft={draft}
+        onChange={onChange}
+        assumedBy={assumedBy}
+        resolvedDayKm={resolved.dayKm}
+      />
+
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-xs font-medium uppercase tracking-[0.14em] text-gold">
@@ -95,27 +115,6 @@ export function ResultView({
           </button>
         </div>
       </div>
-
-      <section aria-label="Angaben">
-        <p className="text-xs text-muted">{COPY.assumedBanner}</p>
-        <ul className="mt-3 grid gap-2 sm:grid-cols-2">
-          {assumptions.map((a) => (
-            <li
-              key={a.key}
-              className={`rounded-xl border px-3 py-2 text-sm ${
-                a.assumed
-                  ? "border-graphite-line bg-graphite-soft text-assumed"
-                  : "border-graphite-line bg-graphite-card text-paper"
-              }`}
-            >
-              <span className="text-xs uppercase tracking-wide text-muted">
-                {a.assumed ? "Angenommen" : "Eingegeben"} · {a.label}
-              </span>
-              <div className="mt-0.5">{a.value}</div>
-            </li>
-          ))}
-        </ul>
-      </section>
 
       <p className="text-sm text-muted">{COPY.skipCheck}</p>
 

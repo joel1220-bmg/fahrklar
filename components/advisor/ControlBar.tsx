@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
-import { BODY_CHIP, CHARGE_CHIP, USE_CHIP } from "@/lib/copy";
+import { BODY_CHIP, CHARGE_CHIP, COPY, USE_CHIP } from "@/lib/copy";
 import type { BodyStyle, ChargeOption, Draft, UseCase } from "@/lib/engine/types";
 
 /**
@@ -16,7 +16,7 @@ import type { BodyStyle, ChargeOption, Draft, UseCase } from "@/lib/engine/types
  */
 
 const USE_ORDER: UseCase[] = ["everyday", "family", "highway", "mixed"];
-const BODY_ORDER: BodyStyle[] = ["hatch", "sedan", "crossover"];
+const BODY_ORDER: BodyStyle[] = ["hatch", "compact", "sedan", "crossover"];
 const CHARGE_ORDER: ChargeOption[] = ["home", "work", "public", "unknown"];
 
 function Chevron() {
@@ -135,6 +135,12 @@ export function ControlBar({ draft, onChange, assumedBy, resolvedDayKm }: Props)
       ? "alle Formen"
       : draft.bodies.map((b) => BODY_CHIP[b]).join(", ");
 
+  // Mirror resolveDraft(): no answer and "Noch unklar" are both computed with
+  // public charging, so that is the value the control has to show — marked as
+  // assumed, in the one place where it can be corrected.
+  const chargeValue: ChargeOption =
+    draft.charge === null || draft.charge === "unknown" ? "public" : draft.charge;
+
   const priceValue =
     draft.priceMax && draft.priceMax > 0
       ? `bis ${Math.round(draft.priceMax).toLocaleString("de-DE")} €`
@@ -150,7 +156,9 @@ export function ControlBar({ draft, onChange, assumedBy, resolvedDayKm }: Props)
   return (
     <section
       aria-label="Angaben ändern"
-      className="no-print sticky top-0 z-20 -mx-4 border-b border-line bg-canvas/95 px-4 py-3 backdrop-blur-sm"
+      /* Pinned from sm up. Stacked one-per-row on a phone the bar is ~300 px
+         tall, and pinning that would eat a third of the viewport for good. */
+      className="no-print z-20 -mx-4 border-b border-line bg-canvas/95 px-4 py-3 backdrop-blur-sm sm:sticky sm:top-0"
     >
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
         <Control
@@ -202,7 +210,7 @@ export function ControlBar({ draft, onChange, assumedBy, resolvedDayKm }: Props)
                   onClick={() => set({ dayKm: "", dayUnknown: true })}
                   className="text-accent underline underline-offset-2"
                 >
-                  Weiß ich nicht
+                  {COPY.qDayUnknownChip}
                 </button>
               </div>
             </div>
@@ -232,7 +240,7 @@ export function ControlBar({ draft, onChange, assumedBy, resolvedDayKm }: Props)
 
         <Control
           label="Laden"
-          value={CHARGE_CHIP[draft.charge ?? "unknown"]}
+          value={CHARGE_CHIP[chargeValue]}
           assumed={!!assumedBy.charge}
         >
           {(close) => (
@@ -282,6 +290,7 @@ export function ControlBar({ draft, onChange, assumedBy, resolvedDayKm }: Props)
           )}
         </Control>
       </div>
+      <p className="mt-2 text-xs text-muted">{COPY.assumedBanner}</p>
     </section>
   );
 }

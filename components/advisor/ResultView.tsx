@@ -1,11 +1,12 @@
 "use client";
 
-import { COPY, MONTH_LABEL } from "@/lib/copy";
+import { COPY, LONG_CHIP, MONTH_LABEL } from "@/lib/copy";
 import { formatEUR, formatRangeKm } from "@/lib/engine/parse";
 import type {
   Assumption,
   CarResult,
   Draft,
+  LongTrip,
   ResolvedInput,
   SpeedKph,
 } from "@/lib/engine/types";
@@ -174,52 +175,6 @@ export function ResultView({
         </div>
       </section>
 
-      {/* Showroom hero */}
-      {selected ? (
-        <section className="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
-          <CarCanvas
-            body={selected.car.body}
-            color={selected.car.colorHex}
-            className="min-h-[320px] h-[42vh] lg:h-[480px]"
-          />
-          <div className="flex flex-col justify-center space-y-4">
-            <p className="text-xs uppercase tracking-[0.14em] text-gold">Showroom</p>
-            <h3 className="serif text-3xl text-paper sm:text-4xl">
-              {selected.car.brand} {selected.car.model}
-            </h3>
-            <p className="text-sm text-muted">
-              Autobahn-Reichweite {MONTH_LABEL[resolved.month]}:{" "}
-              <span className="text-paper">
-                {formatRangeKm(selected.range.lowKm, selected.range.highKm)}
-              </span>
-            </p>
-            <p className="text-sm text-muted">
-              Kaufpreis grob{" "}
-              <span className="text-paper">{formatEUR(selected.car.listEur)}</span>
-              {" · "}
-              {selected.car.seats} Sitze
-              {" · "}
-              Wärmepumpe {selected.car.heatPump ? "ja" : "nein"}
-            </p>
-            <p className="text-xs text-muted">
-              Prüfstand (WLTP) {selected.car.wltpKm} km — Laborwert, nicht Alltag.
-            </p>
-            {selected.trip.active ? (
-              <GermanyMap
-                polyline={selected.trip.polyline}
-                routeKm={selected.trip.routeKm}
-                rangeMid={selected.trip.rangeMid}
-                needsStop={selected.trip.needsStop}
-                stopAfterKm={selected.trip.stopAfterKm}
-                routeName={selected.trip.routeName}
-              />
-            ) : null}
-          </div>
-        </section>
-      ) : (
-        <p className="text-muted">Mit diesen Angaben finden wir gerade kein Auto.</p>
-      )}
-
       {/* Cards */}
       <ul className="grid gap-4 sm:grid-cols-2">
         {results.map((r) => {
@@ -265,6 +220,66 @@ export function ResultView({
           );
         })}
       </ul>
+
+      {/* Showroom hero */}
+      {selected ? (
+        <section className="grid gap-6 lg:grid-cols-[1.2fr_1fr]">
+          <CarCanvas
+            body={selected.car.body}
+            color={selected.car.colorHex}
+            className="min-h-[320px] h-[42vh] lg:h-[480px]"
+          />
+          <div className="flex flex-col justify-center space-y-4">
+            <p className="text-xs uppercase tracking-[0.14em] text-gold">Showroom</p>
+            <h3 className="serif text-3xl text-paper sm:text-4xl">
+              {selected.car.brand} {selected.car.model}
+            </h3>
+            <p className="text-sm text-muted">
+              Autobahn-Reichweite {MONTH_LABEL[resolved.month]}:{" "}
+              <span className="text-paper">
+                {formatRangeKm(selected.range.lowKm, selected.range.highKm)}
+              </span>
+            </p>
+            <p className="text-sm text-muted">
+              Kaufpreis grob{" "}
+              <span className="text-paper">{formatEUR(selected.car.listEur)}</span>
+              {" · "}
+              {selected.car.seats} Sitze
+              {" · "}
+              Wärmepumpe {selected.car.heatPump ? "ja" : "nein"}
+            </p>
+            <p className="text-xs text-muted">
+              Prüfstand (WLTP) {selected.car.wltpKm} km — Laborwert, nicht Alltag.
+            </p>
+          </div>
+        </section>
+      ) : (
+        <p className="text-muted">Mit diesen Angaben finden wir gerade kein Auto.</p>
+      )}
+
+      {selected ? (
+        <section className="space-y-4">
+          <ChipGroup<LongTrip>
+            legend={COPY.qLong}
+            value={draft.longTrip}
+            onChange={(v) => onChange({ ...draft, longTrip: v })}
+            options={(Object.keys(LONG_CHIP) as LongTrip[]).map((k) => ({
+              value: k,
+              label: LONG_CHIP[k],
+            }))}
+            help={draft.longTrip === null || draft.longTrip === "none" ? COPY.qLongEmpty : COPY.qLongHint}
+          />
+          <GermanyMap
+            polyline={selected.trip.polyline}
+            routeKm={selected.trip.routeKm}
+            rangeMid={selected.trip.rangeMid}
+            needsStop={selected.trip.needsStop}
+            stopAfterKm={selected.trip.stopAfterKm}
+            routeName={selected.trip.routeName}
+          />
+        </section>
+      ) : null}
+
 
       {/* Exactly ONE next step */}
       <aside className="rounded-2xl border border-gold/40 bg-graphite-card p-5">

@@ -3,7 +3,6 @@
 import {
   CHARGE_CHIP,
   COPY,
-  LONG_CHIP,
   MONTH_LABEL,
   PRICE_CHIP,
   USE_CHIP,
@@ -11,7 +10,6 @@ import {
 import type {
   ChargeOption,
   Draft,
-  LongTrip,
   PriceOption,
   UseCase,
 } from "@/lib/engine/types";
@@ -83,16 +81,6 @@ export function QuestionForm({ draft, onChange, remember, onRemember, onSubmit }
         ) : null}
       </fieldset>
 
-      <ChipGroup<LongTrip>
-        legend={COPY.qLong}
-        value={draft.longTrip}
-        onChange={(v) => set("longTrip", v)}
-        options={(Object.keys(LONG_CHIP) as LongTrip[]).map((k) => ({
-          value: k,
-          label: LONG_CHIP[k],
-        }))}
-        help={draft.longTrip === null ? COPY.qLongEmpty : COPY.qLongHint}
-      />
 
       <fieldset>
         <legend className="serif text-lg text-paper">{COPY.qMonth}</legend>

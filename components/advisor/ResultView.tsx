@@ -507,7 +507,7 @@ export function ResultView({
                 </div>
               </div>
             </div>
-          )}
+          ) : null}
         </section>
       )}
 

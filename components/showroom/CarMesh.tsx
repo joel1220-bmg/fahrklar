@@ -20,10 +20,21 @@ type Props = {
 };
 
 /** Named L/W/H (m) from generated dims.json — keep in sync via scripts/generate-car-glb.py */
-export const CAR_DIMS: Record<BodyStyle, { L: number; W: number; H: number }> = dimsJson;
+type Dim = { L: number; W: number; H: number };
+
+/**
+ * "compact" has no generated model yet — scripts/generate-car-glb.py only knows
+ * hatch / sedan / crossover. It borrows the hatch silhouette and dimensions,
+ * which is the closest of the three, until the generator gains its own entry.
+ */
+export const CAR_DIMS: Record<BodyStyle, Dim> = {
+  ...(dimsJson as Record<string, Dim>),
+  compact: (dimsJson as Record<string, Dim>).hatch,
+} as Record<BodyStyle, Dim>;
 
 const MODEL_URL: Record<BodyStyle, string> = {
   hatch: "/models/hatch.glb",
+  compact: "/models/hatch.glb",
   sedan: "/models/sedan.glb",
   crossover: "/models/crossover.glb",
 };

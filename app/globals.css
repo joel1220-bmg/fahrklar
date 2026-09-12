@@ -42,7 +42,36 @@
   --color-gold: #15578a;
   --color-gold-dim: #0f4269;
 
-  /* ---- data encodings: range bars, comparisons ---- */
+  /* ---- data encodings: range bars, comparisons ----
+     Audited against WCAG 1.4.11 (non-text contrast, 3:1) for the elements
+     that actually carry meaning; a passive background doesn't need it.
+
+       --color-data-range      3.40:1 on --color-data-track, 4.29:1 on white.
+                                Holds up on its own — used for the span's
+                                border and the mid-value tick.
+       --color-data-mark       ~14:1 on track, ~18:1 on white. Holds up with
+                                large margin, which is the point: it marks an
+                                external fixed figure (e.g. WLTP) that must
+                                read as a hard fact, not a soft one.
+       --color-data-range-soft 1.13:1 on --color-data-track alone — does NOT
+                                clear 3:1, and can't while staying visibly
+                                "softer" than --color-data-range (matching
+                                its lightness would erase the distinction).
+                                Left as-is: it is the span's fill, and
+                                RangeBar.tsx draws the boundary as a
+                                --color-data-range border on top of it, the
+                                technique WCAG 1.4.11 itself suggests for a
+                                fill that can't carry the contrast alone. A
+                                consumer using this token as a fill WITHOUT
+                                that border inherits an invisible edge —
+                                don't.
+       --color-data-track      1.14–1.26:1 on canvas/white. Also left as-is:
+                                it is the empty-scale background, not
+                                information-bearing (the span, its border and
+                                the marks on top are), and this is the same
+                                low-contrast register the existing --color-
+                                sunken/--color-line tokens already sit in.
+  */
   --color-data-range: #2b7fc0;
   --color-data-range-soft: #c3dbef;
   --color-data-track: #e4e5e8;

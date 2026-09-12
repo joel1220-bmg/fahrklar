@@ -1,9 +1,10 @@
 "use client";
 
-import { useMemo } from "react";
+import { useId, useMemo, useState } from "react";
 import { COPY, MONTH_LABEL } from "@/lib/copy";
 import { formatEUR, formatRangeKm } from "@/lib/engine/parse";
 import { formatCarName } from "@/lib/engine/labels";
+import { Num, NumSpan } from "@/components/ui/Num";
 import type {
   Assumption,
   CarResult,
@@ -61,6 +62,11 @@ export function ResultView({
   const tripKmVal = draft.tripKm ?? 80;
   const tripActive = draft.tripKm !== null && draft.tripKm >= 80;
   const monthSliderVal = draft.month ?? resolved.month;
+
+  // SMARD's second manner: the cards are the picture, this table is the
+  // evidence behind it — same figures, real markup, checkable.
+  const [tableOpen, setTableOpen] = useState(false);
+  const tableId = useId();
 
   // The engine already decided what was taken from the reader and what it had
   // to assume; the control bar only needs that verdict keyed by control.
@@ -181,6 +187,140 @@ export function ResultView({
           );
         })}
       </ul>
+
+      <div>
+        <button
+          type="button"
+          aria-expanded={tableOpen}
+          aria-controls={tableId}
+          onClick={() => setTableOpen((o) => !o)}
+          className="min-h-10 rounded-full border border-graphite-line px-4 text-sm text-paper hover:border-gold"
+        >
+          {tableOpen ? "Tabelle ausblenden" : "Tabelle anzeigen"}
+        </button>
+
+        {tableOpen ? (
+          <div
+            id={tableId}
+            className="mt-4 overflow-x-auto rounded-2xl border border-graphite-line bg-graphite-card"
+          >
+            <table className="w-full min-w-[32rem] border-collapse text-sm">
+              <caption className="border-b border-graphite-line px-3 py-3 text-left text-sm text-paper">
+                Die Zahlen hinter den Karten oben — je eine Spalte pro Auto.
+                {tripActive ? (
+                  <span className="mt-1 block text-xs font-normal text-muted">
+                    Ladestopps und Gesamtzeit gelten für {draft.tripKm} km bei{" "}
+                    {draft.speedKph} km/h.
+                  </span>
+                ) : null}
+              </caption>
+              <thead>
+                <tr className="border-b border-graphite-line text-left">
+                  <th
+                    scope="col"
+                    className="px-3 py-3 text-xs uppercase tracking-wide text-muted"
+                  >
+                    —
+                  </th>
+                  {results.map((r) => (
+                    <th key={r.car.id} scope="col" className="px-3 py-3 align-bottom">
+                      <span className="serif block text-base text-paper">
+                        {formatCarName(r.car)}
+                      </span>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b border-graphite-line">
+                  <th scope="row" className="px-3 py-3 text-left text-muted">
+                    Autobahn-Reichweite
+                  </th>
+                  {results.map((r) => (
+                    <td key={r.car.id} className="px-3 py-3 text-paper">
+                      <NumSpan low={r.range.lowKm} high={r.range.highKm} unit="km" />
+                    </td>
+                  ))}
+                </tr>
+                <tr className="border-b border-graphite-line">
+                  <th scope="row" className="px-3 py-3 text-left text-muted">
+                    Listenpreis
+                  </th>
+                  {results.map((r) => (
+                    <td key={r.car.id} className="px-3 py-3 text-paper">
+                      <Num value={r.car.listEur} unit="€" />
+                    </td>
+                  ))}
+                </tr>
+                <tr className="border-b border-graphite-line">
+                  <th scope="row" className="px-3 py-3 text-left text-muted">
+                    Sitze
+                  </th>
+                  {results.map((r) => (
+                    <td key={r.car.id} className="px-3 py-3 text-paper">
+                      <Num value={r.car.seats} />
+                    </td>
+                  ))}
+                </tr>
+                <tr className="border-b border-graphite-line">
+                  <th scope="row" className="px-3 py-3 text-left text-muted">
+                    Nutzbare Batterie
+                  </th>
+                  {results.map((r) => (
+                    <td key={r.car.id} className="px-3 py-3 text-paper">
+                      <Num value={r.car.usableKwh} unit="kWh" decimals={1} />
+                    </td>
+                  ))}
+                </tr>
+                <tr className="border-b border-graphite-line">
+                  <th scope="row" className="px-3 py-3 text-left text-muted">
+                    Verbrauch Autobahn
+                  </th>
+                  {results.map((r) => (
+                    <td key={r.car.id} className="px-3 py-3 text-paper">
+                      <Num value={r.car.highwayKwhPer100} unit="kWh/100 km" decimals={1} />
+                    </td>
+                  ))}
+                </tr>
+                <tr className={tripActive ? "border-b border-graphite-line" : undefined}>
+                  <th scope="row" className="px-3 py-3 text-left text-muted">
+                    DC-Ladeleistung
+                  </th>
+                  {results.map((r) => (
+                    <td key={r.car.id} className="px-3 py-3 text-paper">
+                      <Num value={r.car.dcPeakKw} unit="kW" />
+                    </td>
+                  ))}
+                </tr>
+                {tripActive ? (
+                  <>
+                    <tr className="border-b border-graphite-line">
+                      <th scope="row" className="px-3 py-3 text-left text-muted">
+                        {COPY.compareStops}
+                      </th>
+                      {results.map((r) => (
+                        <td key={r.car.id} className="px-3 py-3 text-paper">
+                          <Num value={r.trip.stops.length} />
+                        </td>
+                      ))}
+                    </tr>
+                    <tr>
+                      <th scope="row" className="px-3 py-3 text-left font-medium text-paper">
+                        {COPY.compareTotal}
+                      </th>
+                      {results.map((r) => (
+                        <td key={r.car.id} className="px-3 py-3 text-paper">
+                          {formatSpanFootnote(r.trip.totalSpan.low, r.trip.totalSpan.high)}
+                        </td>
+                      ))}
+                    </tr>
+                  </>
+                ) : null}
+              </tbody>
+            </table>
+          </div>
+        ) : null}
+      </div>
 
       {!selected ? (
         <p className="text-sm text-muted">{COPY.pickCarFirst}</p>

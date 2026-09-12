@@ -58,6 +58,30 @@ BODY_DIMS: dict[str, dict] = {
         "arch_bulge": 0.055,
         "light_style": "compact",
     },
+    # Compact EV (ID.3 / Born / EV3 class): the hatch silhouette grown up —
+    # longer wheelbase, taller greenhouse, still a hatch tail, not a fastback.
+    # NOTE: rear_overhang is carried for documentation only; nothing in this
+    # script reads it (grep it — only hood_len, wheelbase, roof_h, belt_h and
+    # the rake/flat terms actually drive _side_profile()).
+    "compact": {
+        "L": 4.40,
+        "W": 1.84,
+        "H": 1.60,
+        "wheelbase": 2.80,
+        "wheel_r": 0.335,
+        "hood_len": 0.80,
+        "rear_overhang": 0.48,
+        "roof_h": 0.68,
+        "belt_h": 0.70,
+        "nose_drop": 0.26,
+        "windshield_rake": 0.58,
+        "rear_glass_rake": 0.32,
+        "roof_flat": 1.42,
+        "ride": "low",
+        "deck": "hatch",
+        "arch_bulge": 0.058,
+        "light_style": "compact",
+    },
     # Low fastback sedan: long WB, long hood/deck, low sleek roof
     "sedan": {
         "L": 4.78,

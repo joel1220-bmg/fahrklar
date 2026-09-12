@@ -24,19 +24,12 @@ type Props = {
 /** Named L/W/H (m) from generated dims.json — keep in sync via scripts/generate-car-glb.py */
 type Dim = { L: number; W: number; H: number };
 
-/**
- * "compact" has no generated model yet — scripts/generate-car-glb.py only knows
- * hatch / sedan / crossover. It borrows the hatch silhouette and dimensions,
- * which is the closest of the three, until the generator gains its own entry.
- */
-export const CAR_DIMS: Record<BodyStyle, Dim> = {
-  ...(dimsJson as Record<string, Dim>),
-  compact: (dimsJson as Record<string, Dim>).hatch,
-} as Record<BodyStyle, Dim>;
+/** Named L/W/H (m) from generated dims.json — keep in sync via scripts/generate-car-glb.py */
+export const CAR_DIMS: Record<BodyStyle, Dim> = dimsJson;
 
 const MODEL_URL: Record<BodyStyle, string> = {
   hatch: "/models/hatch.glb",
-  compact: "/models/hatch.glb",
+  compact: "/models/compact.glb",
   sedan: "/models/sedan.glb",
   crossover: "/models/crossover.glb",
 };
@@ -157,7 +150,9 @@ export function CarMesh({ body, color }: Props) {
   );
 }
 
-/* "compact" is deliberately absent: it points at hatch.glb, preloaded below. */
+/* All four bodies: three cards can render side by side, so none of them should
+   be the one that pops in late. */
 useGLTF.preload(MODEL_URL.hatch);
+useGLTF.preload(MODEL_URL.compact);
 useGLTF.preload(MODEL_URL.sedan);
 useGLTF.preload(MODEL_URL.crossover);

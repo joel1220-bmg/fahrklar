@@ -7,10 +7,16 @@ export function SiteFooter() {
       <div className="mx-auto flex max-w-5xl flex-col gap-2 px-4 py-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
         <p>{COPY.notCertified}</p>
         <div className="flex gap-4">
-          <Link href="/datenschutz" className="hover:text-accent">
+          <Link
+            href="/datenschutz"
+            className="inline-flex min-h-11 items-center hover:text-accent"
+          >
             Datenschutz
           </Link>
-          <Link href="/impressum" className="hover:text-accent">
+          <Link
+            href="/impressum"
+            className="inline-flex min-h-11 items-center hover:text-accent"
+          >
             Impressum
           </Link>
         </div>

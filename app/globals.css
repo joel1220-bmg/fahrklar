@@ -1,30 +1,76 @@
 @import "tailwindcss";
 
+/*
+ * Light data-portal palette, after smard.de: pale neutral ground, white panels,
+ * hairline rules, one accent, and that accent is SMARD's blue.
+ *
+ * Two token sets live here on purpose. The semantic names (canvas/surface/ink/
+ * accent) are the ones to write new code against. The graphite-* / paper / gold
+ * names are what the dark theme used; they are kept as aliases pointing at light
+ * values so components not yet migrated keep working and keep looking right.
+ * Remove an alias once its last caller is gone.
+ */
 @theme inline {
-  --color-graphite: #1a1c1e;
-  --color-graphite-soft: #242628;
-  --color-graphite-card: #2a2d30;
-  --color-graphite-line: #3a3e42;
-  --color-gold: #d4a84b;
-  --color-gold-dim: #a6853f;
-  --color-paper: #ebe6dc;
-  --color-muted: #9a9590;
-  --color-assumed: #6b6762;
-  --color-ink: #ebe6dc;
+  /* ---- ground and panels ---- */
+  --color-canvas: #f4f4f2;
+  --color-surface: #ffffff;
+  --color-sunken: #ececea;
+  --color-sunken-alt: #e8e8e5;
+
+  /* ---- text ---- */
+  --color-ink: #15171a;
+  --color-ink-soft: #464c54;
+  --color-muted: #676d75;
+  --color-assumed: #83888f;
+
+  /* ---- rules ---- */
+  --color-line: #d8d9dd;
+  --color-line-strong: #b7babf;
+
+  /* ---- accent: blue. --color-accent clears 7:1 on white, so it is safe for
+         body-size text, not just for fills. --band is the lighter chip-row blue
+         and is for fills only - it fails contrast as text. ---- */
+  --color-accent: #15578a;
+  --color-accent-strong: #0f4269;
+  --color-accent-tint: #e4eef7;
+  --color-accent-band: #2b7fc0;
+
+  /* Dark-theme gold aliases, remapped onto the blue so the call sites still
+     carrying text-gold / bg-gold pick up the new accent without being touched.
+     Their companion text-graphite is now near-white, which is the right
+     foreground on this blue. */
+  --color-gold: #15578a;
+  --color-gold-dim: #0f4269;
+
+  /* ---- data encodings: range bars, comparisons ---- */
+  --color-data-range: #2b7fc0;
+  --color-data-range-soft: #c3dbef;
+  --color-data-track: #e4e5e8;
+  --color-data-mark: #15171a;
+
+  /* ---- legacy aliases from the dark theme, remapped to light ---- */
+  --color-graphite: #f4f4f2;
+  --color-graphite-soft: #ffffff;
+  --color-graphite-card: #ffffff;
+  --color-graphite-line: #d8d9dd;
+  --color-paper: #15171a;
+
   --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-serif: Georgia, "Times New Roman", ui-serif, serif;
 }
 
 html {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 body {
-  background: var(--color-graphite);
+  background: var(--color-canvas);
   color: var(--color-ink);
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
+/* Serif for display only. Everything operational stays sans - that mix is what
+   keeps the page readable as a data tool rather than as an article. */
 h1,
 h2,
 h3,
@@ -32,9 +78,15 @@ h3,
   font-family: var(--font-serif), ui-serif, Georgia, serif;
 }
 
+/* Figures are compared down columns constantly here; lock the digit width. */
+.tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
 :focus-visible {
-  outline: 2px solid var(--color-gold);
-  outline-offset: 3px;
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
 }
 
 .skip-link {
@@ -42,8 +94,8 @@ h3,
   left: 0.75rem;
   top: -3rem;
   z-index: 50;
-  background: var(--color-gold);
-  color: var(--color-graphite);
+  background: var(--color-accent);
+  color: #ffffff;
   padding: 0.5rem 0.75rem;
 }
 .skip-link:focus {
@@ -66,16 +118,11 @@ h3,
     display: none !important;
   }
   body {
-    background: white;
-    color: black;
+    background: #ffffff;
+    color: #000000;
   }
 }
 
 input[type="range"] {
-  accent-color: var(--color-gold);
-}
-
-input,
-select {
-  color-scheme: dark;
+  accent-color: var(--color-accent);
 }

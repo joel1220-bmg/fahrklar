@@ -17,7 +17,7 @@ export function ChipGroup<T extends string>({
 }) {
   return (
     <fieldset className="min-w-0">
-      <legend className="serif text-lg text-paper">{legend}</legend>
+      <legend className="serif text-lg text-ink">{legend}</legend>
       <div className="mt-3 flex flex-wrap gap-2" role="radiogroup" aria-label={legend}>
         {options.map((o) => {
           const selected = value === o.value;
@@ -30,8 +30,8 @@ export function ChipGroup<T extends string>({
               onClick={() => onChange(o.value)}
               className={`min-h-11 rounded-full border px-3.5 text-sm transition-colors ${
                 selected
-                  ? "border-gold bg-gold text-graphite"
-                  : "border-graphite-line bg-graphite-card text-paper hover:border-gold-dim"
+                  ? "border-accent bg-accent font-medium text-white"
+                  : "border-line bg-surface text-ink hover:border-accent hover:text-accent"
               }`}
             >
               {o.label}
@@ -70,7 +70,7 @@ export function MultiChipGroup<T extends string>({
 
   return (
     <fieldset className="min-w-0">
-      <legend className="serif text-lg text-paper">{legend}</legend>
+      <legend className="serif text-lg text-ink">{legend}</legend>
       <div className="mt-3 flex flex-wrap gap-2" role="group" aria-label={legend}>
         {options.map((o) => {
           const selected = value.includes(o.value);
@@ -82,8 +82,8 @@ export function MultiChipGroup<T extends string>({
               onClick={() => toggle(o.value)}
               className={`min-h-11 rounded-full border px-3.5 text-sm transition-colors ${
                 selected
-                  ? "border-gold bg-gold text-graphite"
-                  : "border-graphite-line bg-graphite-card text-paper hover:border-gold-dim"
+                  ? "border-accent bg-accent font-medium text-white"
+                  : "border-line bg-surface text-ink hover:border-accent hover:text-accent"
               }`}
             >
               {o.label}
@@ -121,7 +121,7 @@ export function Field({
 }) {
   return (
     <label className="block">
-      <span className="text-sm font-medium text-paper">{label}</span>
+      <span className="text-sm font-medium text-ink">{label}</span>
       <div className="mt-1">{children}</div>
       {hint ? <span className="mt-1 block text-xs text-muted">{hint}</span> : null}
     </label>
@@ -129,4 +129,4 @@ export function Field({
 }
 
 export const inputClass =
-  "min-h-11 w-full rounded-xl border border-graphite-line bg-graphite-soft px-3 text-base text-paper";
+  "min-h-11 w-full rounded-lg border border-line bg-surface px-3 text-base text-ink tnum placeholder:text-muted focus:border-accent";

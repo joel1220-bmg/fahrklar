@@ -104,7 +104,7 @@ export function QuestionForm({ draft, onChange, remember, onRemember, onSubmit }
             set("month", e.target.value === "" ? null : Number(e.target.value))
           }
         >
-          <option value="">Aktueller Monat</option>
+          <option value="" />
           {Object.entries(MONTH_LABEL).map(([n, label]) => (
             <option key={n} value={n}>
               {label}
@@ -154,7 +154,9 @@ export function QuestionForm({ draft, onChange, remember, onRemember, onSubmit }
           />
           <span>
             {COPY.remember}
-            <span className="mt-1 block text-muted">{COPY.rememberOff}</span>
+            {!remember ? (
+              <span className="mt-1 block text-muted">{COPY.rememberOff}</span>
+            ) : null}
           </span>
         </label>
       </div>

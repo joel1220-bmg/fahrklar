@@ -28,7 +28,7 @@ scripts/             the GLB generator (trimesh; no Blender on this machine)
 ## The loop
 
 ```bash
-pwsh ./verify.ps1 -Quick     # types + 54 tests, ~16 s, run constantly
+pwsh ./verify.ps1 -Quick     # types + 83 tests, ~15 s, run constantly
 pwsh ./verify.ps1            # adds lint + production build
 npx next dev -p 3001         # then actually look at it
 ```
@@ -86,8 +86,10 @@ to anyone else**, and never run two writers over one file set.
 **2. A union grew a variant and the build died.** `BodyStyle` gained `compact`
 in `types.ts` and in `cars.de.json`, but `generate-car-glb.py` still produced
 three models and `dims.json` had three entries. A new variant means every
-consumer changes in the same commit. `compact` still borrows the hatch
-silhouette today.
+consumer changes in the same commit. `compact` has its own `BODY_DIMS` entry
+and its own model now — but note the generator needs `.venv-glb` with trimesh,
+shapely and mapbox-earcut, which is gitignored and has to be recreated per
+machine. trimesh 5 no longer bundles a triangulation engine.
 
 **3. `ContactShadows` draws its own rectangle.** It has no radial falloff, so
 the shadow plane's corners show as a grey diamond under the car — on the dark

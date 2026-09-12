@@ -4,7 +4,24 @@ import type { Car } from "./types";
 
 export type KwSpan = { low: number; mid: number; high: number };
 
-/** Catalog avg kW over 10→80 % SoC at ~20 °C (Ladekurve handoff). */
+/**
+ * Catalog avg kW over 10->80 % SoC at ~20 °C (Ladekurve handoff).
+ *
+ * UNVERIFIED against manufacturer figures. These drive the single number a
+ * reader is most likely to check against their own experience, so they are the
+ * most damaging place to be wrong.
+ *
+ * Known discrepancy, 12.09.2026: for `skoda-elroq` (77 kWh usable, 175 kW peak)
+ * this table's mid of 100 kW yields 36 minutes for 10->80 %, but published
+ * figures for the MEB 77 kWh platform are commonly around 28 minutes, which
+ * implies roughly 115 kW average - this table's `high`, not its `mid`. If that
+ * holds, several mids here are conservative and every trip plan overstates the
+ * time at the charger.
+ *
+ * Do not "fix" these from memory. Check 10->80 % times against the
+ * manufacturer or a measured test, then derive avg kW as
+ * (usableKwh * 0.7) / (minutes / 60), and record the source.
+ */
 const AVG_KW_10_80: Record<string, KwSpan> = {
   "vw-id7": { low: 110, mid: 125, high: 145 },
   "tesla-m3": { low: 75, mid: 105, high: 120 },

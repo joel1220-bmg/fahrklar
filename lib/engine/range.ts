@@ -43,6 +43,26 @@ export function tempFactor(outdoorC: number, heatPump: boolean): number {
   return 1 + delta * perDegree;
 }
 
+/**
+ * Cold air is denser, and at Autobahn speed most of the energy goes into pushing
+ * it aside. Ideal gas at constant pressure: density scales with T_ref/T in
+ * Kelvin, so 0.5 °C air is about 5 % denser than the 15 °C reference. Drag is
+ * roughly three quarters of the energy at 130 km/h, so only that share is
+ * affected.
+ *
+ * This is separate from tempFactor, which models cabin heating. Leaving it out
+ * made every winter figure too optimistic by a few percent.
+ */
+export const DRAG_SHARE_AT_REF = 0.72;
+
+export function airDensityFactor(outdoorC: number): number {
+  const tRef = REF_TEMP_C + 273.15;
+  const t = outdoorC + 273.15;
+  if (t <= 0) return 1;
+  const densityRatio = tRef / t;
+  return 1 + DRAG_SHARE_AT_REF * (densityRatio - 1);
+}
+
 export function speedFactor(speedKph: number): number {
   const ratio = speedKph / REF_SPEED;
   return Math.pow(ratio, 1.6);
@@ -62,6 +82,7 @@ export function highwayConsumption(
   return (
     car.highwayKwhPer100 *
     tempFactor(outdoorC, car.heatPump) *
+    airDensityFactor(outdoorC) *
     speedFactor(speedKph) *
     personsFactor(persons)
   );
@@ -143,25 +164,46 @@ function planAtRange(
   avgKw = 0,
   preconditioned = true,
 ): Omit<TripPlan, "driveSpan" | "extraSpan" | "totalSpan"> {
-  const { firstLeg, laterLeg } = tripLegs(rangeKm, startSoc);
+  const { firstLeg, range100 } = tripLegs(rangeKm, startSoc);
   const fTemp = tempFactorCharge(outdoorC, preconditioned);
   const baseKw = avgKw > 0 ? avgKw : avgKwSpanForCar(car).mid;
   const avgKwEff = Math.max(1, baseKw * fTemp);
   const stops: TripStop[] = [];
   let covered = 0;
   let remaining = tripKm;
-  let first = true;
+  let leg = firstLeg;
 
-  while (true) {
-    const leg = first ? firstLeg : laterLeg;
+  /*
+   * How much energy a kilometre costs, derived from the full-pack range so the
+   * caller does not have to pass consumption in a second time.
+   */
+  const kwhPerKm = range100 > 0 ? car.usableKwh / range100 : 0;
+  /* 10 -> 80 %: the fast part of the curve. Past 80 % the power collapses and
+     waiting there costs far more minutes than the kilometres are worth. */
+  const capKwh = car.usableKwh * STOP_ENERGY_FRAC;
+
+  while (kwhPerKm > 0) {
     if (remaining <= leg + 0.5) break;
     covered += leg;
     remaining -= leg;
-    first = false;
-    const energy = car.usableKwh * STOP_ENERGY_FRAC;
-    const chargeOnly = (energy / avgKwEff) * 60;
+
+    /*
+     * Charge for the road ahead, not a fixed slab of battery.
+     *
+     * We arrive at a stop on the 10 % reserve and want to reach the destination
+     * still holding 10 %, so the energy to put in is exactly what the remaining
+     * distance costs - capped at the 10 -> 80 % window. Charging the full 70 %
+     * every time produced the absurd case this replaced: a 44-minute stop 12 km
+     * from the destination.
+     */
+    const needKwh = remaining * kwhPerKm;
+    const takeKwh = Math.min(needKwh, capKwh);
+    const chargeOnly = (takeKwh / avgKwEff) * 60;
     const minutes = Math.round(chargeOnly + OVERHEAD_MIN);
     stops.push({ afterKm: Math.round(covered), minutes });
+
+    /* The next leg is whatever was actually put in, not a fixed 70 % leg. */
+    leg = Math.max(1, takeKwh / kwhPerKm);
   }
 
   const driveMin = (tripKm / Math.max(1, speedKph)) * 60;

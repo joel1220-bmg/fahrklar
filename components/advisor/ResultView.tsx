@@ -1,18 +1,16 @@
 "use client";
 
-import { COPY, LONG_CHIP, MONTH_LABEL } from "@/lib/copy";
+import { COPY, MONTH_LABEL } from "@/lib/copy";
 import { formatEUR, formatRangeKm } from "@/lib/engine/parse";
 import type {
   Assumption,
   CarResult,
   Draft,
-  LongTrip,
   ResolvedInput,
   SpeedKph,
 } from "@/lib/engine/types";
 import { CarCanvas } from "@/components/showroom/CarCanvas";
 import { GermanyMap } from "@/components/showroom/GermanyMap";
-import { ChipGroup } from "@/components/ui/ChipGroup";
 
 type Props = {
   draft: Draft;
@@ -22,9 +20,16 @@ type Props = {
   results: CarResult[];
   selectedId: string | null;
   onSelect: (id: string) => void;
+  onDismiss: (id: string) => void;
   onEdit: () => void;
   onReset: () => void;
 };
+
+function formatHours(min: number): string {
+  const h = min / 60;
+  if (h < 1) return `${Math.round(min)} Min`;
+  return `${h.toLocaleString("de-DE", { maximumFractionDigits: 1 })} Std`;
+}
 
 export function ResultView({
   draft,
@@ -34,6 +39,7 @@ export function ResultView({
   results,
   selectedId,
   onSelect,
+  onDismiss,
   onEdit,
   onReset,
 }: Props) {
@@ -41,6 +47,10 @@ export function ResultView({
     results.find((r) => r.car.id === selectedId) ?? results[0] ?? null;
 
   const weatherDelta = resolved.outdoorC - 15;
+  const tripKmVal = draft.tripKm ?? 80;
+  const priceVal =
+    draft.priceMax && draft.priceMax > 0 ? draft.priceMax : 0;
+  const tripActive = selected?.trip.active ?? false;
 
   return (
     <div className="space-y-10">
@@ -50,7 +60,7 @@ export function ResultView({
             Erste Auswahl
           </p>
           <h2 className="serif mt-2 text-2xl text-paper sm:text-3xl">
-            {results.length} Autos in der engeren Auswahl
+            {results.length} Autos in der Auswahl
           </h2>
           <p className="mt-2 max-w-xl text-sm text-muted">{COPY.wltpAlways}</p>
         </div>
@@ -110,81 +120,98 @@ export function ResultView({
         </ul>
       </section>
 
-      {/* Fine-tune */}
+      {/* Live sliders: month, tripKm, speed, priceMax */}
       <section className="space-y-4 rounded-2xl border border-graphite-line bg-graphite-card p-4">
         <h3 className="serif text-lg text-paper">Feinschliff</h3>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-5 sm:grid-cols-2">
           <label className="text-sm">
-            <span className="text-muted">Monat</span>
-            <select
-              className="mt-1 min-h-11 w-full rounded-xl border border-graphite-line bg-graphite-soft px-3"
+            <span className="text-muted">
+              Monat · {MONTH_LABEL[draft.month ?? resolved.month]}
+            </span>
+            <input
+              type="range"
+              min={1}
+              max={12}
+              step={1}
+              className="mt-2 w-full"
               value={draft.month ?? resolved.month}
               onChange={(e) =>
                 onChange({ ...draft, month: Number(e.target.value) })
               }
-            >
-              {Object.entries(MONTH_LABEL).map(([n, label]) => (
-                <option key={n} value={n}>
-                  {label}
-                </option>
-              ))}
-            </select>
+            />
           </label>
-          <ChipGroup<`${SpeedKph}`>
-            legend="Tempo Autobahn"
-            value={String(draft.speedKph) as `${SpeedKph}`}
-            onChange={(v) =>
-              onChange({ ...draft, speedKph: Number(v) as SpeedKph })
-            }
-            options={[
-              { value: "120", label: "120 km/h" },
-              { value: "130", label: "130 km/h" },
-              { value: "140", label: "140 km/h" },
-            ]}
-          />
+
           <label className="text-sm">
             <span className="text-muted">
-              Start-Ladestand {Math.round(draft.startSoc * 100)} %
+              {COPY.qTrip} ·{" "}
+              {draft.tripKm !== null ? `${draft.tripKm} km` : "—"}
             </span>
             <input
               type="range"
-              min={50}
-              max={100}
-              step={5}
+              min={80}
+              max={900}
+              step={10}
               className="mt-2 w-full"
-              value={Math.round(draft.startSoc * 100)}
+              value={tripKmVal}
               onChange={(e) =>
-                onChange({ ...draft, startSoc: Number(e.target.value) / 100 })
+                onChange({ ...draft, tripKm: Number(e.target.value) })
+              }
+            />
+            <span className="mt-1 block text-xs text-muted">
+              {draft.tripKm === null ? COPY.qTripEmpty : COPY.qTripHint}
+            </span>
+          </label>
+
+          <label className="text-sm">
+            <span className="text-muted">Tempo Autobahn · {draft.speedKph} km/h</span>
+            <input
+              type="range"
+              min={100}
+              max={140}
+              step={10}
+              className="mt-2 w-full"
+              value={draft.speedKph}
+              onChange={(e) =>
+                onChange({
+                  ...draft,
+                  speedKph: Number(e.target.value) as SpeedKph,
+                })
               }
             />
           </label>
+
           <label className="text-sm">
-            <span className="text-muted">Personen {draft.persons}</span>
+            <span className="text-muted">
+              Kaufpreis max ·{" "}
+              {priceVal > 0
+                ? `${priceVal.toLocaleString("de-DE")} €`
+                : "offen"}
+            </span>
             <input
               type="range"
-              min={1}
-              max={5}
-              step={1}
+              min={28000}
+              max={75000}
+              step={1000}
               className="mt-2 w-full"
-              value={draft.persons}
+              value={priceVal > 0 ? priceVal : 50000}
               onChange={(e) =>
-                onChange({ ...draft, persons: Number(e.target.value) })
+                onChange({ ...draft, priceMax: Number(e.target.value) })
               }
             />
           </label>
         </div>
       </section>
 
-      {/* Cards */}
-      <ul className="grid gap-4 sm:grid-cols-2">
+      {/* Exactly 3 cards */}
+      <ul className="grid gap-4 sm:grid-cols-3">
         {results.map((r) => {
           const active = selected?.car.id === r.car.id;
           return (
-            <li key={r.car.id}>
+            <li key={r.car.id} className="relative">
               <button
                 type="button"
                 onClick={() => onSelect(r.car.id)}
-                className={`w-full rounded-2xl border p-4 text-left transition-colors ${
+                className={`w-full rounded-2xl border p-4 pr-10 text-left transition-colors ${
                   active
                     ? "border-gold bg-graphite-card"
                     : "border-graphite-line bg-graphite-soft hover:border-gold-dim"
@@ -200,7 +227,7 @@ export function ResultView({
                     </p>
                   </div>
                   <span
-                    className="mt-1 inline-block h-3 w-3 rounded-full"
+                    className="mt-1 inline-block h-3 w-3 shrink-0 rounded-full"
                     style={{ background: r.car.colorHex }}
                     aria-hidden
                   />
@@ -210,11 +237,35 @@ export function ResultView({
                   {r.car.heatPump ? "ja" : "nein"}
                 </p>
                 {r.priceOutlier ? (
-                  <p className="mt-1 text-xs text-assumed">Teurer Ausreißer (Budget offen)</p>
+                  <p className="mt-1 text-xs text-assumed">
+                    Teurer Ausreißer (Budget offen)
+                  </p>
                 ) : null}
                 {r.trip.active && r.trip.needsStop ? (
-                  <p className="mt-1 text-xs text-muted">Langstrecke: Ladehalt nötig</p>
+                  <p className="mt-1 text-xs text-muted">
+                    Autobahn: {r.trip.stops.length} Ladehalt
+                    {r.trip.stops.length === 1 ? "" : "e"}
+                  </p>
                 ) : null}
+              </button>
+              <button
+                type="button"
+                aria-label={COPY.dismissCar}
+                title={COPY.dismissCar}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDismiss(r.car.id);
+                }}
+                className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full border border-graphite-line bg-graphite-soft text-sm text-muted hover:border-gold hover:text-paper"
+              >
+                ×
+              </button>
+              <button
+                type="button"
+                onClick={() => onDismiss(r.car.id)}
+                className="mt-2 w-full text-center text-xs text-muted underline hover:text-paper"
+              >
+                {COPY.dismissCar}
               </button>
             </li>
           );
@@ -257,33 +308,57 @@ export function ResultView({
         <p className="text-muted">Mit diesen Angaben finden wir gerade kein Auto.</p>
       )}
 
-      {selected ? (
-        <section className="space-y-4">
-          <ChipGroup<LongTrip>
-            legend={COPY.qLong}
-            value={draft.longTrip}
-            onChange={(v) => onChange({ ...draft, longTrip: v })}
-            options={(Object.keys(LONG_CHIP) as LongTrip[]).map((k) => ({
-              value: k,
-              label: LONG_CHIP[k],
-            }))}
-            help={draft.longTrip === null ? COPY.qLongEmpty : COPY.qLongHint}
+      {/* Trip map + times — only when trip active */}
+      {selected && tripActive ? (
+        <section className="grid gap-6 lg:grid-cols-[1fr_1fr]">
+          <GermanyMap
+            polyline={selected.trip.polyline}
+            routeKm={selected.trip.tripKm}
+            rangeMid={selected.trip.rangeMid}
+            stops={selected.trip.stops}
           />
-          {draft.longTrip === "hamMuc" ||
-          draft.longTrip === "berCgn" ||
-          draft.longTrip === "strBer" ? (
-            <GermanyMap
-              polyline={selected.trip.polyline}
-              routeKm={selected.trip.routeKm}
-              rangeMid={selected.trip.rangeMid}
-              needsStop={selected.trip.needsStop}
-              stopAfterKm={selected.trip.stopAfterKm}
-              routeName={selected.trip.routeName}
-            />
-          ) : null}
+          <div className="space-y-3 rounded-2xl border border-graphite-line bg-graphite-card p-4">
+            <p className="text-xs uppercase tracking-[0.14em] text-gold">
+              Strecke {selected.trip.tripKm} km
+            </p>
+            <dl className="space-y-2 text-sm">
+              <div className="flex justify-between gap-4">
+                <dt className="text-muted">{COPY.tripDrive}</dt>
+                <dd className="text-paper">
+                  ca. {formatHours(selected.trip.driveMin)}
+                </dd>
+              </div>
+              <div className="flex justify-between gap-4">
+                <dt className="text-muted">{COPY.tripCharge}</dt>
+                <dd className="text-paper">
+                  ca. {selected.trip.extraMin} Min
+                </dd>
+              </div>
+              <div className="flex justify-between gap-4 border-t border-graphite-line pt-2">
+                <dt className="font-medium text-paper">{COPY.tripTotal}</dt>
+                <dd className="font-medium text-gold">
+                  ca. {formatHours(selected.trip.totalMin)}
+                </dd>
+              </div>
+            </dl>
+            {selected.trip.stops.length > 0 ? (
+              <ul className="mt-3 space-y-1 border-t border-graphite-line pt-3 text-sm text-muted">
+                {selected.trip.stops.map((s, i) => (
+                  <li key={i}>
+                    nach {s.afterKm} km · ca. {s.minutes} Min
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mt-3 text-sm text-muted">
+                Ohne Ladehalt auf dieser Strecke (mit Puffer).
+              </p>
+            )}
+          </div>
         </section>
+      ) : selected && draft.tripKm === null ? (
+        <p className="text-sm text-muted">{COPY.qTripEmpty}</p>
       ) : null}
-
 
       {/* Exactly ONE next step */}
       <aside className="rounded-2xl border border-gold/40 bg-graphite-card p-5">

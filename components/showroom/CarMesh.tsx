@@ -11,7 +11,7 @@ type Props = {
   autoRotate?: boolean;
 };
 
-/** Stylized generic EV silhouette — no brand logos or copied body language. */
+/** Stylized generic EV silhouette — tapered nose/tail, no brand logos. */
 export function CarMesh({ body, color, autoRotate = true }: Props) {
   const ref = useRef<Group>(null);
   const dims = useMemo(() => {
@@ -44,32 +44,68 @@ export function CarMesh({ body, color, autoRotate = true }: Props) {
         <meshBasicMaterial color="#0a0a0a" transparent opacity={0.35} />
       </mesh>
 
-      {/* Main body */}
+      {/* Main body — slightly lower mid section */}
       <mesh position={[0, bodyY + dims.H * 0.28, 0]} castShadow>
-        <boxGeometry args={[dims.L * 0.92, dims.H * 0.45, dims.W]} />
+        <boxGeometry args={[dims.L * 0.78, dims.H * 0.45, dims.W]} />
+        <meshStandardMaterial color={color} metalness={0.55} roughness={0.35} />
+      </mesh>
+
+      {/* Tapered nose */}
+      <mesh
+        position={[dims.L * 0.38, bodyY + dims.H * 0.22, 0]}
+        castShadow
+        scale={[1, 0.85, 0.92]}
+      >
+        <boxGeometry args={[dims.L * 0.22, dims.H * 0.38, dims.W * 0.95]} />
+        <meshStandardMaterial color={color} metalness={0.55} roughness={0.35} />
+      </mesh>
+
+      {/* Tapered tail */}
+      <mesh
+        position={[-dims.L * 0.36, bodyY + dims.H * 0.26, 0]}
+        castShadow
+        scale={[1, 0.9, 0.94]}
+      >
+        <boxGeometry args={[dims.L * 0.2, dims.H * 0.4, dims.W * 0.96]} />
         <meshStandardMaterial color={color} metalness={0.55} roughness={0.35} />
       </mesh>
 
       {/* Cabin / roof */}
-      <mesh position={[0.1, bodyY + dims.H * 0.55 + dims.roofZ * 0.15, 0]} castShadow>
+      <mesh position={[0.05, bodyY + dims.H * 0.55 + dims.roofZ * 0.15, 0]} castShadow>
         <boxGeometry args={[dims.cabinL, dims.roofZ, dims.W * 0.88]} />
         <meshStandardMaterial color={color} metalness={0.5} roughness={0.4} />
       </mesh>
 
       {/* Windows */}
-      <mesh position={[0.1, bodyY + dims.H * 0.55 + dims.roofZ * 0.2, 0]}>
+      <mesh position={[0.05, bodyY + dims.H * 0.55 + dims.roofZ * 0.2, 0]}>
         <boxGeometry args={[dims.cabinL * 0.85, dims.roofZ * 0.55, dims.W * 0.9]} />
-        <meshStandardMaterial color={glass} metalness={0.8} roughness={0.15} transparent opacity={0.85} />
+        <meshStandardMaterial
+          color={glass}
+          metalness={0.8}
+          roughness={0.15}
+          transparent
+          opacity={0.85}
+        />
       </mesh>
 
       {/* Headlights — warm gold accent */}
-      <mesh position={[dims.L * 0.44, bodyY + dims.H * 0.32, dims.W * 0.32]}>
-        <boxGeometry args={[0.08, 0.12, 0.28]} />
+      <mesh position={[dims.L * 0.46, bodyY + dims.H * 0.28, dims.W * 0.3]}>
+        <boxGeometry args={[0.08, 0.12, 0.26]} />
         <meshStandardMaterial color="#d4a84b" emissive="#d4a84b" emissiveIntensity={0.85} />
       </mesh>
-      <mesh position={[dims.L * 0.44, bodyY + dims.H * 0.32, -dims.W * 0.32]}>
-        <boxGeometry args={[0.08, 0.12, 0.28]} />
+      <mesh position={[dims.L * 0.46, bodyY + dims.H * 0.28, -dims.W * 0.3]}>
+        <boxGeometry args={[0.08, 0.12, 0.26]} />
         <meshStandardMaterial color="#d4a84b" emissive="#d4a84b" emissiveIntensity={0.85} />
+      </mesh>
+
+      {/* Tail lights */}
+      <mesh position={[-dims.L * 0.44, bodyY + dims.H * 0.3, dims.W * 0.3]}>
+        <boxGeometry args={[0.06, 0.1, 0.22]} />
+        <meshStandardMaterial color="#a33" emissive="#a33" emissiveIntensity={0.5} />
+      </mesh>
+      <mesh position={[-dims.L * 0.44, bodyY + dims.H * 0.3, -dims.W * 0.3]}>
+        <boxGeometry args={[0.06, 0.1, 0.22]} />
+        <meshStandardMaterial color="#a33" emissive="#a33" emissiveIntensity={0.5} />
       </mesh>
 
       {/* Wheels */}

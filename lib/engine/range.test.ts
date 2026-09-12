@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { computeRange, computeTrip, tempFactor } from "./range";
+import { computeRange, computeTrip, computeTripPlan, tempFactor } from "./range";
 import type { Car } from "./types";
 
 const base: Car = {
@@ -61,5 +61,46 @@ describe("computeTrip", () => {
   it("no stop when mid range covers trip with buffer", () => {
     const t = computeTrip(900, 575);
     expect(t.needsStop).toBe(false);
+  });
+});
+
+describe("computeTripPlan", () => {
+  it("300 km needs fewer stops than 800 km", () => {
+    const rangeMid = 350;
+    const short = computeTripPlan(base, rangeMid, 300, 120);
+    const long = computeTripPlan(base, rangeMid, 800, 120);
+    expect(short.stops.length).toBeLessThan(long.stops.length);
+    expect(long.stops.length).toBeGreaterThan(0);
+  });
+
+  it("winter month (shorter range) means more stops or longer total than summer", () => {
+    const winterRange = computeRange(base, -0.5, 120, 0.9, 2);
+    const summerRange = computeRange(base, 18.5, 120, 0.9, 2);
+    const tripKm = 700;
+    const winter = computeTripPlan(base, winterRange.midKm, tripKm, 120);
+    const summer = computeTripPlan(base, summerRange.midKm, tripKm, 120);
+    const worse =
+      winter.stops.length > summer.stops.length ||
+      winter.totalMin > summer.totalMin;
+    expect(worse).toBe(true);
+  });
+
+  it("120 vs 140 speed: higher speed shortens drive but may change total", () => {
+    const range120 = computeRange(base, 15, 120, 0.9, 2);
+    const range140 = computeRange(base, 15, 140, 0.9, 2);
+    const p120 = computeTripPlan(base, range120.midKm, 500, 120);
+    const p140 = computeTripPlan(base, range140.midKm, 500, 140);
+    expect(p120.driveMin).toBeGreaterThan(p140.driveMin);
+  });
+
+  it("stop minutes include 8 min overhead in display value", () => {
+    const plan = computeTripPlan(base, 200, 500, 120);
+    expect(plan.stops.length).toBeGreaterThan(0);
+    for (const s of plan.stops) {
+      expect(s.minutes).toBeGreaterThan(8);
+      expect(s.afterKm).toBeGreaterThan(0);
+    }
+    expect(plan.extraMin).toBe(plan.chargeMin + plan.stops.length * 8);
+    expect(plan.totalMin).toBe(plan.driveMin + plan.extraMin);
   });
 });

@@ -3,10 +3,12 @@
 export type BodyStyle = "hatch" | "sedan" | "crossover";
 
 export type UseCase = "everyday" | "family" | "highway" | "mixed";
+/** @deprecated city-pair presets — kept for old localStorage only */
 export type LongTrip = "none" | "hamMuc" | "berCgn" | "strBer" | "unknown";
 export type ChargeOption = "home" | "work" | "public" | "unknown";
+/** @deprecated chip budget — kept for old localStorage only */
 export type PriceOption = "to35" | "to45" | "to60" | "over" | "unknown";
-export type SpeedKph = 120 | 130 | 140;
+export type SpeedKph = 100 | 110 | 120 | 130 | 140;
 
 export interface Car {
   id: string;
@@ -45,10 +47,16 @@ export interface Draft {
   /** empty string = unknown/empty → 50 km assumed */
   dayKm: string;
   dayUnknown: boolean;
+  /** @deprecated city-pair — ignored by engine when tripKm is used */
   longTrip: LongTrip | null;
+  /** Flexible Autobahn trip length; null = no trip sim yet */
+  tripKm: number | null;
   month: number | null;
   charge: ChargeOption | null;
+  /** @deprecated chip budget */
   price: PriceOption | null;
+  /** Slider max list price; null / 0 = open */
+  priceMax: number | null;
   speedKph: SpeedKph;
   startSoc: number;
   persons: number;
@@ -70,15 +78,21 @@ export interface RangeSpan {
   kwhPer100: number;
 }
 
+export interface TripStop {
+  afterKm: number;
+  minutes: number;
+}
+
 export interface TripResult {
   active: boolean;
-  routeId: string | null;
-  routeName: string | null;
-  routeKm: number;
+  tripKm: number;
   rangeMid: number;
   needsStop: boolean;
-  remainingKm: number;
-  stopAfterKm: number | null;
+  stops: TripStop[];
+  driveMin: number;
+  chargeMin: number;
+  extraMin: number;
+  totalMin: number;
   polyline: [number, number][] | null;
 }
 
@@ -95,19 +109,18 @@ export interface ResolvedInput {
   useAssumed: boolean;
   dayKm: number;
   dayAssumed: boolean;
-  longTrip: LongTrip;
-  longAssumed: boolean;
+  tripKm: number | null;
+  tripActive: boolean;
   month: number;
   monthAssumed: boolean;
   charge: ChargeOption;
   chargeAssumed: boolean;
-  price: PriceOption;
+  priceMax: number | null;
   priceAssumed: boolean;
   speedKph: SpeedKph;
   startSoc: number;
   persons: number;
   outdoorC: number;
-  route: RouteDef | null;
 }
 
 export function emptyDraft(): Draft {
@@ -116,10 +129,12 @@ export function emptyDraft(): Draft {
     dayKm: "",
     dayUnknown: false,
     longTrip: null,
+    tripKm: null,
     month: null,
     charge: null,
     price: null,
-    speedKph: 130,
+    priceMax: null,
+    speedKph: 120,
     startSoc: 0.9,
     persons: 2,
   };

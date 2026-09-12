@@ -29,6 +29,15 @@ export const COPY = {
     "Größtenteils Autobahn. Ein Ladehalt nur, wenn er nötig wäre — keine Zusage.",
   qLongEmpty: "Ohne Angabe spielen wir keine Langstrecke durch.",
 
+  qTrip: "Wie weit soll die Autobahnfahrt ungefähr sein?",
+  qTripHint: "Regler in Kilometern. Monat und Tempo ändern die Zeit.",
+  qTripEmpty: "Ohne Strecke bleibt die Karte leer.",
+
+  tripDrive: "Fahrt",
+  tripCharge: "Laden extra",
+  tripTotal: "Gesamt",
+  dismissCar: "Passt nicht",
+
   qMonth: "Für welchen Monat soll die Reichweite gelten?",
   qMonthHint:
     "Im Winter (Heizung an) ist die Reichweite oft spürbar kürzer als im Sommer.",

@@ -1,14 +1,13 @@
 "use client";
 
 import { useMemo } from "react";
+import type { TripStop } from "@/lib/engine/types";
 
 type Props = {
   polyline: [number, number][] | null;
   routeKm: number;
   rangeMid: number;
-  needsStop: boolean;
-  stopAfterKm: number | null;
-  routeName?: string | null;
+  stops: TripStop[];
 };
 
 /** Rough DE bounding box for SVG projection. */
@@ -34,14 +33,24 @@ const OUTLINE: [number, number][] = [
   [51.0, 6.0], [51.8, 6.1], [53.0, 7.0], [53.7, 7.2], [54.9, 8.6],
 ];
 
-export function GermanyMap({
-  polyline,
-  routeKm,
-  rangeMid,
-  needsStop,
-  stopAfterKm,
-  routeName,
-}: Props) {
+function pointAlong(
+  polyline: [number, number][],
+  afterKm: number,
+  routeKm: number,
+): [number, number] | null {
+  if (!polyline.length || routeKm <= 0) return null;
+  const t = Math.min(0.98, Math.max(0.02, afterKm / routeKm));
+  const seg = t * (polyline.length - 1);
+  const i = Math.floor(seg);
+  const f = seg - i;
+  const a = polyline[i]!;
+  const b = polyline[Math.min(i + 1, polyline.length - 1)]!;
+  const lat = a[0] + (b[0] - a[0]) * f;
+  const lng = a[1] + (b[1] - a[1]) * f;
+  return project(lat, lng);
+}
+
+export function GermanyMap({ polyline, routeKm, rangeMid, stops }: Props) {
   const outlinePts = useMemo(
     () => OUTLINE.map(([la, ln]) => project(la, ln).join(",")).join(" "),
     [],
@@ -59,9 +68,8 @@ export function GermanyMap({
 
   const corridor = useMemo(() => {
     if (!polyline || polyline.length < 2 || rangeMid <= 0) return null;
-    // Approximate fraction of route coverable without stop
-    const cover = Math.min(1, (rangeMid * 0.85) / Math.max(routeKm, 1));
-    const idx = Math.max(1, Math.floor((polyline.length - 1) * cover));
+    const cover = Math.min(1, (rangeMid * 0.75) / Math.max(routeKm, 1));
+    const idx = Math.max(1, Math.floor((polyline.length - 1) * Math.min(1, cover * 1.2)));
     return polyline
       .slice(0, idx + 1)
       .map(([la, ln], i) => {
@@ -71,50 +79,84 @@ export function GermanyMap({
       .join(" ");
   }, [polyline, rangeMid, routeKm]);
 
-  const stopPoint = useMemo(() => {
-    if (!needsStop || !polyline || !stopAfterKm || routeKm <= 0) return null;
-    const t = Math.min(0.95, stopAfterKm / routeKm);
-    const seg = t * (polyline.length - 1);
-    const i = Math.floor(seg);
-    const f = seg - i;
-    const a = polyline[i]!;
-    const b = polyline[Math.min(i + 1, polyline.length - 1)]!;
-    const lat = a[0] + (b[0] - a[0]) * f;
-    const lng = a[1] + (b[1] - a[1]) * f;
-    return project(lat, lng);
-  }, [needsStop, polyline, stopAfterKm, routeKm]);
+  const stopPoints = useMemo(() => {
+    if (!polyline || !stops.length) return [];
+    return stops
+      .map((s) => {
+        const pt = pointAlong(polyline, s.afterKm, routeKm);
+        return pt ? { ...s, x: pt[0], y: pt[1] } : null;
+      })
+      .filter((x): x is TripStop & { x: number; y: number } => x !== null);
+  }, [polyline, stops, routeKm]);
 
   if (!polyline) {
     return (
       <div className="rounded-2xl border border-graphite-line bg-graphite-card p-4 text-sm text-muted">
-        Keine Langstrecke gewählt — Karte bleibt leer.
+        Ohne Strecke bleibt die Karte leer.
       </div>
     );
   }
 
   return (
     <figure className="rounded-2xl border border-graphite-line bg-graphite-card p-3">
-      <svg viewBox={`0 0 ${W} ${H}`} className="mx-auto h-auto w-full max-w-xs" role="img" aria-label={routeName ?? "Routenkarte"}>
-        <polygon points={outlinePts} fill="#1f2225" stroke="#3a3e42" strokeWidth="1.5" />
+      <svg
+        viewBox={`0 0 ${W} ${H}`}
+        className="mx-auto h-auto w-full max-w-xs"
+        role="img"
+        aria-label={`Strecke ${routeKm} km`}
+      >
+        <polygon
+          points={outlinePts}
+          fill="#1f2225"
+          stroke="#3a3e42"
+          strokeWidth="1.5"
+        />
         {corridor ? (
-          <path d={corridor} fill="none" stroke="#d4a84b" strokeWidth="10" strokeOpacity="0.25" strokeLinecap="round" />
+          <path
+            d={corridor}
+            fill="none"
+            stroke="#d4a84b"
+            strokeWidth="14"
+            strokeOpacity="0.22"
+            strokeLinecap="round"
+          />
         ) : null}
         {routePath ? (
-          <path d={routePath} fill="none" stroke="#d4a84b" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+          <path
+            d={routePath}
+            fill="none"
+            stroke="#d4a84b"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         ) : null}
-        {stopPoint ? (
-          <g>
-            <circle cx={stopPoint[0]} cy={stopPoint[1]} r="7" fill="#1a1c1e" stroke="#d4a84b" strokeWidth="2" />
-            <text x={stopPoint[0]} y={stopPoint[1] - 12} textAnchor="middle" fill="#ebe6dc" fontSize="10">
-              Laden
+        {stopPoints.map((s, i) => (
+          <g key={i}>
+            <circle
+              cx={s.x}
+              cy={s.y}
+              r="7"
+              fill="#1a1c1e"
+              stroke="#d4a84b"
+              strokeWidth="2"
+            />
+            <text
+              x={s.x}
+              y={s.y - 12}
+              textAnchor="middle"
+              fill="#ebe6dc"
+              fontSize="9"
+            >
+              {s.minutes}′
             </text>
           </g>
-        ) : null}
+        ))}
       </svg>
       <figcaption className="mt-2 text-center text-xs text-muted">
         Orientierung, kein Navi.
-        {needsStop && stopAfterKm
-          ? ` Grober Ladehalt nach ca. ${Math.round(stopAfterKm)} km.`
+        {stops.length > 0
+          ? ` ${stops.length} Ladehalt${stops.length === 1 ? "" : "e"}.`
           : routeKm
             ? " Ohne Ladehalt auf dieser Strecke (mit Puffer)."
             : ""}

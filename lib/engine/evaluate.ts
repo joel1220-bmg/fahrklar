@@ -1,17 +1,20 @@
 import carsJson from "@/data/cars.de.json";
 import climateJson from "@/data/climate-months.de.json";
 import routesJson from "@/data/routes.de.json";
-import { CHARGE_CHIP, LONG_CHIP, MONTH_LABEL, PRICE_CHIP, USE_CHIP } from "@/lib/copy";
+import { CHARGE_CHIP, MONTH_LABEL, USE_CHIP } from "@/lib/copy";
 import { parseDeNumber } from "./parse";
-import { computeRange, computeTrip, outdoorForMonth } from "./range";
+import {
+  computeRange,
+  computeTripPlan,
+  outdoorForMonth,
+  tripPolyline,
+} from "./range";
 import type {
   Assumption,
   Car,
   CarResult,
   ChargeOption,
   Draft,
-  LongTrip,
-  PriceOption,
   ResolvedInput,
   RouteDef,
   UseCase,
@@ -20,6 +23,8 @@ import type {
 const cars = carsJson as Car[];
 const climate = climateJson as { months: Record<string, number> };
 const routes = (routesJson as unknown as { routes: RouteDef[] }).routes;
+
+const SPINE = routes.find((r) => r.id === "hamMuc")!;
 
 export function getCars(): Car[] {
   return cars;
@@ -50,8 +55,9 @@ export function resolveDraft(draft: Draft): ResolvedInput {
     }
   }
 
-  const longAssumed = draft.longTrip === null;
-  const longTrip: LongTrip = draft.longTrip ?? "none";
+  const tripKm =
+    draft.tripKm !== null && draft.tripKm >= 80 ? draft.tripKm : draft.tripKm;
+  const tripActive = tripKm !== null && tripKm >= 80;
 
   const nowMonth = new Date().getMonth() + 1;
   const monthAssumed = draft.month === null;
@@ -61,52 +67,35 @@ export function resolveDraft(draft: Draft): ResolvedInput {
   const charge: ChargeOption =
     draft.charge === null || draft.charge === "unknown" ? "public" : draft.charge;
 
-  const priceAssumed = draft.price === null || draft.price === "unknown";
-  const price: PriceOption =
-    draft.price === null || draft.price === "unknown" ? "unknown" : draft.price;
-
-  let route: RouteDef | null = null;
-  if (longTrip === "hamMuc" || longTrip === "berCgn" || longTrip === "strBer") {
-    route = getRoute(longTrip);
-  }
+  const priceMax =
+    draft.priceMax !== null && draft.priceMax > 0 ? draft.priceMax : null;
+  const priceAssumed = priceMax === null;
 
   return {
     use,
     useAssumed,
     dayKm,
     dayAssumed,
-    longTrip,
-    longAssumed: longAssumed || longTrip === "unknown",
+    tripKm: draft.tripKm,
+    tripActive,
     month,
     monthAssumed,
     charge,
     chargeAssumed,
-    price,
+    priceMax,
     priceAssumed,
     speedKph: draft.speedKph,
     startSoc: draft.startSoc,
     persons: draft.persons,
     outdoorC: outdoorForMonth(climate.months, month),
-    route,
   };
 }
 
-export function budgetCap(price: PriceOption): number | null {
-  switch (price) {
-    case "to35":
-      return 35000;
-    case "to45":
-      return 45000;
-    case "to60":
-      return 60000;
-    case "over":
-      return null;
-    case "unknown":
-      return null;
-  }
+export function budgetCap(priceMax: number | null): number | null {
+  return priceMax !== null && priceMax > 0 ? priceMax : null;
 }
 
-export function buildAssumptions(r: ResolvedInput, draft: Draft): Assumption[] {
+export function buildAssumptions(r: ResolvedInput): Assumption[] {
   const rows: Assumption[] = [
     {
       key: "use",
@@ -120,18 +109,13 @@ export function buildAssumptions(r: ResolvedInput, draft: Draft): Assumption[] {
       value: `${Math.round(r.dayKm)} km`,
       assumed: r.dayAssumed,
     },
-    ...(draft.longTrip !== null
+    ...(r.tripKm !== null
       ? [
           {
-            key: "long",
-            label: "Langstrecke",
-            value:
-              r.longTrip === "unknown"
-                ? LONG_CHIP.unknown
-                : r.longTrip === "none"
-                  ? LONG_CHIP.none
-                  : LONG_CHIP[r.longTrip],
-            assumed: r.longAssumed,
+            key: "trip",
+            label: "Strecke",
+            value: `${Math.round(r.tripKm)} km`,
+            assumed: false,
           } satisfies Assumption,
         ]
       : []),
@@ -144,15 +128,15 @@ export function buildAssumptions(r: ResolvedInput, draft: Draft): Assumption[] {
     {
       key: "charge",
       label: "Laden",
-      value: CHARGE_CHIP[r.charge === "public" && r.chargeAssumed ? "public" : r.charge],
+      value: CHARGE_CHIP[r.charge],
       assumed: r.chargeAssumed,
     },
     {
       key: "price",
       label: "Kaufpreis",
       value: r.priceAssumed
-        ? PRICE_CHIP.unknown
-        : PRICE_CHIP[r.price as Exclude<PriceOption, "unknown">] ?? PRICE_CHIP.unknown,
+        ? "offen"
+        : `bis ${Math.round(r.priceMax!).toLocaleString("de-DE")} €`,
       assumed: r.priceAssumed,
     },
   ];
@@ -162,13 +146,14 @@ export function buildAssumptions(r: ResolvedInput, draft: Draft): Assumption[] {
 function emptyTrip(rangeMid: number): import("./types").TripResult {
   return {
     active: false,
-    routeId: null,
-    routeName: null,
-    routeKm: 0,
+    tripKm: 0,
     rangeMid,
     needsStop: false,
-    remainingKm: rangeMid,
-    stopAfterKm: null,
+    stops: [],
+    driveMin: 0,
+    chargeMin: 0,
+    extraMin: 0,
+    totalMin: 0,
     polyline: null,
   };
 }
@@ -179,8 +164,8 @@ export function evaluateCars(draft: Draft): {
   results: CarResult[];
 } {
   const resolved = resolveDraft(draft);
-  const assumptions = buildAssumptions(resolved, draft);
-  const cap = budgetCap(resolved.price);
+  const assumptions = buildAssumptions(resolved);
+  const cap = budgetCap(resolved.priceMax);
 
   const results: CarResult[] = cars.map((car) => {
     const range = computeRange(
@@ -192,18 +177,29 @@ export function evaluateCars(draft: Draft): {
     );
 
     let trip = emptyTrip(range.midKm);
-    if (resolved.route) {
-      const t = computeTrip(range.midKm, resolved.route.km);
+    if (resolved.tripActive && resolved.tripKm !== null) {
+      const plan = computeTripPlan(
+        car,
+        range.midKm,
+        resolved.tripKm,
+        resolved.speedKph,
+      );
+      const poly = tripPolyline(
+        SPINE.polyline,
+        resolved.tripKm,
+        SPINE.km,
+      );
       trip = {
         active: true,
-        routeId: resolved.route.id,
-        routeName: resolved.route.name,
-        routeKm: resolved.route.km,
-        rangeMid: t.rangeMid,
-        needsStop: t.needsStop,
-        remainingKm: t.remainingKm,
-        stopAfterKm: t.stopAfterKm,
-        polyline: resolved.route.polyline,
+        tripKm: resolved.tripKm,
+        rangeMid: range.midKm,
+        needsStop: plan.stops.length > 0,
+        stops: plan.stops,
+        driveMin: plan.driveMin,
+        chargeMin: plan.chargeMin,
+        extraMin: plan.extraMin,
+        totalMin: plan.totalMin,
+        polyline: poly,
       };
     }
 
@@ -213,17 +209,14 @@ export function evaluateCars(draft: Draft): {
     return { car, range, trip, priceFits, priceOutlier };
   });
 
-  // Prefer fitting budget; then highway mid range; then list price
   results.sort((a, b) => {
     if (a.priceFits !== b.priceFits) return a.priceFits ? -1 : 1;
     if (a.priceOutlier !== b.priceOutlier) return a.priceOutlier ? 1 : -1;
-    // family → prefer seats (all 5 here); highway use → prefer range
     if (resolved.use === "highway") {
       const d = b.range.midKm - a.range.midKm;
       if (d !== 0) return d;
     }
     if (resolved.use === "everyday" || resolved.dayKm <= 80) {
-      // prefer efficient / smaller list among fits
       const d = a.car.listEur - b.car.listEur;
       if (Math.abs(d) > 500) return d;
     }
@@ -231,9 +224,10 @@ export function evaluateCars(draft: Draft): {
   });
 
   const filtered =
-    cap !== null ? results.filter((r) => r.priceFits) : results.filter((r) => !r.priceOutlier || resolved.priceAssumed);
+    cap !== null
+      ? results.filter((r) => r.priceFits)
+      : results.filter((r) => !r.priceOutlier || resolved.priceAssumed);
 
-  // If budget filter emptied catalog, fall back to all with mark
   const finalList = filtered.length > 0 ? filtered : results;
 
   return { resolved, assumptions, results: finalList };

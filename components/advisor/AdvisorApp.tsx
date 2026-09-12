@@ -19,6 +19,7 @@ export function AdvisorApp() {
   const [remember, setRememberState] = useState(false);
   const [phase, setPhase] = useState<"form" | "result">("form");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [dismissedIds, setDismissedIds] = useState<string[]>([]);
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
@@ -36,12 +37,17 @@ export function AdvisorApp() {
 
   const evaluation = useMemo(() => evaluateCars(draft), [draft]);
 
+  const visible = useMemo(() => {
+    const dismissed = new Set(dismissedIds);
+    return evaluation.results.filter((r) => !dismissed.has(r.car.id)).slice(0, 3);
+  }, [evaluation.results, dismissedIds]);
+
   useEffect(() => {
     if (phase !== "result") return;
-    if (!selectedId || !evaluation.results.some((r) => r.car.id === selectedId)) {
-      setSelectedId(evaluation.results[0]?.car.id ?? null);
+    if (!selectedId || !visible.some((r) => r.car.id === selectedId)) {
+      setSelectedId(visible[0]?.car.id ?? null);
     }
-  }, [evaluation.results, phase, selectedId]);
+  }, [visible, phase, selectedId]);
 
   const onRemember = (on: boolean) => {
     setRememberState(on);
@@ -54,6 +60,22 @@ export function AdvisorApp() {
     setDraft(emptyDraft());
     setPhase("form");
     setSelectedId(null);
+    setDismissedIds([]);
+  };
+
+  const onDismiss = (id: string) => {
+    setDismissedIds((prev) => (prev.includes(id) ? prev : [...prev, id]));
+    if (selectedId === id) {
+      const remaining = evaluation.results
+        .filter((r) => r.car.id !== id && !dismissedIds.includes(r.car.id))
+        .slice(0, 3);
+      // After dismiss, visible will recompute; pick first remaining excluding this id
+      const next = evaluation.results.find(
+        (r) => r.car.id !== id && !dismissedIds.includes(r.car.id),
+      );
+      setSelectedId(next?.car.id ?? null);
+      void remaining;
+    }
   };
 
   if (!hydrated) {
@@ -68,7 +90,10 @@ export function AdvisorApp() {
           onChange={setDraft}
           remember={remember}
           onRemember={onRemember}
-          onSubmit={() => setPhase("result")}
+          onSubmit={() => {
+            setDismissedIds([]);
+            setPhase("result");
+          }}
         />
       ) : (
         <ResultView
@@ -76,9 +101,10 @@ export function AdvisorApp() {
           onChange={setDraft}
           resolved={evaluation.resolved}
           assumptions={evaluation.assumptions}
-          results={evaluation.results}
+          results={visible}
           selectedId={selectedId}
           onSelect={setSelectedId}
+          onDismiss={onDismiss}
           onEdit={() => setPhase("form")}
           onReset={onReset}
         />

@@ -154,6 +154,9 @@ function emptyTrip(rangeMid: number): import("./types").TripResult {
     chargeMin: 0,
     extraMin: 0,
     totalMin: 0,
+    driveSpan: { low: 0, mid: 0, high: 0 },
+    extraSpan: { low: 0, mid: 0, high: 0 },
+    totalSpan: { low: 0, mid: 0, high: 0 },
     polyline: null,
   };
 }
@@ -183,6 +186,9 @@ export function evaluateCars(draft: Draft): {
         range.midKm,
         resolved.tripKm,
         resolved.speedKph,
+        resolved.startSoc,
+        range.lowKm,
+        range.highKm,
       );
       const poly = tripPolyline(
         SPINE.polyline,
@@ -199,6 +205,9 @@ export function evaluateCars(draft: Draft): {
         chargeMin: plan.chargeMin,
         extraMin: plan.extraMin,
         totalMin: plan.totalMin,
+        driveSpan: plan.driveSpan,
+        extraSpan: plan.extraSpan,
+        totalSpan: plan.totalSpan,
         polyline: poly,
       };
     }

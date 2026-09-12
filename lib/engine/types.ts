@@ -83,6 +83,12 @@ export interface TripStop {
   minutes: number;
 }
 
+export interface MinSpan {
+  low: number;
+  mid: number;
+  high: number;
+}
+
 export interface TripResult {
   active: boolean;
   tripKm: number;
@@ -93,6 +99,9 @@ export interface TripResult {
   chargeMin: number;
   extraMin: number;
   totalMin: number;
+  driveSpan: MinSpan;
+  extraSpan: MinSpan;
+  totalSpan: MinSpan;
   polyline: [number, number][] | null;
 }
 

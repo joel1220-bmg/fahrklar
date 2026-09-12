@@ -31,6 +31,13 @@ function formatHours(min: number): string {
   return `${h.toLocaleString("de-DE", { maximumFractionDigits: 1 })} Std`;
 }
 
+function formatHourSpan(low: number, high: number): string {
+  if (low === high) return `ca. ${formatHours(low)}`;
+  const a = formatHours(Math.min(low, high));
+  const b = formatHours(Math.max(low, high));
+  return `ca. ${a}–${b}`;
+}
+
 export function ResultView({
   draft,
   onChange,
@@ -325,19 +332,21 @@ export function ResultView({
               <div className="flex justify-between gap-4">
                 <dt className="text-muted">{COPY.tripDrive}</dt>
                 <dd className="text-paper">
-                  ca. {formatHours(selected.trip.driveMin)}
+                  {formatHourSpan(selected.trip.driveSpan.low, selected.trip.driveSpan.high)}
                 </dd>
               </div>
               <div className="flex justify-between gap-4">
                 <dt className="text-muted">{COPY.tripCharge}</dt>
                 <dd className="text-paper">
-                  ca. {selected.trip.extraMin} Min
+                  {selected.trip.extraSpan.low === selected.trip.extraSpan.high
+                    ? `ca. ${selected.trip.extraMin} Min`
+                    : `ca. ${selected.trip.extraSpan.low}–${selected.trip.extraSpan.high} Min`}
                 </dd>
               </div>
               <div className="flex justify-between gap-4 border-t border-graphite-line pt-2">
                 <dt className="font-medium text-paper">{COPY.tripTotal}</dt>
                 <dd className="font-medium text-gold">
-                  ca. {formatHours(selected.trip.totalMin)}
+                  {formatHourSpan(selected.trip.totalSpan.low, selected.trip.totalSpan.high)}
                 </dd>
               </div>
             </dl>

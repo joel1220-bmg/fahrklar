@@ -50,10 +50,10 @@ describe("computeRange winter vs summer", () => {
 });
 
 describe("computeTrip", () => {
-  it("needs stop when rangeMid * 0.85 < routeKm", () => {
-    const short = computeTrip(500, 400);
+  it("needs stop when rangeMid * 0.75 < routeKm", () => {
+    const short = computeTrip(500, 350);
     expect(short.needsStop).toBe(false);
-    const long = computeTrip(400, 790);
+    const long = computeTrip(400, 400);
     expect(long.needsStop).toBe(true);
     expect(long.stopAfterKm).not.toBeNull();
   });

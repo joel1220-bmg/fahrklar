@@ -1,4 +1,4 @@
-import type { Car, RangeSpan, SpeedKph, TripStop } from "./types";
+import type { Car, MinSpan, RangeSpan, SpeedKph, TripStop } from "./types";
 
 const REF_TEMP_C = 15;
 const REF_SPEED = 130;
@@ -18,6 +18,9 @@ export type TripPlan = {
   extraMin: number;
   totalMin: number;
   usableLeg: number;
+  driveSpan: MinSpan;
+  extraSpan: MinSpan;
+  totalSpan: MinSpan;
 };
 
 /** Cabin heat load factor vs heatPump / PTC at outdoor °C relative to 15 °C. */
@@ -81,11 +84,12 @@ export function computeRange(
 
 /** Legacy single-stop check (kept for older tests / callers). */
 export function computeTrip(rangeMid: number, routeKm: number): TripCore {
-  const needsStop = rangeMid * 0.85 < routeKm;
+  const usableLeg = rangeMid * 0.75;
+  const needsStop = usableLeg < routeKm;
   const remainingKm = Math.round(rangeMid - routeKm);
   let stopAfterKm: number | null = null;
   if (needsStop) {
-    stopAfterKm = Math.round(rangeMid * 0.7);
+    stopAfterKm = Math.round(usableLeg);
   }
   return {
     routeKm,
@@ -102,43 +106,99 @@ export function computeTrip(rangeMid: number, routeKm: number): TripCore {
  * Each stop: energy = usableKwh * 0.7 (10–80%), avg = dcPeakKw * 0.55,
  * charge minutes = energy/avg*60; +8 min overhead per stop in extra time.
  */
-export function computeTripPlan(
+function spanOf(low: number, mid: number, high: number): MinSpan {
+  const a = Math.round(Math.min(low, mid, high));
+  const c = Math.round(Math.max(low, mid, high));
+  return { low: a, mid: Math.round(mid), high: c };
+}
+
+function planAtRange(
   car: Car,
-  rangeMid: number,
+  rangeKm: number,
   tripKm: number,
   speedKph: number,
-): TripPlan {
-  const usableLeg = Math.max(1, rangeMid * 0.75);
+  startSoc: number,
+): Omit<TripPlan, "driveSpan" | "extraSpan" | "totalSpan"> {
+  const soc = Math.max(0.15, Math.min(1, startSoc));
+  const firstLeg = Math.max(1, rangeKm * 0.75);
+  const range80 = rangeKm * (0.8 / soc);
+  const laterLeg = Math.max(1, range80 * 0.75);
   const stops: TripStop[] = [];
   let covered = 0;
   let remaining = tripKm;
+  let first = true;
 
-  while (remaining > usableLeg + 0.5) {
-    covered += usableLeg;
+  while (true) {
+    const leg = first ? firstLeg : laterLeg;
+    if (remaining <= leg + 0.5) break;
+    covered += leg;
+    remaining -= leg;
+    first = false;
     const energy = car.usableKwh * 0.7;
     const avgPower = Math.max(1, car.dcPeakKw * 0.55);
     const chargeOnly = (energy / avgPower) * 60;
     const minutes = Math.round(chargeOnly + 8);
-    stops.push({
-      afterKm: Math.round(covered),
-      minutes,
-    });
-    remaining -= usableLeg;
+    stops.push({ afterKm: Math.round(covered), minutes });
   }
 
   const driveMin = (tripKm / Math.max(1, speedKph)) * 60;
   const chargeMin = stops.reduce((sum, s) => sum + (s.minutes - 8), 0);
   const extraMin = chargeMin + stops.length * 8;
-  const totalMin = driveMin + extraMin;
-
   return {
     stops,
     driveMin: Math.round(driveMin),
     chargeMin: Math.round(chargeMin),
     extraMin: Math.round(extraMin),
-    totalMin: Math.round(totalMin),
-    usableLeg: Math.round(usableLeg),
+    totalMin: Math.round(driveMin + extraMin),
+    usableLeg: Math.round(firstLeg),
   };
+}
+
+export function computeTripPlan(
+  car: Car,
+  rangeMid: number,
+  tripKm: number,
+  speedKph: number,
+  startSoc = 0.9,
+  rangeLow?: number,
+  rangeHigh?: number,
+): TripPlan {
+  const mid = planAtRange(car, rangeMid, tripKm, speedKph, startSoc);
+  const pessimistic = planAtRange(car, rangeLow ?? rangeMid * 0.88, tripKm, speedKph, startSoc);
+  const optimistic = planAtRange(car, rangeHigh ?? rangeMid * 1.1, tripKm, speedKph, startSoc);
+  const driveHigh = Math.round(mid.driveMin * 1.08);
+  const driveLow = Math.round(mid.driveMin * 0.95);
+  return {
+    ...mid,
+    driveSpan: spanOf(driveLow, mid.driveMin, driveHigh),
+    extraSpan: spanOf(optimistic.extraMin, mid.extraMin, pessimistic.extraMin),
+    totalSpan: spanOf(
+      driveLow + optimistic.extraMin,
+      mid.totalMin,
+      driveHigh + pessimistic.extraMin,
+    ),
+  };
+}
+
+/** Point on a lat/lng polyline at geodesic distance `km` from the start. */
+export function pointAtKm(
+  polyline: [number, number][],
+  km: number,
+): [number, number] | null {
+  if (polyline.length === 0) return null;
+  if (polyline.length === 1 || km <= 0) return polyline[0]!;
+  let acc = 0;
+  for (let i = 1; i < polyline.length; i++) {
+    const a = polyline[i - 1]!;
+    const b = polyline[i]!;
+    const seg = geodesicKm(a, b);
+    if (acc + seg >= km) {
+      const f = seg > 0 ? (km - acc) / seg : 0;
+      return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f];
+    }
+    acc += seg;
+  }
+  return polyline[polyline.length - 1]!;
 }
 
 export function outdoorForMonth(months: Record<string, number>, month: number): number {

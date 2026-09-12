@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import type { TripStop } from "@/lib/engine/types";
+import { geodesicKm, pointAtKm } from "@/lib/engine/range";
 
 type Props = {
   polyline: [number, number][] | null;
@@ -33,21 +34,9 @@ const OUTLINE: [number, number][] = [
   [51.0, 6.0], [51.8, 6.1], [53.0, 7.0], [53.7, 7.2], [54.9, 8.6],
 ];
 
-function pointAlong(
-  polyline: [number, number][],
-  afterKm: number,
-  routeKm: number,
-): [number, number] | null {
-  if (!polyline.length || routeKm <= 0) return null;
-  const t = Math.min(0.98, Math.max(0.02, afterKm / routeKm));
-  const seg = t * (polyline.length - 1);
-  const i = Math.floor(seg);
-  const f = seg - i;
-  const a = polyline[i]!;
-  const b = polyline[Math.min(i + 1, polyline.length - 1)]!;
-  const lat = a[0] + (b[0] - a[0]) * f;
-  const lng = a[1] + (b[1] - a[1]) * f;
-  return project(lat, lng);
+function pointAlongKm(polyline: [number, number][], afterKm: number): [number, number] | null {
+  const ll = pointAtKm(polyline, afterKm);
+  return ll ? project(ll[0], ll[1]) : null;
 }
 
 export function GermanyMap({ polyline, routeKm, rangeMid, stops }: Props) {
@@ -67,27 +56,40 @@ export function GermanyMap({ polyline, routeKm, rangeMid, stops }: Props) {
   }, [polyline]);
 
   const corridor = useMemo(() => {
-    if (!polyline || polyline.length < 2 || rangeMid <= 0) return null;
-    const cover = Math.min(1, (rangeMid * 0.75) / Math.max(routeKm, 1));
-    const idx = Math.max(1, Math.floor((polyline.length - 1) * Math.min(1, cover * 1.2)));
-    return polyline
-      .slice(0, idx + 1)
+    if (!polyline || polyline.length < 2) return null;
+    const firstStop = stops[0]?.afterKm ?? rangeMid * 0.75;
+    const cut = Math.min(firstStop, routeKm);
+    const pts: [number, number][] = [polyline[0]!];
+    let acc = 0;
+    for (let i = 1; i < polyline.length; i++) {
+      const a = polyline[i - 1]!;
+      const b = polyline[i]!;
+      const seg = geodesicKm(a, b);
+      if (acc + seg >= cut) {
+        const end = pointAtKm(polyline, cut);
+        if (end) pts.push(end);
+        break;
+      }
+      acc += seg;
+      pts.push(b);
+    }
+    return pts
       .map(([la, ln], i) => {
         const [x, y] = project(la, ln);
         return `${i === 0 ? "M" : "L"}${x.toFixed(1)} ${y.toFixed(1)}`;
       })
       .join(" ");
-  }, [polyline, rangeMid, routeKm]);
+  }, [polyline, rangeMid, routeKm, stops]);
 
   const stopPoints = useMemo(() => {
     if (!polyline || !stops.length) return [];
     return stops
       .map((s) => {
-        const pt = pointAlong(polyline, s.afterKm, routeKm);
+        const pt = pointAlongKm(polyline, s.afterKm);
         return pt ? { ...s, x: pt[0], y: pt[1] } : null;
       })
       .filter((x): x is TripStop & { x: number; y: number } => x !== null);
-  }, [polyline, stops, routeKm]);
+  }, [polyline, stops]);
 
   if (!polyline) {
     return (

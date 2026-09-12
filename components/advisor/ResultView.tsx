@@ -267,16 +267,20 @@ export function ResultView({
               value: k,
               label: LONG_CHIP[k],
             }))}
-            help={draft.longTrip === null || draft.longTrip === "none" ? COPY.qLongEmpty : COPY.qLongHint}
+            help={draft.longTrip === null ? COPY.qLongEmpty : COPY.qLongHint}
           />
-          <GermanyMap
-            polyline={selected.trip.polyline}
-            routeKm={selected.trip.routeKm}
-            rangeMid={selected.trip.rangeMid}
-            needsStop={selected.trip.needsStop}
-            stopAfterKm={selected.trip.stopAfterKm}
-            routeName={selected.trip.routeName}
-          />
+          {draft.longTrip === "hamMuc" ||
+          draft.longTrip === "berCgn" ||
+          draft.longTrip === "strBer" ? (
+            <GermanyMap
+              polyline={selected.trip.polyline}
+              routeKm={selected.trip.routeKm}
+              rangeMid={selected.trip.rangeMid}
+              needsStop={selected.trip.needsStop}
+              stopAfterKm={selected.trip.stopAfterKm}
+              routeName={selected.trip.routeName}
+            />
+          ) : null}
         </section>
       ) : null}
 

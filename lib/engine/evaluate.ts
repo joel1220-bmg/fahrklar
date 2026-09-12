@@ -106,7 +106,7 @@ export function budgetCap(price: PriceOption): number | null {
   }
 }
 
-export function buildAssumptions(r: ResolvedInput): Assumption[] {
+export function buildAssumptions(r: ResolvedInput, draft: Draft): Assumption[] {
   const rows: Assumption[] = [
     {
       key: "use",
@@ -120,17 +120,21 @@ export function buildAssumptions(r: ResolvedInput): Assumption[] {
       value: `${Math.round(r.dayKm)} km`,
       assumed: r.dayAssumed,
     },
-    {
-      key: "long",
-      label: "Langstrecke",
-      value:
-        r.longTrip === "unknown"
-          ? LONG_CHIP.unknown
-          : r.longTrip === "none"
-            ? LONG_CHIP.none
-            : LONG_CHIP[r.longTrip],
-      assumed: r.longAssumed,
-    },
+    ...(draft.longTrip !== null
+      ? [
+          {
+            key: "long",
+            label: "Langstrecke",
+            value:
+              r.longTrip === "unknown"
+                ? LONG_CHIP.unknown
+                : r.longTrip === "none"
+                  ? LONG_CHIP.none
+                  : LONG_CHIP[r.longTrip],
+            assumed: r.longAssumed,
+          } satisfies Assumption,
+        ]
+      : []),
     {
       key: "month",
       label: "Monat",
@@ -175,7 +179,7 @@ export function evaluateCars(draft: Draft): {
   results: CarResult[];
 } {
   const resolved = resolveDraft(draft);
-  const assumptions = buildAssumptions(resolved);
+  const assumptions = buildAssumptions(resolved, draft);
   const cap = budgetCap(resolved.price);
 
   const results: CarResult[] = cars.map((car) => {

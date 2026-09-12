@@ -75,7 +75,7 @@ That boundary is the whole mechanism; parallel work without it eats itself.
 
 Open work is in `docs/backlog.md`.
 
-## Four traps this project already fell into
+## Five traps this project already fell into
 
 **1. Two agents, one working tree, nothing committed.** On 12.09. a second
 process restored the tree from an archive and an hour of finished work vanished
@@ -101,6 +101,15 @@ body read as a toy. Related: the GLB bakes in a disc named `shadow` which must
 *leave the scene graph*, not merely be hidden — `Box3.setFromObject` ignores
 the visible flag, so a hidden 4 m disc still inflates the bounding box and
 makes `<Bounds>` frame the car far too small.
+
+**5. `<Bounds clip>` left the canvas empty.** `clip` pulls the camera's near
+and far planes tight around what `<Bounds>` measured — and it measures before
+the GLTF has finished loading and before `CarMesh` has dropped the baked shadow
+disc, so the planes bracket the wrong volume and the car is clipped away
+entirely. The symptom is not a half-drawn car: it is an empty canvas on a
+correct background, a live WebGL context, and no console error — which is why
+it cost four screenshots and a bisect to find. `fit observe` without `clip` is
+what ships.
 
 ## One false alarm, so nobody chases it twice
 

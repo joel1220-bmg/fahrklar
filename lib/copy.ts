@@ -242,7 +242,17 @@ export const COPY = {
   highwayRangeLabel: "Autobahn-Reichweite",
   cityRangeHint:
     "In der Stadt reicht dieselbe Batterie weiter als auf der Autobahn, oft auch weiter als der Prüfstandswert. Das liegt nicht an schöngerechneten Zahlen, sondern daran, dass der Prüfstand Autobahn mitmisst, und genau dort verbraucht ein E-Auto am meisten. Langsam fahren kostet wenig Luft, und beim Bremsen fließt Strom zurück.",
-  batteryHint: "Batterie. Daraus ergeben sich die beiden Reichweiten oben.",
+  /*
+   * "nutzbar" is not pedantry. Manufacturers advertise the gross pack while
+   * only part of it is available to drive on, and four cars in this catalogue
+   * carried the gross figure in their own model name while the card showed the
+   * net one. Saying which of the two this is, every time, is what stops the
+   * reader thinking two different numbers describe two different cars.
+   */
+  batteryHint: "nutzbare Batterie. Daraus ergeben sich die beiden Reichweiten oben.",
+  batteryLabel: "Nutzbare Batterie",
+  batteryTableHint:
+    "Nutzbar heißt der Teil der Batterie, mit dem Sie wirklich fahren. Hersteller nennen oft die größere Bruttozahl.",
 
   // --- Leerzustände -------------------------------------------------------
   // Simplified 13.09.2026 (copy-guard audit): "in der engeren Auswahl" is

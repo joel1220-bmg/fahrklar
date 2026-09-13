@@ -1,26 +1,15 @@
 /** Short card titles: brand + model, without raw trim tokens. */
 
-const TRIM_TOKENS = [
-  "Comfort Range",
-  "Long Range",
-  "E-Tech",
-  "Design",
-  "Pro",
-  "RWD",
-  "Comfort",
-] as const;
-
-function stripTrimTokens(model: string): string {
-  let out = model;
-  for (const token of TRIM_TOKENS) {
-    const escaped = token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/ /g, "\\s+");
-    out = out.replace(new RegExp(`\\s*\\b${escaped}\\b`, "gi"), " ");
-  }
-  return out.replace(/\s+/g, " ").trim();
-}
-
-/** Brand + short model (e.g. Renault 5, not 5 E-Tech Comfort Range). */
+/**
+ * Brand plus the full model designation.
+ *
+ * This used to strip trim tokens - Pro, Long Range, Design, RWD, Comfort - to
+ * keep names short, and in doing so threw away the one thing that tells two
+ * cars apart. A VW ID.3 Pro and an ID.3 Pro S are different battery sizes and
+ * therefore different answers to the question this whole site asks; showing
+ * both as "Volkswagen ID.3" made the catalogue look like it listed the same car
+ * twice. Long names are the lesser problem.
+ */
 export function formatCarName(car: { brand: string; model: string }): string {
-  const model = stripTrimTokens(car.model);
-  return [car.brand, model].filter(Boolean).join(" ");
+  return [car.brand, car.model].filter(Boolean).map((s) => s.trim()).join(" ");
 }

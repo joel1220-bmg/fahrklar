@@ -314,7 +314,7 @@ export function ResultView({
                 </tr>
                 <tr className="border-b border-graphite-line">
                   <th scope="row" className="px-3 py-3 text-left text-muted">
-                    Nutzbare Batterie
+                    {COPY.batteryLabel}
                   </th>
                   {results.map((r) => (
                     <td key={r.car.id} className="px-3 py-3 text-paper">
@@ -746,6 +746,7 @@ export function ResultView({
                       they were a wall of small print under the numbers. */}
                   <Disclosure summary={COPY.methodSummary} panelClassName="space-y-1 pt-2">
                     <p>{COPY.spanNote}</p>
+                    <p>{COPY.batteryTableHint}</p>
                     <p>{COPY.cityRangeHint}</p>
                     <p>{COPY.peakHint}</p>
                     <p>{COPY.chargeWindow}</p>

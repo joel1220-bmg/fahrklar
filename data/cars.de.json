@@ -85,7 +85,7 @@
     {
       "id": "hyundai-ioniq5",
       "brand": "Hyundai",
-      "model": "Ioniq 5 77 kWh",
+      "model": "Ioniq 5 Long Range",
       "body": "crossover",
       "seats": 5,
       "listEur": 49990,
@@ -95,7 +95,8 @@
       "dcPeakKw": 235,
       "heatPump": true,
       "colorHex": "#E8D5A3",
-      "asOf": "2026-09-12"
+      "asOf": "2026-09-12",
+      "notes": " Am 13.09.2026 wurde die Bruttokapazitaet aus dem Modellnamen entfernt: sie stand im Widerspruch zur nutzbaren Kapazitaet auf der Karte."
     },
     {
       "id": "kia-ev3",
@@ -146,7 +147,7 @@
     {
       "id": "cupra-born",
       "brand": "Cupra",
-      "model": "Born 59 kWh",
+      "model": "Born",
       "body": "compact",
       "seats": 5,
       "listEur": 39990,
@@ -156,7 +157,8 @@
       "dcPeakKw": 135,
       "heatPump": true,
       "colorHex": "#7B2D3B",
-      "asOf": "2026-09-12"
+      "asOf": "2026-09-12",
+      "notes": " Am 13.09.2026 wurde die Bruttokapazitaet aus dem Modellnamen entfernt: sie stand im Widerspruch zur nutzbaren Kapazitaet auf der Karte."
     },
     {
       "id": "volvo-ex30",
@@ -253,7 +255,7 @@
     {
       "id": "fiat-500e",
       "brand": "Fiat",
-      "model": "500e Icon 42 kWh",
+      "model": "500e Icon",
       "body": "hatch",
       "seats": 5,
       "listEur": 35950,
@@ -264,7 +266,7 @@
       "heatPump": false,
       "colorHex": "#C1121F",
       "asOf": "2026-09-13",
-      "notes": "UNVERIFIED (13.09.2026): all figures from memory. heatPump set to false because it is an optional extra on lower 500e trims rather than standard, but that has not been confirmed for this specific trim — if this trim includes it as standard, winter range here is understated, not overstated. Check usableKwh, wltpKm, dcPeakKw and the heat-pump assumption against Fiat's configurator before go-live."
+      "notes": "UNVERIFIED (13.09.2026): all figures from memory. heatPump set to false because it is an optional extra on lower 500e trims rather than standard, but that has not been confirmed for this specific trim — if this trim includes it as standard, winter range here is understated, not overstated. Check usableKwh, wltpKm, dcPeakKw and the heat-pump assumption against Fiat's configurator before go-live. Am 13.09.2026 wurde die Bruttokapazitaet aus dem Modellnamen entfernt: sie stand im Widerspruch zur nutzbaren Kapazitaet auf der Karte."
     },
     {
       "id": "hyundai-inster",
@@ -381,7 +383,7 @@
     {
       "id": "mg4",
       "brand": "MG",
-      "model": "4 Electric Long Range 64 kWh",
+      "model": "4 Electric Long Range",
       "body": "compact",
       "seats": 5,
       "listEur": 36990,
@@ -392,7 +394,7 @@
       "heatPump": true,
       "colorHex": "#C8102E",
       "asOf": "2026-09-13",
-      "notes": "UNVERIFIED (13.09.2026): all figures from memory. Filed as 'compact' (same bucket as vw-id3/cupra-born) rather than 'hatch' since it is closer to their C-segment size than to the smaller renault-5/opel-corsa/byd-dolphin hatches — a classification judgment, not a sourced fact. MG publishes several battery sizes for the 4 (51/64/77 kWh); this is meant to be the 64 kWh Long Range specifically. Check usableKwh, wltpKm and dcPeakKw against MG's German data sheet before go-live."
+      "notes": "UNVERIFIED (13.09.2026): all figures from memory. Filed as 'compact' (same bucket as vw-id3/cupra-born) rather than 'hatch' since it is closer to their C-segment size than to the smaller renault-5/opel-corsa/byd-dolphin hatches — a classification judgment, not a sourced fact. MG publishes several battery sizes for the 4 (51/64/77 kWh); this is meant to be the 64 kWh Long Range specifically. Check usableKwh, wltpKm and dcPeakKw against MG's German data sheet before go-live. Am 13.09.2026 wurde die Bruttokapazitaet aus dem Modellnamen entfernt: sie stand im Widerspruch zur nutzbaren Kapazitaet auf der Karte."
     },
     {
       "id": "peugeot-e3008",

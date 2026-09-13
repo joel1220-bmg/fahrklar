@@ -85,8 +85,9 @@ export function ResultView({
     [assumptions],
   );
 
-  /* The map needs exactly one car. Fall back to the first so the check is
-     useful before anything is chosen. */
+  /* The one car the detail view speaks about: whichever was chosen, else the
+     first of the list. It drives both the map and the highlighted column in the
+     comparison, so those two can never disagree about which car is meant. */
   const detail = selected ?? results[0] ?? null;
 
   const compareCols = useMemo(
@@ -197,9 +198,7 @@ export function ResultView({
                 <p className="mt-1 text-sm text-muted">
                   {formatEUR(r.car.listEur)}
                 </p>
-                {r.priceOutlier ? (
-                  <p className="mt-1 text-xs text-assumed">{COPY.priceOutlier}</p>
-                ) : null}
+
               </button>
               <button
                 type="button"
@@ -585,9 +584,6 @@ export function ResultView({
                   Ohne Ladehalt auf dieser Strecke (mit Puffer).
                 </p>
               ) : null}
-              {!selected ? (
-                <p className="px-1 text-xs text-muted">{COPY.pickCarFirst}</p>
-              ) : null}
             </div>
           ) : null}
 
@@ -618,7 +614,7 @@ export function ResultView({
                         <span className="sr-only">Merkmal</span>
                       </th>
                       {compareCols.map((r) => {
-                        const isSel = r.car.id === selected?.car.id;
+                        const isSel = r.car.id === detail?.car.id;
                         return (
                           <th
                             key={r.car.id}
@@ -653,7 +649,7 @@ export function ResultView({
                         {COPY.compareStops}
                       </th>
                       {compareCols.map((r) => {
-                        const isSel = r.car.id === selected?.car.id;
+                        const isSel = r.car.id === detail?.car.id;
                         const n = r.trip.stops.length;
                         return (
                           <td
@@ -678,7 +674,7 @@ export function ResultView({
                         {COPY.tripCharge}
                       </th>
                       {compareCols.map((r) => {
-                        const isSel = r.car.id === selected?.car.id;
+                        const isSel = r.car.id === detail?.car.id;
                         const mid = r.trip.extraSpan?.mid ?? r.trip.extraMin;
                         const lo = r.trip.extraSpan.low;
                         const hi = r.trip.extraSpan.high;
@@ -712,7 +708,7 @@ export function ResultView({
                         {COPY.compareTotal}
                       </th>
                       {compareCols.map((r) => {
-                        const isSel = r.car.id === selected?.car.id;
+                        const isSel = r.car.id === detail?.car.id;
                         const mid = tripTotalMid(r);
                         return (
                           <td

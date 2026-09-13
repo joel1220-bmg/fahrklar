@@ -49,7 +49,7 @@ export function AdvisorApp() {
 
   const visible = useMemo(() => {
     const dismissed = new Set(dismissedIds);
-    return evaluation.results.filter((r) => !dismissed.has(r.car.id)).slice(0, 3);
+    return evaluation.results.filter((r) => !dismissed.has(r.car.id)).slice(0, 4);
   }, [evaluation.results, dismissedIds]);
 
   /*

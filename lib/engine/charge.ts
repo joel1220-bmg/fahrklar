@@ -109,6 +109,44 @@ const AVG_KW_10_80: Record<string, KwSpan> = {
   "polestar-2": { low: 100, mid: 118, high: 135 },
   "mercedes-eqs": { low: 125, mid: 146, high: 165 },
   "toyota-bz4x": { low: 55, mid: 68, high: 85 },
+
+  /* --- 13.09.2026, Katalog auf 61 Autos erweitert ---------------------------
+     Dreizehn der 28 neuen Autos bekommen hier einen Eintrag, und zwar nur die,
+     bei denen ein Geschwister in dieser Tabelle steht: gleicher Akku, gleiche
+     Plattform, gleiche Kurve. Die anderen fuenfzehn bleiben auf dem
+     Peak-Fallback, weil eine erfundene Zahl den Cluster oben nur verlaengern
+     wuerde, und genau das ist das Problem, das dieser Kommentar beschreibt.
+     Alles hier ist UNVERIFIED und abgeleitet, nicht gemessen. */
+
+  // MEB, 77 kWh, 175 kW Peak - identisch zu `skoda-elroq`, das oben als
+  // bestaetigt konservativ markiert ist. Wenn dort korrigiert wird, hier mit.
+  "vw-id3-pro-s": { low: 90, mid: 100, high: 115 },
+  "vw-id4": { low: 90, mid: 100, high: 115 },
+  "skoda-enyaq": { low: 90, mid: 100, high: 115 },
+  // Gleicher Stapel, spaetere Leistungsstufe (185 kW): `skoda-elroq` mit dem
+  // Peak-Verhaeltnis skaliert, nichts weiter.
+  "cupra-born-vz": { low: 95, mid: 105, high: 120 },
+  // MEB+, 86 kWh, 200 kW - `vw-id7` mit dem Peak-Verhaeltnis skaliert.
+  "vw-id7-tourer-s": { low: 125, mid: 143, high: 165 },
+  // Gleiche Plattform und gleicher 52-kWh-Akku wie `renault-5`, uebernommen.
+  "renault-4": { low: 50, mid: 58, high: 70 },
+  // Tesla NCM-Paket mit 75 kWh statt des LFP-Pakets der Hecktriebler oben.
+  // Beide Long Range teilen sich Akku und Kurve; die Karosserie aendert den
+  // Verbrauch, nicht die Ladeleistung.
+  "tesla-m3-lr": { low: 100, mid: 120, high: 140 },
+  "tesla-my-lr": { low: 100, mid: 120, high: 140 },
+  // E-GMP, gleiches 800-V-Paket wie `hyundai-ioniq5`, uebernommen.
+  "hyundai-ioniq6": { low: 150, mid: 175, high: 190 },
+  // E-GMP mit 96 kWh und 210 kW - nach `kia-ev6` (71 % vom Peak) gerechnet.
+  "kia-ev9": { low: 130, mid: 150, high: 170 },
+  // PPE, 800 V, 94.9 kWh - dasselbe Paket wie `audi-q6-etron`, uebernommen.
+  // Der Macan sitzt auf derselben Plattform und bekommt dieselbe Kurve.
+  "audi-a6-etron": { low: 170, mid: 200, high: 230 },
+  "porsche-macan": { low: 170, mid: 200, high: 230 },
+  // 800 V, 85 kWh, 320 kW Peak. Rueckgerechnet aus einer haeufig genannten
+  // Zeit von rund 22 Minuten fuer 10 auf 80 Prozent, also (0.7*85)/(22/60)
+  // etwa 162 kW, nur 51 % vom Peak - die Spitze steht sehr kurz an.
+  "mercedes-cla-sb": { low: 145, mid: 162, high: 180 },
 };
 
 const FALLBACK_TYPICAL = 0.55;

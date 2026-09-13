@@ -12,7 +12,7 @@ import type {
   ResolvedInput,
   SpeedKph,
 } from "@/lib/engine/types";
-import { sortForCompare, tripTotalMid } from "@/lib/advisor/compare";
+import { tripTotalMid } from "@/lib/advisor/compare";
 import { BodyIcon } from "@/components/showroom/BodyIcon";
 import { GermanyMap } from "@/components/showroom/GermanyMap";
 import { charge1080Min } from "@/lib/engine/charge";
@@ -90,8 +90,12 @@ export function ResultView({
      comparison, so those two can never disagree about which car is meant. */
   const detail = selected ?? results[0] ?? null;
 
+  /* Same order as the cards above, deliberately. The table shows stops and
+     total time in their own rows; reordering the columns by those figures
+     would only repeat what the reader can already read off, and would move a
+     car out from under their finger on every slider nudge. */
   const compareCols = useMemo(
-    () => (tripActive ? sortForCompare(results) : []),
+    () => (tripActive ? results : []),
     [tripActive, results],
   );
 
@@ -144,15 +148,19 @@ export function ResultView({
 
       <p className="text-sm text-muted">{COPY.skipCheck}</p>
 
-      <ul className="grid gap-4 sm:grid-cols-3">
+      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {results.map((r) => {
           const active = selected?.car.id === r.car.id;
           return (
-            <li key={r.car.id} className="relative">
+            /* Column, full height, card grows: four abreast makes the names
+               wrap to different depths, and without this the bottom edge of
+               the row is ragged and the four dismiss links no longer line up
+               with each other. */
+            <li key={r.car.id} className="relative flex h-full flex-col">
               <button
                 type="button"
                 onClick={() => onSelect(r.car.id)}
-                className={`w-full rounded-2xl border p-3 pr-10 text-left transition-colors ${
+                className={`flex-1 w-full rounded-2xl border p-3 text-left transition-colors ${
                   active
                     ? "border-gold bg-graphite-card"
                     : "border-graphite-line bg-graphite-soft hover:border-gold-dim"
@@ -199,18 +207,6 @@ export function ResultView({
                   {formatEUR(r.car.listEur)}
                 </p>
 
-              </button>
-              <button
-                type="button"
-                aria-label={COPY.dismissCar}
-                title={COPY.dismissCar}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDismiss(r.car.id);
-                }}
-                className="absolute right-2 top-2 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-graphite-line bg-graphite-soft text-sm text-muted hover:border-gold hover:text-paper"
-              >
-                ×
               </button>
               {/* Red, and big enough to hit. It was grey and set in the
                   smallest type on the page, so the one control that changes
@@ -592,7 +588,7 @@ export function ResultView({
           ) : null}
 
           <div className="space-y-3 lg:min-w-0 lg:flex-1">
-              {/* Comparison table — all visible cars, sorted by stops then time */}
+              {/* Comparison table — all visible cars, in the order of the cards */}
               <div className="overflow-x-auto rounded-2xl border border-graphite-line bg-graphite-card">
                 <h3 className="serif border-b border-graphite-line px-3 py-2.5 text-lg text-paper">
                   {COPY.compareTitle}

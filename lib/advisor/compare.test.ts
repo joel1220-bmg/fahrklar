@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { sortForCompare } from "./compare";
+import { tripTotalMid } from "./compare";
 import type { CarResult, TripResult } from "@/lib/engine/types";
 
 function fake(id: string, stops: number, totalMid: number): CarResult {
@@ -58,12 +58,9 @@ function fake(id: string, stops: number, totalMid: number): CarResult {
   };
 }
 
-describe("sortForCompare", () => {
-  it("orders by fewest stops, then shortest total mid", () => {
-    const a = fake("a", 2, 300);
-    const b = fake("b", 1, 320);
-    const c = fake("c", 2, 280);
-    const sorted = sortForCompare([a, b, c]);
-    expect(sorted.map((r) => r.car.id)).toEqual(["b", "c", "a"]);
+describe("tripTotalMid", () => {
+  it("reads the middle of the total span", () => {
+    expect(tripTotalMid(fake("a", 2, 300))).toBe(300);
+    expect(tripTotalMid(fake("b", 0, 275))).toBe(275);
   });
 });

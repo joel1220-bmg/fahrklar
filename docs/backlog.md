@@ -93,15 +93,23 @@ Status: `offen` · `läuft` · `fertig` · `blockiert`
 | Regler, Karte und Vergleich auf einem Schirm, 663 px | **fertig** |
 | Städtische Reichweite als zweite Spanne | **fertig** |
 | Ladezeit 10 auf 80 Prozent statt Spitzenleistung als Vergleichswert | **fertig** |
+| Katalog von 33 auf 61 Autos, alle fünf Karosserien mit echtem Feld | **fertig** |
+| Vier Autos nebeneinander statt drei | **fertig** |
+| Spalten der Vergleichstabelle folgen den Karten, keine eigene Sortierung | **fertig** |
 
 ## Was jetzt am meisten stört
 
 1. **Handy.** Nach dem Absenden sieht man kein einziges Auto ohne zu scrollen,
    624 px Kopfbereich stehen davor. `components/ui/Disclosure.tsx` liegt fertig
    da, ist aber nicht eingehängt.
-2. **Katalog gegen echte Quellen prüfen.** 18 Autos sind als ungeprüft
-   markiert, und bei zweien im Altbestand war die Ladeleistung nachweislich
-   falsch. Größter offener Posten, braucht Daten von außen.
+2. **Katalog gegen echte Quellen prüfen.** Der Katalog ist am 13.09. von 33
+   auf 61 Autos gewachsen, und damit ist dieser Posten größer geworden, nicht
+   kleiner: 52 der 61 Autos sind als ungeprüft markiert, und bei zweien im
+   Altbestand war die Ladeleistung nachweislich falsch. Dazu kommen 13
+   Ladekurven-Einträge in `lib/engine/charge.ts`, die von einem Geschwister
+   derselben Plattform abgeleitet sind. Abgeleitet ist nicht belegt: wird ein
+   Geschwister korrigiert, müssen alle Einträge mit, die davon abgeschrieben
+   wurden. Größter offener Posten, braucht Daten von außen.
 3. **Farbe allein als Signal.** Angenommene Werte stehen kursiv und grau, sonst
    nichts. `components/ui/AssumedMarker.tsx` liegt fertig da, nicht eingehängt.
 4. **Nutzung bietet kein Weiß-ich-nicht**, ein Verstoß gegen `intake-lock.md`.

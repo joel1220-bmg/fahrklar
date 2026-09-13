@@ -91,7 +91,7 @@ describe("extreme inputs", () => {
 });
 
 describe("a car with no heat pump in deep winter", () => {
-  const noHp = car("byd-dolphin"); // heatPump: false, smallest battery in the catalog
+  const noHp = car("byd-dolphin"); // heatPump: false, one of several no-heat-pump cars in the catalog
   const hpTwin: Car = { ...noHp, id: "hp-twin", heatPump: true };
 
   it("still returns a finite, ordered range span, not NaN or a collapse", () => {

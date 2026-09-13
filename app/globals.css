@@ -21,7 +21,28 @@
   --color-ink: #15171a;
   --color-ink-soft: #464c54;
   --color-muted: #676d75;
-  --color-assumed: #83888f;
+
+  /* --color-assumed marks the one distinction the whole product is built on:
+     "you told us this" vs "we guessed this" (CLAUDE.md rule 2). Audited
+     2026-09-13 against WCAG 2.1 SC 1.4.3 (4.5:1, small text) after
+     audit-2026-09-12.md finding 1.1 measured the old #83888f at 3.57:1 on
+     white / 3.24:1 on canvas - a hard fail exactly where it matters most.
+
+       #5f646b on --color-surface (#ffffff) -> 5.96:1
+       #5f646b on --color-canvas  (#f4f4f2) -> 5.41:1
+
+     Both clear 4.5:1 with margin. It still has to read as *quieter* than
+     --color-ink, not just legal: --color-ink is 17.96:1 on white (near-
+     black), and #5f646b sits at 5.96:1 - a 3.01:1 step away from ink itself,
+     which is a real, visible difference in weight, not a rounding artifact.
+     Landing this close to --color-muted (1.14:1 apart - practically the same
+     shade) is deliberate: there was no lighter grey left that still cleared
+     4.5:1 on canvas, and per WCAG 1.4.1 colour was never allowed to carry
+     this alone anyway. Pair it with components/ui/AssumedMarker.tsx (a
+     text+icon tag, not colour) wherever this token marks a value - that's
+     the non-colour channel the audit asked for. Don't lighten this token
+     back up without rerunning both ratios above. */
+  --color-assumed: #5f646b;
 
   /* ---- rules ---- */
   --color-line: #d8d9dd;

@@ -273,7 +273,7 @@ export function ControlBar({ draft, onChange, assumedBy, resolvedDayKm }: Props)
                   behaviour that these two get for free. The engine sorts a
                   window entered back to front, so crossing them is harmless. */}
               <label className="block text-sm text-ink">
-                Mindestens
+                {COPY.priceFromLabel}
                 <input
                   type="range"
                   min={PRICE_FLOOR}
@@ -288,7 +288,7 @@ export function ControlBar({ draft, onChange, assumedBy, resolvedDayKm }: Props)
                 />
               </label>
               <label className="mt-3 block text-sm text-ink">
-                Höchstens
+                {COPY.priceToLabel}
                 <input
                   type="range"
                   min={PRICE_FLOOR}
@@ -309,7 +309,7 @@ export function ControlBar({ draft, onChange, assumedBy, resolvedDayKm }: Props)
                   onClick={() => set({ priceMin: null, priceMax: null })}
                   className="shrink-0 text-accent underline underline-offset-2"
                 >
-                  offen lassen
+                  {COPY.priceOpenLink}
                 </button>
               </div>
             </div>

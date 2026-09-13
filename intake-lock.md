@@ -44,6 +44,24 @@ Weiß ich nicht / noch unklar an jedem Slot, der unsicher sein darf. Leer = Anna
 > `UseCase`-Wert plus UI-Chip in einem Commit (engine + advisor-ux) — siehe
 > Kommentar über `USE_CHIP` in `lib/copy.ts`.
 
+> **Gefunden, nicht behoben (copy-guard-Audit, 13.09.2026):** Slot 5 legt
+> einen einzelnen Kaufpreis-Deckel fest ("Kaufpreis, nicht Leasingrate"), und
+> `QuestionForm.tsx` fragt auch nur danach (ein Slider, `priceMax`). Seit
+> heute Morgen bietet `ControlBar.tsx` (die Kontrollleiste im Ergebnis) für
+> denselben Slot zwei Slider — "Mindestens" und "Höchstens" — und schreibt
+> damit `priceMin`, wonach im Intake nie gefragt wurde. Ein Leser verlässt
+> die Fragen mit einer Preisobergrenze und findet im Ergebnis unangekündigt
+> eine Preisuntergrenze vor, die er nie gesetzt hat (Default: offen, wirkt
+> sich also nicht aus, bis er sie anfasst) — kein Bug, aber eine stille
+> Erweiterung von Slot 5, die dieser Lock nicht kennt. Braucht eine
+> Produktentscheidung, keine Wortentscheidung: entweder Slot 5 hier bewusst
+> auf ein Zwei-Seiten-Fenster erweitern (dann auch im Intake fragen, damit
+> die Kontrollleiste nichts Neues einführt), oder die Mindestens-Seite aus
+> `ControlBar.tsx` wieder entfernen, bis das Intake sie kennt. Sprachlich:
+> siehe `priceFromLabel`/`priceToLabel`/`priceOpenLink` in `lib/copy.ts`
+> (copy-guard-Audit, 13.09.2026) für die vorgeschlagene Beschriftung, falls
+> die Erweiterung bleibt.
+
 Morgen-Schritt (einer):
 > Morgen: auf Ihrem üblichen Weg notieren, wo Sie laden könnten — Steckdose oder Wallbox zu Hause, sonst eine Säule. Das bleibt bei Ihnen, kein Upload.
 

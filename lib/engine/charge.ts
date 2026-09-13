@@ -42,6 +42,41 @@ export type KwSpan = { low: number; mid: number; high: number };
  *   manufacturer number in the first place - only `hyundai-ioniq5` (75 %) and
  *   `byd-seal` (69 %) stand out as plausibly real per-car data.
  *
+ * Extended again 13.09.2026 for the 15-car catalog expansion (data/cars.de.json).
+ * Of those 15 new cars, six got an explicit entry below and nine were left on
+ * the plain peak-based fallback because there was no specific figure to reason
+ * from - guessing a number would only add another unsourced entry to the
+ * cluster above, which is the opposite of the point. The six added:
+ *
+ * - `vw-id-buzz` (79 kWh usable, 170 kW peak): interpolated from its own MEB
+ *   siblings already in this table (`vw-id3` 56 % of peak, `vw-id7` 62.5 %),
+ *   not from a Buzz-specific source - mid = 100 kW, 59 % of peak.
+ * - `audi-q6-etron` (94.9 kWh usable, 270 kW peak) and `kia-ev6` (74 kWh
+ *   usable, 239 kW peak): both are 800V platforms (PPE / E-GMP) reasoned by
+ *   analogy to `hyundai-ioniq5` (also E-GMP-family, 75 % of peak, flagged
+ *   above as plausibly real) rather than the low-power `kia-ev3` in this same
+ *   table, which is a different pack/inverter and already confirmed
+ *   conservative - mid = 200 kW (74 %) and 170 kW (71 %) respectively.
+ * - `polestar-2` (79 kWh usable, 205 kW peak): back-derived from a commonly
+ *   cited ~28 min 10->80 % figure for this pack, giving avg kW = (0.7*79)/(28/60)
+ *   ~= 118 kW, 58 % of peak - close to the FALLBACK_TYPICAL ratio, but recorded
+ *   explicitly rather than left to fall through, since a reason exists.
+ * - `mercedes-eqs` (107.8 kWh usable, 200 kW peak): back-derived the same way
+ *   from a commonly cited ~31 min 10->80 % figure, giving avg kW ~= 146 kW,
+ *   73 % of peak - in the same "genuinely fast, well-engineered flagship"
+ *   range as `hyundai-ioniq5` and `byd-seal` above.
+ * - `toyota-bz4x` (71.4 kWh usable, 150 kW peak): the one deliberately
+ *   *below* FALLBACK_TYPICAL, not above it. The bZ4X has a widely reported
+ *   reputation (independent reviews, forum consensus - not a timed source) for
+ *   a flatter, more conservative DC curve than its peak spec implies; mid =
+ *   68 kW, 45 % of peak (matching FALLBACK_LOW's ratio, not FALLBACK_TYPICAL's).
+ *   This is a reasoned pessimistic estimate, explicitly not a source - if
+ *   this car's charge time is ever challenged, this line is where to look.
+ *
+ * None of this touches the two confirmed-conservative entries (`skoda-elroq`,
+ * `kia-ev3`) or the five-plus-one suspected-but-unchecked ones from the
+ * 12.09.2026 pass - that problem is exactly as big as it was, not bigger.
+ *
  * Do not "fix" these from memory. Check 10->80 % times against the
  * manufacturer or a measured test, then derive avg kW as
  * (usableKwh * 0.7) / (minutes / 60), and record the source.
@@ -62,6 +97,12 @@ const AVG_KW_10_80: Record<string, KwSpan> = {
   "byd-dolphin": { low: 45, mid: 55, high: 65 },
   "opel-corsa": { low: 50, mid: 58, high: 70 },
   "mercedes-eqa": { low: 70, mid: 80, high: 95 },
+  "vw-id-buzz": { low: 85, mid: 100, high: 120 },
+  "audi-q6-etron": { low: 170, mid: 200, high: 230 },
+  "kia-ev6": { low: 145, mid: 170, high: 195 },
+  "polestar-2": { low: 100, mid: 118, high: 135 },
+  "mercedes-eqs": { low: 125, mid: 146, high: 165 },
+  "toyota-bz4x": { low: 55, mid: 68, high: 85 },
 };
 
 const FALLBACK_TYPICAL = 0.55;

@@ -1,21 +1,6 @@
 import Link from "next/link";
 import { CarCanvas } from "@/components/showroom/CarCanvas";
-import { COPY } from "@/lib/copy";
-
-const TILES = [
-  {
-    t: "Alltag zuerst.",
-    d: "Wenige Fragen zu Weg, Laden und Platz. Weiß ich nicht ist immer erlaubt.",
-  },
-  {
-    t: "Reichweite als Spanne.",
-    d: "Prüfstand (WLTP) übersetzen wir. Im Alltag, auf der Autobahn und im Winter ist es oft weniger.",
-  },
-  {
-    t: "Kaufpreis grob.",
-    d: "Listenpreis als Orientierung. Keine Leasingrate, die den Preis versteckt.",
-  },
-] as const;
+import { COPY, LANDING_TILES } from "@/lib/copy";
 
 function CtaBlock({ className = "" }: { className?: string }) {
   return (
@@ -36,12 +21,21 @@ export default function HomePage() {
     <div className="mx-auto max-w-6xl px-4 pb-24 pt-10 sm:px-6 sm:pt-14">
       <section className="grid items-center gap-10 lg:grid-cols-[1.05fr_1fr] lg:gap-14">
         <div className="max-w-xl">
-          <p className="text-sm font-medium uppercase tracking-[0.16em] text-gold">Fahrklar</p>
+          <p className="text-sm font-medium uppercase tracking-[0.16em] text-gold">
+            {COPY.eyebrow}
+          </p>
           <h1 className="serif mt-4 text-[2.15rem] leading-[1.12] text-paper sm:text-5xl sm:leading-[1.1]">
-            Ein neues E-Auto, das zu Ihrem Alltag passt — mit ehrlicher Reichweite, nicht mit
-            Prüfstandszahlen.
+            {COPY.landingLead}
           </h1>
-          <p className="mt-5 text-lg leading-relaxed text-muted">{COPY.privacy}</p>
+          {/* The reader's actual fear, named out loud. Everything else on this
+              page promised honesty about range in the abstract; nothing said
+              which worry that honesty is for. The privacy line used to sit
+              here - true, but not what someone anxious about a long drive
+              needs to read second. */}
+          <p className="mt-5 text-lg leading-relaxed text-ink">
+            {COPY.longDistancePromise}
+          </p>
+          <p className="mt-3 text-sm text-muted">{COPY.privacy}</p>
           <CtaBlock className="mt-9 hidden lg:flex" />
         </div>
 
@@ -55,13 +49,13 @@ export default function HomePage() {
       </section>
 
       <ol className="mt-16 grid gap-4 sm:grid-cols-3 sm:gap-5">
-        {TILES.map((tile) => (
+        {LANDING_TILES.map((tile) => (
           <li
-            key={tile.t}
-            className="rounded-2xl border border-graphite-line bg-graphite-card/90 px-5 py-5"
+            key={tile.title}
+            className="rounded-2xl border border-line bg-surface px-5 py-5"
           >
-            <p className="serif text-lg text-gold">{tile.t}</p>
-            <p className="mt-2 text-sm leading-relaxed text-muted">{tile.d}</p>
+            <p className="serif text-lg text-accent">{tile.title}</p>
+            <p className="mt-2 text-sm leading-relaxed text-muted">{tile.body}</p>
           </li>
         ))}
       </ol>

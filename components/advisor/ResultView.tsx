@@ -130,8 +130,7 @@ export function ResultView({
         /* Say it, rather than quietly showing cars outside the window and
            letting the reader assume they fit. */
         <p className="rounded-lg border border-line bg-accent-tint px-3 py-2 text-sm text-ink">
-          In dieser Preisspanne finden wir gerade kein Auto. Wir zeigen Ihnen
-          die nächstgelegenen — sie liegen außerhalb Ihrer Spanne.
+          {COPY.budgetEmptyNotice}
         </p>
       ) : null}
 
@@ -169,20 +168,22 @@ export function ResultView({
                     className="mt-0.5 h-7 w-auto shrink-0 text-muted"
                   />
                 </div>
-                <p className="mt-2 text-sm text-paper">{r.car.seats} Sitze</p>
-                {/* The battery size on its own means nothing to a beginner -
-                    it is only worth showing because the Autobahn range right
-                    above it is what that number buys. */}
-                <p className="mt-1 text-sm text-muted tnum">
-                  {formatDeUnit(r.car.usableKwh, "kWh", 1)} Batterie
+                {/* Directly under the range on purpose: the sentence says
+                    "daraus ergibt sich die Reichweite oben", so nothing may sit
+                    between the two or the word "oben" stops being true. A bare
+                    kWh figure means nothing to someone buying their first EV. */}
+                <p className="mt-2 text-sm text-muted">
+                  <span className="tnum">
+                    {formatDeUnit(r.car.usableKwh, "kWh", 1)}
+                  </span>{" "}
+                  {COPY.batteryHint}
                 </p>
+                <p className="mt-1 text-sm text-paper">{r.car.seats} Sitze</p>
                 <p className="mt-1 text-sm text-muted">
                   {formatEUR(r.car.listEur)}
                 </p>
                 {r.priceOutlier ? (
-                  <p className="mt-1 text-xs text-assumed">
-                    Teurer Ausreißer (Budget offen)
-                  </p>
+                  <p className="mt-1 text-xs text-assumed">{COPY.priceOutlier}</p>
                 ) : null}
               </button>
               <button

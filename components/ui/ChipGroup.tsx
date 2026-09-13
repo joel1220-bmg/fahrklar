@@ -97,8 +97,8 @@ export function MultiChipGroup<T extends string>({
             onClick={() => onChange([])}
             className={`min-h-11 rounded-full border px-3.5 text-sm transition-colors ${
               unknownSelected
-                ? "border-gold bg-gold text-graphite"
-                : "border-graphite-line bg-graphite-card text-paper hover:border-gold-dim"
+                ? "border-accent bg-accent font-medium text-white"
+                : "border-line bg-surface text-ink hover:border-accent hover:text-accent"
             }`}
           >
             {unknownLabel}

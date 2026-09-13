@@ -29,6 +29,20 @@ export const COPY = {
   eyebrow: "Fahrklar",
   landingLead:
     "Ein neues E-Auto, das zu Ihrem Alltag passt — mit ehrlicher Reichweite, nicht mit Prüfstandszahlen.",
+  /**
+   * Added 13.09.2026 (copy-guard audit). Every string on the landing page and
+   * in the intake was checked against "does this name the reader's actual
+   * fear" — none did. `landingLead` promises honesty about range in general;
+   * nothing anywhere said, in plain words, "the thing you're afraid of is
+   * the long trip, and that's the first thing we answer." CLAUDE.md calls
+   * this out by name as the product's main claim and the reader's main
+   * worry; a product that never says so out loud is easy to mistake for a
+   * spec-sheet comparison tool. Not wired into app/page.tsx yet — that file
+   * is design-system's (see CLAUDE.md's division of labour); meant to sit
+   * directly under landingLead, before the CTA.
+   */
+  longDistancePromise:
+    "Die größte Sorge beim Umstieg ist meist die lange Fahrt. Deshalb beantworten wir genau das zuerst: wie weit Sie wirklich kommen und wo Sie unterwegs anhalten müssten — ehrlich, mit Spanne statt Zusage.",
 
   privacy: "Ihre Angaben bleiben in diesem Browser.",
   cta: "Passende Autos ansehen",
@@ -109,6 +123,30 @@ export const COPY = {
   qPriceHint:
     "Listenpreis grob. Leasingraten blenden wir absichtlich aus — die verstecken oft den Preis.",
   qPriceEmpty: "Ohne Angabe zeigen wir eine grobe Preisspanne und markieren teure Ausreißer.",
+  /**
+   * Added 13.09.2026 (copy-guard audit). `components/advisor/QuestionForm.tsx`
+   * hardcodes "Budget offen lassen" (intake, one-sided ceiling slider) and
+   * `components/advisor/ControlBar.tsx` hardcodes the shorter "offen lassen"
+   * for the same action on its own two-sided min/max sliders (new this
+   * morning, un-reviewed). Same action, two different labels a reader could
+   * read as two different things on the way from intake to result. One
+   * string for both; components are outside this file's ownership, so this
+   * is a proposal for whoever wires it in, not yet referenced anywhere.
+   */
+  priceOpenLink: "Budget offen lassen",
+  /**
+   * Added 13.09.2026 (copy-guard audit), for ControlBar.tsx's two-sided
+   * budget control (new this morning). "Mindestens" / "Höchstens" are
+   * correct German but a more formal register than the rest of the product
+   * needs, and they don't match the words the control already shows once
+   * both sliders are set (`priceWindowLabel` in lib/engine/evaluate.ts prints
+   * "ab 30.000 €" / "bis 45.000 €"). "Ab" / "Bis" say the same thing in the
+   * same words the reader sees a moment later in the summary line — one
+   * vocabulary instead of two for one control. Not wired in; ControlBar.tsx
+   * is outside this file's ownership.
+   */
+  priceFromLabel: "Ab",
+  priceToLabel: "Bis",
 
   morningStep:
     "Morgen: auf Ihrem üblichen Weg notieren, wo Sie laden könnten — Steckdose oder Wallbox zu Hause, sonst eine Säule. Das bleibt bei Ihnen, kein Upload.",
@@ -145,10 +183,36 @@ export const COPY = {
   // on the car card instead of reading this. Same claim, different wording —
   // pick one and reference it (copy-guard audit, 12.09.2026).
   priceOutlier: "Teurer Ausreißer — Sie haben kein Budget gesetzt.",
+  /**
+   * Added 13.09.2026 (copy-guard audit). Result cards now show
+   * `{kWh-Zahl} Batterie` (ResultView.tsx, landed this morning, un-reviewed)
+   * — a bare spec-sheet figure. This is the exact failure CLAUDE.md names by
+   * example: "77 kWh means nothing to a beginner." The card's own comment
+   * claims the number is placed right under the Autobahn range so the range
+   * gives it meaning — in the actual markup a "X Sitze" line sits between
+   * them, and proximity alone was never going to do the explaining anyway:
+   * nothing in words ties battery size to what it buys. This string is
+   * meant to be appended after the figure, turning "48,0 kWh Batterie" into
+   * "48,0 kWh Batterie — daraus ergibt sich die Reichweite oben.", naming the
+   * relationship instead of relying on layout to imply it. Not wired in;
+   * ResultView.tsx is outside this file's ownership. Independently, moving
+   * the battery line to sit directly after the range (before "Sitze") would
+   * make "oben" literally true rather than approximately true — flagged to
+   * whoever owns that component.
+   */
+  batteryHint: "Batterie — daraus ergibt sich die Reichweite oben.",
 
   // --- Leerzustände -------------------------------------------------------
-  emptyCatalog:
-    "Mit diesen Angaben finden wir gerade kein neues E-Auto in der engeren Auswahl.",
+  // Simplified 13.09.2026 (copy-guard audit): "in der engeren Auswahl" is
+  // report-register filler a beginner has to parse before reaching the
+  // actual news (no car found). "Kein passendes ... Auto" says the same
+  // true thing in fewer, plainer words. Still not wired into
+  // ResultView.tsx, which now has *two* independent hardcoded stand-ins
+  // for this string, not one: line ~675 ("Mit diesen Angaben finden wir
+  // gerade kein Auto.", no help text at all) for an empty catalogue, and
+  // the separate budgetEmptyNotice case below for an empty two-sided price
+  // window. Whoever owns ResultView.tsx should read both from here instead.
+  emptyCatalog: "Mit diesen Angaben finden wir gerade kein passendes E-Auto.",
   // "Weiß ich nicht" only names an actual option on the Form question
   // (MultiChipGroup's unknown toggle). Kaufpreis has no chip of that name —
   // its unknown affordance is the "offen lassen" link — so this text must
@@ -156,6 +220,25 @@ export const COPY = {
   // find. Reworded 12.09.2026 (copy-guard audit) to cover both truthfully.
   emptyCatalogHelp:
     "Lockern Sie Kaufpreis oder Form — oder lassen Sie eine Antwort offen. Dann zeigen wir eine vorsichtige, weitere Auswahl und markieren sie.",
+  /**
+   * Added 13.09.2026 (copy-guard audit), replacing a hardcoded string found
+   * in ResultView.tsx (landed this morning, un-reviewed):
+   *
+   *   "In dieser Preisspanne finden wir gerade kein Auto. Wir zeigen Ihnen
+   *   die nächstgelegenen — sie liegen außerhalb Ihrer Spanne."
+   *
+   * Two problems. First, "nächstgelegen" means nearest *in location* to a
+   * German reader — used here for "closest in price" it borrows a spatial
+   * word for a different axis, which a beginner has no reason to resolve
+   * correctly on first read. Second, the same idea is named three ways in
+   * three strings on this screen: "Preisspanne" here, "Spanne" one sentence
+   * later, "Budget" in priceOutlier above and in the intake's "Budget offen
+   * lassen". One word for the reader's own price limit, used everywhere:
+   * "Budget" — it already won two of the three spots. Not wired in;
+   * ResultView.tsx is outside this file's ownership.
+   */
+  budgetEmptyNotice:
+    "In Ihrem Budget finden wir gerade kein Auto. Die folgenden liegen preislich am nächsten — aber außerhalb Ihres Budgets.",
 } as const;
 
 /** Landing tiles. Title and body, in the order they stand on the page. */

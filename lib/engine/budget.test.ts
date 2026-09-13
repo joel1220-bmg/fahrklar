@@ -9,7 +9,7 @@
 
 import { describe, expect, it } from "vitest";
 import { emptyDraft } from "./types";
-import { evaluateCars, priceInWindow, priceWindowLabel } from "./evaluate";
+import { evaluateCars, getCars, priceInWindow, priceWindowLabel } from "./evaluate";
 import type { Draft } from "./types";
 
 function draft(patch: Partial<Draft>): Draft {
@@ -88,7 +88,15 @@ describe("a budget window in evaluateCars", () => {
 
   it("falls back to the cars nearest the window, not the cheapest", () => {
     // A window above every car in the catalogue: the nearest are the dearest.
-    const e = evaluateCars(draft({ priceMin: 70_000, priceMax: 75_000 }));
+    // Derived from the catalogue's actual ceiling (rather than a hardcoded
+    // 70_000-75_000) so this keeps testing "above every car" as the catalogue
+    // grows a genuinely expensive end - see the 13.09.2026 catalogue expansion,
+    // which added cars above the old catalog's ~57k ceiling and would otherwise
+    // have sat inside this window and silently broken its premise.
+    const maxListEur = Math.max(...getCars().map((c) => c.listEur));
+    const priceMin = maxListEur + 20_000;
+    const priceMax = maxListEur + 25_000;
+    const e = evaluateCars(draft({ priceMin, priceMax }));
     expect(e.budgetEmpty).toBe(true);
     const shown = e.results.slice(0, 3).map((r) => r.car.listEur);
     const dearest = [...e.results].map((r) => r.car.listEur).sort((a, b) => b - a);

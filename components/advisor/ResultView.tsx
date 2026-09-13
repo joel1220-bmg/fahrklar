@@ -16,6 +16,7 @@ import { sortForCompare, tripTotalMid } from "@/lib/advisor/compare";
 import { BodyIcon } from "@/components/showroom/BodyIcon";
 import { GermanyMap } from "@/components/showroom/GermanyMap";
 import { charge1080Min } from "@/lib/engine/charge";
+import { Disclosure } from "@/components/ui/Disclosure";
 import { tripMaxKm } from "@/lib/engine/evaluate";
 import { ControlBar } from "./ControlBar";
 
@@ -521,6 +522,9 @@ export function ResultView({
                     })
                   }
                 />
+                <span className="mt-1 block text-xs text-muted">
+                  {COPY.qSpeedHint}
+                </span>
               </label>
 
               <label className="block text-sm">
@@ -568,33 +572,22 @@ export function ResultView({
                 rangeMid={detail.trip.rangeMid}
                 stops={detail.trip.stops}
               />
-              <div className="space-y-1.5 rounded-2xl border border-graphite-line bg-graphite-card px-3 py-2.5">
-                <p className="text-xs uppercase tracking-[0.14em] text-gold">
-                  {formatCarName(detail.car)} · Strecke {detail.trip.tripKm} km
+              {/* The written-out stop list is gone: the map already marks every
+                  halt with its minutes, and the caption counts them. Repeating
+                  it underneath said the same thing twice and cost the height
+                  that put map and comparison side by side. Only the two things
+                  the map cannot say for itself are left. */}
+              <p className="px-1 text-xs uppercase tracking-[0.14em] text-gold">
+                {formatCarName(detail.car)} · Strecke {detail.trip.tripKm} km
+              </p>
+              {detail.trip.stops.length === 0 ? (
+                <p className="px-1 text-sm text-muted">
+                  Ohne Ladehalt auf dieser Strecke (mit Puffer).
                 </p>
-                {detail.trip.stops.length > 0 ? (
-                  /* One running line, not a list: at eight stops the list alone
-                     was taller than the map and pushed the comparison table off
-                     the screen, and the whole reason the map sits here is that
-                     all three can be seen at once. */
-                  <p className="text-sm text-muted">
-                    Halt nach{" "}
-                    {detail.trip.stops.map((s, i) => (
-                      <span key={i} className="whitespace-nowrap">
-                        {i > 0 ? ", " : ""}
-                        {s.afterKm} km ({s.minutes} Min)
-                      </span>
-                    ))}
-                  </p>
-                ) : (
-                  <p className="text-sm text-muted">
-                    Ohne Ladehalt auf dieser Strecke (mit Puffer).
-                  </p>
-                )}
-                {!selected ? (
-                  <p className="text-xs text-muted">{COPY.pickCarFirst}</p>
-                ) : null}
-              </div>
+              ) : null}
+              {!selected ? (
+                <p className="px-1 text-xs text-muted">{COPY.pickCarFirst}</p>
+              ) : null}
             </div>
           ) : null}
 
@@ -751,16 +744,17 @@ export function ResultView({
                   </tbody>
                 </table>
                 <div className="space-y-1 border-t border-graphite-line px-3 py-2 text-xs text-muted">
-                  <p>{COPY.spanNote}</p>
-                  {/* Without this, a city figure above the brochure number
-                      reads as inflation rather than as the reason an electric
-                      car suits town driving. */}
-                  <p>{COPY.cityRangeHint}</p>
-                  <p>{COPY.peakHint}</p>
-                  <p>{COPY.chargeWindow}</p>
-                  {resolved.outdoorC < 10 ? (
-                    <p>{COPY.precondAssumed}</p>
-                  ) : null}
+                  {/* Folded away rather than deleted. Every one of these
+                      sentences names an uncertainty the result depends on, so
+                      dropping them would quietly turn spans into promises. Open
+                      they were a wall of small print under the numbers. */}
+                  <Disclosure summary={COPY.methodSummary} panelClassName="space-y-1 pt-2">
+                    <p>{COPY.spanNote}</p>
+                    <p>{COPY.cityRangeHint}</p>
+                    <p>{COPY.peakHint}</p>
+                    <p>{COPY.chargeWindow}</p>
+                    {resolved.outdoorC < 10 ? <p>{COPY.precondAssumed}</p> : null}
+                  </Disclosure>
                 </div>
               </div>
 

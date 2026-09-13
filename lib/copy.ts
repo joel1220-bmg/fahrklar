@@ -110,6 +110,13 @@ export const COPY = {
   pickCarFirst:
     "Gezeigt wird die Route des ersten Autos. Tippen Sie ein anderes an, um dessen Fahrt zu sehen.",
   qSpeed: "Welches Tempo auf der Autobahn?",
+  /*
+   * The one piece of advice this screen can honestly give. Faster is not
+   * simply slower overall: past about 130 the extra consumption forces more
+   * stops, and the stops cost more time than the speed saved.
+   */
+  qSpeedHint:
+    "Am günstigsten fahren die meisten Autos zwischen 110 und 130 km/h. Deutlich schneller heißt bei den meisten so viel Mehrverbrauch, dass Sie öfter nachladen müssen und unterm Strich später ankommen.",
   qStart: "Wie voll ist das Auto am Start?",
   qStartHint: "Voll ist der übliche Start. Mit weniger Ladung kommt der erste Stopp früher.",
   tableWhen: "Gilt für diesen Monat und diesen Start, nicht für jedes Wetter.",
@@ -220,6 +227,13 @@ export const COPY = {
    * with a higher peak. The reader compares by whatever number is put in front
    * of them, so the number in front of them is now the time.
    */
+  /*
+   * Added 13.09.2026. Four paragraphs of small print sat open under the
+   * comparison table and read as a wall. They are not droppable - each one
+   * names an uncertainty the product is built on - so they moved behind one
+   * line instead. The claim stays, the noise goes.
+   */
+  methodSummary: "Wie wir rechnen",
   charge1080Label: "Laden von 10 auf 80 Prozent",
   peakLabel: "Spitzenleistung",
   peakHint:

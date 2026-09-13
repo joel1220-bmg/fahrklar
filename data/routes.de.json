@@ -6,9 +6,9 @@
     {
       "id": "spineDe",
       "name": "Nord-Süd-Korridor",
-      "km": 1000,
+      "km": 970,
       "mostlyAutobahn": true,
-      "notes": "Skizzen-Korridor fuer die Karte, keine benannte Strecke und kein Navi. Flensburg bis Kufstein, grob entlang A7 und A8. Die Kilometer sind so gewaehlt, dass der Korridor im selben Verhaeltnis steht wie die Strecke Hamburg-Muenchen: deren Skizzenlinie ist laenger als ihre 790 Strassen-Kilometer, weil sie ueber Bremen und Siegen maeandert, und derselbe Massstab ergibt hier rund 1000 km. Nicht gemessen, vor Go-Live gegen einen Routenplaner pruefen.",
+      "notes": "Skizzen-Korridor fuer die Karte, keine benannte Strecke und kein Navi. Flensburg bis Rosenheim, grob entlang A7 und A8, durchgehend auf deutschem Gebiet. Die Kilometer stehen im selben Massstab wie die Strecke Hamburg-Muenchen, deren Skizzenlinie laenger ist als ihre 790 Strassen-Kilometer, weil sie ueber Bremen und Siegen maeandert. Nicht gemessen, vor Go-Live gegen einen Routenplaner pruefen.",
       "polyline": [
         [
           54.78,
@@ -57,10 +57,6 @@
         [
           47.86,
           12.12
-        ],
-        [
-          47.58,
-          12.17
         ]
       ]
     },

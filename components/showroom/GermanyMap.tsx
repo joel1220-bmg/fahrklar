@@ -25,12 +25,22 @@ function project(lat: number, lng: number): [number, number] {
   return [x, y];
 }
 
-/** Simplified Germany outline (coarse). */
-const OUTLINE: [number, number][] = [
-  [54.9, 8.6], [54.5, 9.5], [54.4, 10.2], [54.1, 10.9], [54.3, 12.1],
+/**
+ * Simplified Germany outline (coarse).
+ *
+ * Exported so a test can check that every drawn route actually lies inside the
+ * country: the corridor's northern anchor once sat above this line, and the
+ * route visibly started outside the border.
+ */
+export const OUTLINE: [number, number][] = [
+  // The Flensburg corner. Without it the line cuts straight from Sylt to Kiel
+  // and the whole Schleswig peninsula falls outside the drawn country.
+  [54.9, 8.6], [54.87, 9.45], [54.5, 9.5], [54.4, 10.2], [54.1, 10.9], [54.3, 12.1],
   [54.1, 13.8], [53.5, 14.3], [53.0, 14.2], [52.5, 14.5], [51.9, 14.7],
-  [51.1, 15.0], [50.3, 12.2], [49.5, 12.6], [48.7, 13.8], [47.5, 13.0],
-  [47.4, 10.2], [47.6, 7.6], [48.9, 8.1], [49.5, 6.4], [50.3, 6.2],
+  [51.1, 15.0], [50.3, 12.2], [49.5, 12.6], [48.7, 13.8], [47.7, 12.9],
+  // The Alpine border, which used to be one straight cut at 47.45 and so
+  // swallowed a strip of Austria, Kufstein included.
+  [47.62, 12.2], [47.6, 11.3], [47.4, 10.2], [47.6, 7.6], [48.9, 8.1], [49.5, 6.4], [50.3, 6.2],
   [51.0, 6.0], [51.8, 6.1], [53.0, 7.0], [53.7, 7.2], [54.9, 8.6],
 ];
 
@@ -103,7 +113,7 @@ export function GermanyMap({ polyline, routeKm, rangeMid, stops }: Props) {
     <figure className="rounded-2xl border border-line bg-surface p-3">
       <svg
         viewBox={`0 0 ${W} ${H}`}
-        className="mx-auto h-auto w-full max-w-xs"
+        className="mx-auto h-auto w-full max-w-[15rem]"
         role="img"
         aria-label={`Strecke ${routeKm} km`}
       >

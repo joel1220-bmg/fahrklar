@@ -374,12 +374,13 @@ export function ResultView({
           </div>
         ) : null}
 
-          {/* Sliders and route side by side: every one of these knobs changes
-              what the map shows, so watching it move is the whole point. They
-              stack on a narrow screen, where beside each other would mean
-              neither is readable. */}
-          <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
-          <div className="space-y-4 rounded-2xl border border-graphite-line bg-graphite-card p-4">
+          {/* The knobs are a toolbar, the map and the table are the two things
+              they change. Reading it that way lets all three share one screen:
+              a flat strip of controls on top, the two outputs side by side
+              underneath. The earlier arrangement stacked map under sliders in
+              one column, which made that column 485px tall on its own and
+              pushed the comparison off the fold. */}
+          <div className="space-y-3 rounded-2xl border border-graphite-line bg-graphite-card p-3.5">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <h3 className="serif text-xl text-paper">{COPY.autobahnTitle}</h3>
@@ -400,6 +401,7 @@ export function ResultView({
             </div>
 
             {/* km slider is the opt-in; other knobs stay closed until tripKm is set */}
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <label className="block text-sm">
               <span className="text-muted">
                 {COPY.qTrip} ·{" "}
@@ -425,6 +427,10 @@ export function ResultView({
             </label>
 
             {tripActive ? (
+              /* Month, speed and state of charge side by side. Stacked they
+                 pushed the comparison table off the fold, and the point of
+                 putting the map here was that a reader can watch these three
+                 change it without scrolling. */
               <>
               <label className="block text-sm">
                 <span className="text-muted">
@@ -494,10 +500,13 @@ export function ResultView({
               </label>
               </>
             ) : null}
+            </div>
           </div>
 
-          {tripActive && detail ? (
-            <div className="space-y-3">
+          {tripActive ? (
+          <div className="grid items-start gap-5 lg:grid-cols-[16rem_minmax(0,1fr)]">
+          {detail ? (
+            <div className="space-y-2">
               {/* One route can only be drawn for one car. With nothing chosen
                   the first of the list stands in, named clearly, so the map is
                   never an empty box waiting for a click. */}
@@ -507,18 +516,24 @@ export function ResultView({
                 rangeMid={detail.trip.rangeMid}
                 stops={detail.trip.stops}
               />
-              <div className="space-y-2 rounded-2xl border border-graphite-line bg-graphite-card p-4">
+              <div className="space-y-1.5 rounded-2xl border border-graphite-line bg-graphite-card px-3 py-2.5">
                 <p className="text-xs uppercase tracking-[0.14em] text-gold">
                   {formatCarName(detail.car)} · Strecke {detail.trip.tripKm} km
                 </p>
                 {detail.trip.stops.length > 0 ? (
-                  <ul className="space-y-1 text-sm text-muted">
+                  /* One running line, not a list: at eight stops the list alone
+                     was taller than the map and pushed the comparison table off
+                     the screen, and the whole reason the map sits here is that
+                     all three can be seen at once. */
+                  <p className="text-sm text-muted">
+                    Halt nach{" "}
                     {detail.trip.stops.map((s, i) => (
-                      <li key={i}>
-                        nach {s.afterKm} km · ca. {s.minutes} Min
-                      </li>
+                      <span key={i} className="whitespace-nowrap">
+                        {i > 0 ? ", " : ""}
+                        {s.afterKm} km ({s.minutes} Min)
+                      </span>
                     ))}
-                  </ul>
+                  </p>
                 ) : (
                   <p className="text-sm text-muted">
                     Ohne Ladehalt auf dieser Strecke (mit Puffer).
@@ -530,13 +545,11 @@ export function ResultView({
               </div>
             </div>
           ) : null}
-          </div>
 
-          {tripActive ? (
-            <div className="space-y-6">
+          <div className="space-y-3">
               {/* Comparison table — all visible cars, sorted by stops then time */}
               <div className="overflow-x-auto rounded-2xl border border-graphite-line bg-graphite-card">
-                <h3 className="serif border-b border-graphite-line px-3 py-3 text-xl text-paper">
+                <h3 className="serif border-b border-graphite-line px-3 py-2.5 text-lg text-paper">
                   {COPY.compareTitle}
                 </h3>
                 <table className="w-full min-w-[28rem] border-collapse text-sm">
@@ -694,7 +707,8 @@ export function ResultView({
                 </div>
               </div>
 
-            </div>
+          </div>
+          </div>
           ) : null}
       </section>
 

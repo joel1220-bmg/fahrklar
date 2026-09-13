@@ -4,6 +4,67 @@
   "confidence": "seed - Streckenlängen plausibel, Polylinien nicht gegen eine echte Navigationsroute geprüft.",
   "routes": [
     {
+      "id": "spineDe",
+      "name": "Nord-Süd-Korridor",
+      "km": 1000,
+      "mostlyAutobahn": true,
+      "notes": "Skizzen-Korridor fuer die Karte, keine benannte Strecke und kein Navi. Flensburg bis Kufstein, grob entlang A7 und A8. Die Kilometer sind so gewaehlt, dass der Korridor im selben Verhaeltnis steht wie die Strecke Hamburg-Muenchen: deren Skizzenlinie ist laenger als ihre 790 Strassen-Kilometer, weil sie ueber Bremen und Siegen maeandert, und derselbe Massstab ergibt hier rund 1000 km. Nicht gemessen, vor Go-Live gegen einen Routenplaner pruefen.",
+      "polyline": [
+        [
+          54.78,
+          9.43
+        ],
+        [
+          54.07,
+          9.98
+        ],
+        [
+          53.55,
+          9.99
+        ],
+        [
+          53.08,
+          8.8
+        ],
+        [
+          52.38,
+          9.74
+        ],
+        [
+          51.32,
+          9.5
+        ],
+        [
+          50.78,
+          8.24
+        ],
+        [
+          50.11,
+          8.68
+        ],
+        [
+          49.45,
+          11.08
+        ],
+        [
+          48.77,
+          11.43
+        ],
+        [
+          48.14,
+          11.58
+        ],
+        [
+          47.86,
+          12.12
+        ],
+        [
+          47.58,
+          12.17
+        ]
+      ]
+    },
+    {
       "id": "hamMuc",
       "name": "Hamburg – München",
       "km": 790,

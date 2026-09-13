@@ -29,7 +29,20 @@ const cars = ((carsJson as { cars?: Car[] }).cars ??
 const climate = climateJson as { months: Record<string, number> };
 const routes = (routesJson as unknown as { routes: RouteDef[] }).routes;
 
-const SPINE = routes.find((r) => r.id === "hamMuc")!;
+/*
+ * The sketch corridor the map draws on. Deliberately not one of the named
+ * routes: Hamburg-Muenchen is 790 km, the trip slider offered 900, and
+ * tripPolyline clamps to the corridor - so every trip past 790 km drew the
+ * identical line and the route stopped growing. The corridor now runs the
+ * length of the country, and tripMaxKm() below keeps the slider from ever
+ * again promising a distance the map cannot draw.
+ */
+const SPINE = routes.find((r) => r.id === "spineDe")!;
+
+/** Longest trip the sketch corridor can actually show, in whole tens of km. */
+export function tripMaxKm(): number {
+  return Math.floor(SPINE.km / 10) * 10;
+}
 
 /**
  * Slider stops for any budget control, derived from the catalogue rather than

@@ -44,7 +44,7 @@ export interface CatalogMeta {
 }
 
 export interface RouteDef {
-  id: "hamMuc" | "berCgn" | "strBer";
+  id: "spineDe" | "hamMuc" | "berCgn" | "strBer";
   name: string;
   km: number;
   mostlyAutobahn: boolean;

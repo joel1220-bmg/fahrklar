@@ -15,6 +15,7 @@ import type {
 import { sortForCompare, tripTotalMid } from "@/lib/advisor/compare";
 import { BodyIcon } from "@/components/showroom/BodyIcon";
 import { GermanyMap } from "@/components/showroom/GermanyMap";
+import { tripMaxKm } from "@/lib/engine/evaluate";
 import { ControlBar } from "./ControlBar";
 
 type Props = {
@@ -407,7 +408,10 @@ export function ResultView({
               <input
                 type="range"
                 min={80}
-                max={900}
+                /* Never offer a distance the sketch corridor cannot draw:
+                   the slider used to end at 900 while the corridor stopped at
+                   790, so the line simply stopped growing past that. */
+                max={tripMaxKm()}
                 step={10}
                 className="mt-2 w-full"
                 value={tripKmVal}

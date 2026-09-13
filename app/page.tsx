@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CarCanvas } from "@/components/showroom/CarCanvas";
+import { ChargingScene } from "@/components/showroom/ChargingScene";
 import { COPY, LANDING_TILES } from "@/lib/copy";
 
 function CtaBlock({ className = "" }: { className?: string }) {
@@ -39,11 +39,12 @@ export default function HomePage() {
           <CtaBlock className="mt-9 hidden lg:flex" />
         </div>
 
-        <CarCanvas
-          body="crossover"
-          color="#4A6FA5"
-          className="min-h-[280px] h-[44vh] w-full sm:h-[48vh] lg:h-[min(52vh,520px)]"
-        />
+        {/* Was a three.js canvas. It took fifteen to twenty seconds to appear
+            and arrived as a faceted extruded body; a flat drawing says the same
+            thing instantly and does not pretend to be a photograph. */}
+        <div className="rounded-2xl bg-sunken p-5 sm:p-7">
+          <ChargingScene className="h-auto w-full" />
+        </div>
 
         <CtaBlock className="lg:hidden" />
       </section>

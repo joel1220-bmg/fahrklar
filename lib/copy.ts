@@ -28,7 +28,7 @@ export const COPY = {
   // is outside this file's ownership, so left for whoever owns it to rewire.
   eyebrow: "Fahrklar",
   landingLead:
-    "Ein neues E-Auto, das zu Ihrem Alltag passt — mit ehrlicher Reichweite, nicht mit Prüfstandszahlen.",
+    "Ein neues E-Auto, das zu Ihrem Alltag passt. Mit ehrlicher Reichweite, nicht mit Prüfstandszahlen.",
   /**
    * Added 13.09.2026 (copy-guard audit). Every string on the landing page and
    * in the intake was checked against "does this name the reader's actual
@@ -42,26 +42,26 @@ export const COPY = {
    * directly under landingLead, before the CTA.
    */
   longDistancePromise:
-    "Die größte Sorge beim Umstieg ist meist die lange Fahrt. Deshalb beantworten wir genau das zuerst: wie weit Sie wirklich kommen und wo Sie unterwegs anhalten müssten — ehrlich, mit Spanne statt Zusage.",
+    "Die größte Sorge beim Umstieg ist meist die Langstrecke. Daher beantworten wir genau das für Ihre Auswahl an Autos: wie weit Sie je nach Jahreszeit wirklich kommen und wie viel Zeit Sie unterwegs mehr einplanen müssen.",
 
   privacy: "Ihre Angaben bleiben in diesem Browser.",
   cta: "Passende Autos ansehen",
   underCta:
-    "Kein Verkauf, kein Leasing-Vergleich. Orientierung zum Kauf eines Neuwagens — Spannen, keine Zusage.",
+    "Kein Verkauf, kein Leasing-Vergleich. Orientierung zum Kauf eines Neuwagens: Spannen, keine Zusage.",
   unknownHelp:
-    "Kein Problem — wir rechnen mit einer vorsichtigen Annahme und markieren sie.",
-  remember: "Angaben merken — nur in diesem Browser, kein Konto.",
+    "Kein Problem. Wir rechnen mit einer vorsichtigen Annahme und markieren sie.",
+  remember: "Angaben merken. Nur in diesem Browser, kein Konto.",
   rememberOff: "Ohne Haken bleibt nichts gespeichert.",
   notCertified: "Keine zertifizierte Beratung. Kein Angebot.",
   assumedBanner: "Grau markiert = von uns angenommen, nicht von Ihnen eingegeben.",
 
   wltpAlways:
-    "Prüfstand (WLTP) ist ein Laborwert — nicht Ihre Autobahn- oder Alltagsreichweite.",
+    "Prüfstand (WLTP) ist ein Laborwert, nicht Ihre Autobahn- oder Alltagsreichweite.",
 
   qUse: "Wofür brauchen Sie das Auto vor allem?",
   qUseEmpty: "Ohne Angabe rechnen wir mit Alltag und markieren das.",
 
-  qDay: "Wie weit fahren Sie an einem normalen Tag — hin und zurück?",
+  qDay: "Wie weit fahren Sie an einem normalen Tag, hin und zurück?",
   qDayHint: "Kilometer, grob reicht. „Weiß ich nicht“ ist erlaubt.",
   qDayEmpty: "Ohne Angabe nehmen wir 50 km an und markieren das.",
   qDayPlaceholder: "z. B. 50",
@@ -82,7 +82,7 @@ export const COPY = {
   /** @deprecated Langstrecke is not an intake question (`intake-lock.md`). */
   qLong: "Welche Langstrecke sollen wir grob durchspielen?",
   qLongHint:
-    "Größtenteils Autobahn. Ein Ladehalt nur, wenn er nötig wäre — keine Zusage.",
+    "Größtenteils Autobahn. Ein Ladehalt nur, wenn er nötig wäre. Keine Zusage.",
   qLongEmpty: "Ohne Angabe spielen wir keine Langstrecke durch.",
 
   qTrip: "Wie weit soll die Autobahnfahrt ungefähr sein?",
@@ -101,12 +101,12 @@ export const COPY = {
   compareTotal: "Gesamt",
   spanNote: "Spanne darunter: von vorsichtig gerechnet bis zu guten Bedingungen.",
   pickCarFirst:
-    "Wählen Sie ein Auto — dann erscheint der Autobahn-Check daneben.",
+    "Wählen Sie ein Auto, dann erscheint der Autobahn-Check daneben.",
   qSpeed: "Welches Tempo auf der Autobahn?",
   qStart: "Wie voll ist das Auto am Start?",
   qStartHint: "Voll ist der übliche Start. Weniger voll heißt oft ein früherer erster Stopp.",
-  tableWhen: "Gilt für diesen Monat und diesen Start — nicht für jedes Wetter.",
-  chargeWindow: "Unterwegs von etwa 10 auf 80 Prozent — nicht die Werbe-Ladegeschwindigkeit.",
+  tableWhen: "Gilt für diesen Monat und diesen Start, nicht für jedes Wetter.",
+  chargeWindow: "Unterwegs von etwa 10 auf 80 Prozent, nicht die Werbe-Ladegeschwindigkeit.",
   precondAssumed: "Wir rechnen damit, dass das Auto an der Säule schon warm ist. Sonst dauert der Stopp im Winter oft länger.",
 
   qMonth: "Für welchen Monat rechnen wir Reichweite und Ladestopps?",
@@ -119,9 +119,9 @@ export const COPY = {
   qChargeHomeHint:
     "Zu Hause laden macht den Alltag ruhiger. Fehlt das, rechnen wir grob mit öffentlichen Säulen.",
 
-  qPrice: "Was darf der Neuwagen ungefähr kosten — Kaufpreis, nicht Leasingrate?",
+  qPrice: "Was darf der Neuwagen ungefähr kosten? Kaufpreis, nicht Leasingrate.",
   qPriceHint:
-    "Listenpreis grob. Leasingraten blenden wir absichtlich aus — die verstecken oft den Preis.",
+    "Listenpreis grob. Leasingraten blenden wir absichtlich aus, die verstecken oft den Preis.",
   qPriceEmpty: "Ohne Angabe zeigen wir eine grobe Preisspanne und markieren teure Ausreißer.",
   /**
    * Added 13.09.2026 (copy-guard audit). `components/advisor/QuestionForm.tsx`
@@ -149,7 +149,7 @@ export const COPY = {
   priceToLabel: "Bis",
 
   morningStep:
-    "Morgen: auf Ihrem üblichen Weg notieren, wo Sie laden könnten — Steckdose oder Wallbox zu Hause, sonst eine Säule. Das bleibt bei Ihnen, kein Upload.",
+    "Morgen: auf Ihrem üblichen Weg notieren, wo Sie laden könnten. Steckdose oder Wallbox zu Hause, sonst eine Säule. Das bleibt bei Ihnen, kein Upload.",
 
   skipCheck: "Sie dürfen das auch weglassen.",
   skipTrip: "Autobahnfahrt weglassen",
@@ -182,7 +182,7 @@ export const COPY = {
   // Not wired: ResultView.tsx:163 hardcodes "Teurer Ausreißer (Budget offen)"
   // on the car card instead of reading this. Same claim, different wording —
   // pick one and reference it (copy-guard audit, 12.09.2026).
-  priceOutlier: "Teurer Ausreißer — Sie haben kein Budget gesetzt.",
+  priceOutlier: "Teurer Ausreißer. Sie haben kein Budget gesetzt.",
   /**
    * Added 13.09.2026 (copy-guard audit). Result cards now show
    * `{kWh-Zahl} Batterie` (ResultView.tsx, landed this morning, un-reviewed)
@@ -193,14 +193,14 @@ export const COPY = {
    * them, and proximity alone was never going to do the explaining anyway:
    * nothing in words ties battery size to what it buys. This string is
    * meant to be appended after the figure, turning "48,0 kWh Batterie" into
-   * "48,0 kWh Batterie — daraus ergibt sich die Reichweite oben.", naming the
+   * "48,0 kWh Batterie. Daraus ergibt sich die Reichweite oben.", naming the
    * relationship instead of relying on layout to imply it. Not wired in;
    * ResultView.tsx is outside this file's ownership. Independently, moving
    * the battery line to sit directly after the range (before "Sitze") would
    * make "oben" literally true rather than approximately true — flagged to
    * whoever owns that component.
    */
-  batteryHint: "Batterie — daraus ergibt sich die Reichweite oben.",
+  batteryHint: "Batterie. Daraus ergibt sich die Reichweite oben.",
 
   // --- Leerzustände -------------------------------------------------------
   // Simplified 13.09.2026 (copy-guard audit): "in der engeren Auswahl" is
@@ -219,7 +219,7 @@ export const COPY = {
   // not promise a "Weiß ich nicht" that a reader loosening the price won't
   // find. Reworded 12.09.2026 (copy-guard audit) to cover both truthfully.
   emptyCatalogHelp:
-    "Lockern Sie Kaufpreis oder Form — oder lassen Sie eine Antwort offen. Dann zeigen wir eine vorsichtige, weitere Auswahl und markieren sie.",
+    "Lockern Sie Kaufpreis oder Form, oder lassen Sie eine Antwort offen. Dann zeigen wir eine vorsichtige, weitere Auswahl und markieren sie.",
   /**
    * Added 13.09.2026 (copy-guard audit), replacing a hardcoded string found
    * in ResultView.tsx (landed this morning, un-reviewed):
@@ -238,7 +238,7 @@ export const COPY = {
    * ResultView.tsx is outside this file's ownership.
    */
   budgetEmptyNotice:
-    "In Ihrem Budget finden wir gerade kein Auto. Die folgenden liegen preislich am nächsten — aber außerhalb Ihres Budgets.",
+    "In Ihrem Budget finden wir gerade kein Auto. Die folgenden liegen preislich am nächsten, aber außerhalb Ihres Budgets.",
 } as const;
 
 /** Landing tiles. Title and body, in the order they stand on the page. */
@@ -249,7 +249,7 @@ export const LANDING_TILES = [
   },
   {
     title: "Reichweite als Spanne.",
-    body: "Wir rechnen mit Autobahn, Tempo und Kälte — nicht mit dem Prüfstand. Deshalb eine Spanne, kein Punktwert.",
+    body: "Wir rechnen mit Autobahn, Tempo und Kälte, nicht mit dem Prüfstand. Deshalb eine Spanne, kein Punktwert.",
   },
   {
     title: "Kaufpreis grob.",

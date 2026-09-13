@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { BODY_CHIP, CHARGE_CHIP, COPY, USE_CHIP } from "@/lib/copy";
+import { RangeSlider } from "@/components/ui/RangeSlider";
 import { priceWindowLabel } from "@/lib/engine/evaluate";
 import type { BodyStyle, ChargeOption, Draft, UseCase } from "@/lib/engine/types";
 
@@ -267,41 +268,27 @@ export function ControlBar({ draft, onChange, assumedBy, resolvedDayKm }: Props)
         <Control label="Kaufpreis" value={priceValue} assumed={!!assumedBy.price}>
           {() => (
             <div>
-              {/* Two separate sliders rather than one two-handle control: a
-                  range input with two thumbs has no native equivalent, and
-                  every hand-rolled version loses keyboard and screen-reader
-                  behaviour that these two get for free. The engine sorts a
-                  window entered back to front, so crossing them is harmless. */}
-              <label className="block text-sm text-ink">
-                {COPY.priceFromLabel}
-                <input
-                  type="range"
-                  min={PRICE_FLOOR}
-                  max={PRICE_CEIL}
-                  step={1000}
-                  value={draft.priceMin && draft.priceMin > 0 ? draft.priceMin : PRICE_FLOOR}
-                  onChange={(e) => {
-                    const v = Number(e.target.value);
-                    set({ priceMin: v <= PRICE_FLOOR ? null : v });
-                  }}
-                  className="mt-2 w-full"
-                />
-              </label>
-              <label className="mt-3 block text-sm text-ink">
-                {COPY.priceToLabel}
-                <input
-                  type="range"
-                  min={PRICE_FLOOR}
-                  max={PRICE_CEIL}
-                  step={1000}
-                  value={draft.priceMax && draft.priceMax > 0 ? draft.priceMax : PRICE_CEIL}
-                  onChange={(e) => {
-                    const v = Number(e.target.value);
-                    set({ priceMax: v >= PRICE_CEIL ? null : v });
-                  }}
-                  className="mt-2 w-full"
-                />
-              </label>
+              {/* One range with two handles. Both ends may be left open: a
+                  handle parked on its stop means "no limit on this side", so a
+                  reader who once set a ceiling can always take it off again. */}
+              <RangeSlider
+                min={PRICE_FLOOR}
+                max={PRICE_CEIL}
+                step={1000}
+                valueMin={draft.priceMin}
+                valueMax={draft.priceMax}
+                onChange={(next) => set({ priceMin: next.min, priceMax: next.max })}
+                label="Kaufpreis"
+                format={(n) => `${Math.round(n).toLocaleString("de-DE")} €`}
+              />
+              <div className="flex justify-between text-xs text-muted">
+                <span className="tnum">
+                  {PRICE_FLOOR.toLocaleString("de-DE")} €
+                </span>
+                <span className="tnum">
+                  ab {PRICE_CEIL.toLocaleString("de-DE")} €
+                </span>
+              </div>
               <div className="mt-3 flex items-center justify-between gap-3 text-sm">
                 <span className="tnum text-ink">{priceValue}</span>
                 <button

@@ -8,10 +8,10 @@ export default function DatenschutzPage() {
     <article className="mx-auto max-w-2xl px-4 py-12 leading-relaxed">
       <h1 className="serif text-3xl text-paper">Datenschutz</h1>
       <p className="mt-4 text-muted">
-        Platzhalter — vor Veröffentlichung durch eine Rechtsberatung ersetzen.
+        Platzhalter. Vor Veröffentlichung durch eine Rechtsberatung ersetzen.
       </p>
       <h2 className="serif mt-8 text-xl text-gold">Verantwortliche Stelle</h2>
-      <p className="mt-2 text-paper">[Name, Anschrift, Kontakt — Platzhalter]</p>
+      <p className="mt-2 text-paper">[Name, Anschrift, Kontakt: Platzhalter]</p>
       <h2 className="serif mt-8 text-xl text-gold">Verarbeitung</h2>
       <p className="mt-2 text-paper">
         Fahrklar rechnet ausschließlich in Ihrem Browser. Nur wenn Sie „Angaben merken“ ankreuzen,

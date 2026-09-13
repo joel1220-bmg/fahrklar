@@ -57,7 +57,7 @@ export function QuestionForm({ draft, onChange, remember, onRemember, onSubmit }
         <div className="mt-3 space-y-3">
           <label className="block text-sm">
             <span className="text-muted">
-              {draft.dayUnknown ? "—" : `${dayNum} km`}
+              {draft.dayUnknown ? "noch offen" : `${dayNum} km`}
             </span>
             <input
               type="range"

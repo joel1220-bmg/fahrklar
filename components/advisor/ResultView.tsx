@@ -228,7 +228,7 @@ export function ResultView({
           >
             <table className="w-full min-w-[32rem] border-collapse text-sm">
               <caption className="border-b border-graphite-line px-3 py-3 text-left text-sm text-paper">
-                Die Zahlen hinter den Karten oben — je eine Spalte pro Auto.
+                Die Zahlen hinter den Karten oben, je eine Spalte pro Auto.
                 {tripActive ? (
                   <span className="mt-1 block text-xs font-normal text-muted">
                     Ladestopps und Gesamtzeit gelten für {draft.tripKm} km bei{" "}
@@ -242,7 +242,7 @@ export function ResultView({
                     scope="col"
                     className="px-3 py-3 text-xs uppercase tracking-wide text-muted"
                   >
-                    —
+                    <span className="sr-only">Merkmal</span>
                   </th>
                   {results.map((r) => (
                     <th key={r.car.id} scope="col" className="px-3 py-3 align-bottom">
@@ -387,7 +387,7 @@ export function ResultView({
             <label className="block text-sm">
               <span className="text-muted">
                 {COPY.qTrip} ·{" "}
-                {draft.tripKm !== null ? `${draft.tripKm} km` : "—"}
+                {draft.tripKm !== null ? `${draft.tripKm} km` : "noch offen"}
               </span>
               <input
                 type="range"
@@ -502,7 +502,7 @@ export function ResultView({
                   <thead>
                     <tr className="border-b border-graphite-line text-left">
                       <th scope="col" className="px-3 py-3 text-xs uppercase tracking-wide text-muted">
-                        —
+                        <span className="sr-only">Merkmal</span>
                       </th>
                       {compareCols.map((r) => {
                         const isSel = r.car.id === selected.car.id;

@@ -176,3 +176,99 @@ h3,
 input[type="range"] {
   accent-color: var(--color-accent);
 }
+
+/*
+ * Two-handle range control.
+ *
+ * Two real <input type="range"> elements stacked on one track, not a hand-built
+ * widget: each handle keeps native keyboard stepping, focus and screen-reader
+ * behaviour, which no div-and-mousemove version gets back. The inputs
+ * themselves are transparent and click-through; only their thumbs take the
+ * pointer, so whichever handle you aim at is the one you grab.
+ */
+.rangepair {
+  position: relative;
+  height: 2.75rem;
+}
+
+.rangepair-track,
+.rangepair-fill {
+  position: absolute;
+  top: 50%;
+  height: 0.3rem;
+  border-radius: 999px;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.rangepair-track {
+  left: 0;
+  right: 0;
+  background: var(--color-data-track);
+}
+
+.rangepair-fill {
+  background: var(--color-accent);
+}
+
+.rangepair input[type="range"] {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  width: 100%;
+  margin: 0;
+  transform: translateY(-50%);
+  background: transparent;
+  pointer-events: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.rangepair input[type="range"]::-webkit-slider-runnable-track {
+  background: transparent;
+  height: 2.75rem;
+}
+
+.rangepair input[type="range"]::-moz-range-track {
+  background: transparent;
+  height: 2.75rem;
+}
+
+.rangepair input[type="range"]::-webkit-slider-thumb {
+  pointer-events: auto;
+  -webkit-appearance: none;
+  height: 1.4rem;
+  width: 1.4rem;
+  border-radius: 999px;
+  background: var(--color-accent);
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 1px var(--color-accent);
+  cursor: grab;
+}
+
+.rangepair input[type="range"]::-moz-range-thumb {
+  pointer-events: auto;
+  height: 1.4rem;
+  width: 1.4rem;
+  border-radius: 999px;
+  background: var(--color-accent);
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 1px var(--color-accent);
+  cursor: grab;
+}
+
+/* The whole input is invisible, so the ring has to sit on the thumb. */
+.rangepair input[type="range"]:focus-visible {
+  outline: none;
+}
+
+.rangepair input[type="range"]:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.rangepair input[type="range"]:focus-visible::-moz-range-thumb {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}

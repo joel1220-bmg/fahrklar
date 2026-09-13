@@ -1,6 +1,6 @@
 /** Fahrklar domain types — Neuwagen-Berater. Chip IDs match lib/copy.ts. */
 
-export type BodyStyle = "hatch" | "compact" | "sedan" | "crossover";
+export type BodyStyle = "hatch" | "compact" | "kombi" | "sedan" | "crossover";
 
 /**
  * How much long distance the car has to do. One axis, deliberately: the old

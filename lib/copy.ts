@@ -275,6 +275,7 @@ export const USE_CHIP = {
 export const BODY_CHIP = {
   hatch: "Kleinwagen",
   compact: "Kompakt",
+  kombi: "Kombi",
   sedan: "Limousine",
   crossover: "SUV",
 } as const;

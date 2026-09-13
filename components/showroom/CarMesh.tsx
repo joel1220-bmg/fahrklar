@@ -30,6 +30,7 @@ export const CAR_DIMS: Record<BodyStyle, Dim> = dimsJson;
 const MODEL_URL: Record<BodyStyle, string> = {
   hatch: "/models/hatch.glb",
   compact: "/models/compact.glb",
+  kombi: "/models/kombi.glb",
   sedan: "/models/sedan.glb",
   crossover: "/models/crossover.glb",
 };

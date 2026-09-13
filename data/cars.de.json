@@ -366,7 +366,7 @@
       "id": "bmw-i5-touring",
       "brand": "BMW",
       "model": "i5 Touring eDrive40",
-      "body": "sedan",
+      "body": "kombi",
       "seats": 5,
       "listEur": 76400,
       "usableKwh": 81.2,
@@ -376,7 +376,7 @@
       "heatPump": true,
       "colorHex": "#0653A3",
       "asOf": "2026-09-13",
-      "notes": "UNVERIFIED (13.09.2026): all figures from memory. BodyStyle has no estate/wagon variant, so this Touring (estate) is filed as 'sedan' — the closest existing shape bucket, not a claim it is a saloon; flag to design-system/showroom if the showroom silhouette matters here. wltpKm 577 is a midpoint guess between the range BMW publishes for different wheel sizes on this trim. Check every field against BMW's configurator before go-live."
+      "notes": "UNVERIFIED (13.09.2026): alle Angaben aus dem Gedaechtnis, vor Go-Live gegen eine Primaerquelle pruefen. Am 13.09.2026 von 'sedan' auf 'kombi' umgestellt, nachdem BodyStyle die Kombi-Variante bekam. Die alte Einordnung war ein Notbehelf, kein Klassifikationsfehler."
     },
     {
       "id": "mg4",
@@ -473,6 +473,54 @@
       "colorHex": "#0F0F0F",
       "asOf": "2026-09-13",
       "notes": "UNVERIFIED (13.09.2026): all figures from memory. Mercedes' own marketing headline for this trim is 'up to 822 km' WLTP with the smallest wheels/aero package; wltpKm 700 here is a deliberately more conservative combined-range guess for a more typically-specced car, not the marketing maximum. Added at the top of the price range and as a strong long-distance counterpart to mercedes-g580 in the same brand. Check usableKwh, wltpKm and dcPeakKw against Mercedes' configurator before go-live."
+    },
+    {
+      "id": "vw-id7-tourer",
+      "brand": "Volkswagen",
+      "model": "ID.7 Tourer Pro",
+      "body": "kombi",
+      "seats": 5,
+      "listEur": 49500,
+      "usableKwh": 77,
+      "wltpKm": 605,
+      "highwayKwhPer100": 19.4,
+      "dcPeakKw": 175,
+      "heatPump": true,
+      "colorHex": "#3B4A5A",
+      "asOf": "2026-09-13",
+      "notes": "UNVERIFIED (13.09.2026): alle Angaben aus dem Gedaechtnis, hinzugefuegt, damit die neue Kombi-Auswahl nicht bei einem einzigen Auto endet. Jede Zahl vor Go-Live gegen eine Primaerquelle pruefen, besonders wltpKm und dcPeakKw."
+    },
+    {
+      "id": "peugeot-e308-sw",
+      "brand": "Peugeot",
+      "model": "E-308 SW",
+      "body": "kombi",
+      "seats": 5,
+      "listEur": 44300,
+      "usableKwh": 51,
+      "wltpKm": 410,
+      "highwayKwhPer100": 18.6,
+      "dcPeakKw": 100,
+      "heatPump": true,
+      "colorHex": "#4A5B6B",
+      "asOf": "2026-09-13",
+      "notes": "UNVERIFIED (13.09.2026): alle Angaben aus dem Gedaechtnis, hinzugefuegt, damit die neue Kombi-Auswahl nicht bei einem einzigen Auto endet. Jede Zahl vor Go-Live gegen eine Primaerquelle pruefen, besonders wltpKm und dcPeakKw."
+    },
+    {
+      "id": "opel-astra-st",
+      "brand": "Opel",
+      "model": "Astra Sports Tourer Electric",
+      "body": "kombi",
+      "seats": 5,
+      "listEur": 43600,
+      "usableKwh": 51,
+      "wltpKm": 408,
+      "highwayKwhPer100": 18.8,
+      "dcPeakKw": 100,
+      "heatPump": true,
+      "colorHex": "#5A6472",
+      "asOf": "2026-09-13",
+      "notes": "UNVERIFIED (13.09.2026): alle Angaben aus dem Gedaechtnis, hinzugefuegt, damit die neue Kombi-Auswahl nicht bei einem einzigen Auto endet. Jede Zahl vor Go-Live gegen eine Primaerquelle pruefen, besonders wltpKm und dcPeakKw."
     }
   ]
 }

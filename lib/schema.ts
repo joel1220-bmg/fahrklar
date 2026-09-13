@@ -9,7 +9,14 @@ const speedSchema = z.union([
   z.number().min(100).max(140),
 ]);
 
-const bodyStyleSchema = z.enum(["hatch", "compact", "sedan", "crossover"]);
+/*
+ * Kept in step with BodyStyle by hand: a zod enum is a list of strings, so the
+ * compiler does not check it against the union. "kombi" was added on
+ * 13.09.2026 and this line did not move with it, which no type error would ever
+ * have shown - a saved draft containing it would simply have failed to load.
+ * lib/bodystyle.test.ts now walks the whole chain instead.
+ */
+const bodyStyleSchema = z.enum(["hatch", "compact", "kombi", "sedan", "crossover"]);
 
 /** Optional fields + passthrough so old localStorage drafts still parse. */
 export const draftSchema = z

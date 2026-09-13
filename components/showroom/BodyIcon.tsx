@@ -5,7 +5,7 @@ import type { BodyStyle } from "@/lib/engine/types";
  *
  * The reader this serves has never owned an electric car and is scanning a list
  * of names that mean nothing to them yet. A shape they can recognise in a
- * glance — small / saloon / tall — does more than another line of text.
+ * glance, small or estate or tall, does more than another line of text.
  *
  * Proportions come from BODY_DIMS in scripts/generate-car-glb.py, the same
  * table the 3D models are built from, scaled into one shared viewBox. A
@@ -15,6 +15,7 @@ import type { BodyStyle } from "@/lib/engine/types";
  *   body        L     W     H      roof    deck
  *   hatch     4.26  1.81  1.56     0.66    hatch
  *   compact   4.40  1.84  1.60     0.68    hatch
+ *   kombi     4.75  1.87  1.52     0.56    hatch (flat roof to a square tail)
  *   sedan     4.78  1.85  1.44     0.42    sedan (fastback)
  *   crossover 4.55  1.92  1.68     0.70    crossover (raised)
  *
@@ -35,7 +36,7 @@ type Props = {
 };
 
 /**
- * One viewBox for all four, 120 wide by 48 high, ground line at y=42.
+ * One viewBox for all five, 120 wide by 48 high, ground line at y=42.
  * 1 metre ≈ 24 units, so the longest body (sedan, 4.78 m) fills the width and
  * the others sit shorter inside the same frame — the length difference is the
  * point, so nothing is normalised away.
@@ -65,6 +66,18 @@ const SHAPES: Record<BodyStyle, { body: string; wheels: [number, number][]; r: n
       [85, 42],
     ],
     r: 8.5,
+  },
+  // Estate: sedan length, but the roof runs flat to a square tail instead of
+  // falling away. Recognising a Kombi at icon size is that flat back half.
+  kombi: {
+    body:
+      "M6 42 L6 31 Q6 26 12 24 L30 20 Q40 12 54 12 L98 12 Q106 12 108 16 " +
+      "L112 24 Q116 26 116 31 L116 42 Z",
+    wheels: [
+      [24, 42],
+      [96, 42],
+    ],
+    r: 8,
   },
   // Long, low, fastback: long bonnet, raked screen, roof sloping into the tail.
   sedan: {

@@ -18,7 +18,7 @@ import type { BodyStyle, ChargeOption, Draft, UseCase } from "@/lib/engine/types
  */
 
 const USE_ORDER: UseCase[] = ["city", "cityTrips", "longDistance"];
-const BODY_ORDER: BodyStyle[] = ["hatch", "compact", "sedan", "crossover"];
+const BODY_ORDER: BodyStyle[] = ["hatch", "compact", "kombi", "sedan", "crossover"];
 const CHARGE_ORDER: ChargeOption[] = ["home", "work", "public", "unknown"];
 
 /* Slider stops come from the catalogue, not from a number typed here: the

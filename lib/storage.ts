@@ -20,7 +20,7 @@ function clampSpeed(n: number): SpeedKph {
 
 function normalizeBodies(raw: unknown): BodyStyle[] {
   if (!Array.isArray(raw)) return [];
-  const allowed = new Set<BodyStyle>(["hatch", "compact", "sedan", "crossover"]);
+  const allowed = new Set<BodyStyle>(["hatch", "compact", "kombi", "sedan", "crossover"]);
   return raw.filter((b): b is BodyStyle => typeof b === "string" && allowed.has(b as BodyStyle));
 }
 

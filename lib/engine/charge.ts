@@ -83,6 +83,12 @@ export type KwSpan = { low: number; mid: number; high: number };
  */
 const AVG_KW_10_80: Record<string, KwSpan> = {
   "vw-id7": { low: 110, mid: 125, high: 145 },
+  // Same MEB 77 kWh pack and 175 kW peak as the ID.7 saloon; the estate
+  // body changes drag, not the charging curve. UNVERIFIED like its sibling.
+  "vw-id7-tourer": { low: 110, mid: 125, high: 145 },
+  // peugeot-e308-sw and opel-astra-st are left on the peak-based fallback
+  // on purpose: same Stellantis 51 kWh platform, and there is no informed
+  // basis here to claim a better figure than 0.55 x peak.
   "tesla-m3": { low: 75, mid: 105, high: 120 },
   "tesla-my": { low: 90, mid: 110, high: 125 },
   "byd-seal": { low: 90, mid: 103, high: 115 },

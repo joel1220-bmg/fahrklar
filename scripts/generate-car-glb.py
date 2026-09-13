@@ -82,6 +82,28 @@ BODY_DIMS: dict[str, dict] = {
         "arch_bulge": 0.058,
         "light_style": "compact",
     },
+    # Estate: sedan length and stance, but the roof runs flat all the way to a
+    # square tail instead of falling away. That long flat roof is the whole
+    # silhouette, so roof_flat is the term that matters here.
+    "kombi": {
+        "L": 4.75,
+        "W": 1.87,
+        "H": 1.52,
+        "wheelbase": 2.92,
+        "wheel_r": 0.335,
+        "hood_len": 1.05,
+        "rear_overhang": 0.85,
+        "roof_h": 0.56,
+        "belt_h": 0.66,
+        "nose_drop": 0.32,
+        "windshield_rake": 0.72,
+        "rear_glass_rake": 0.20,
+        "roof_flat": 2.05,
+        "ride": "low",
+        "deck": "hatch",
+        "arch_bulge": 0.05,
+        "light_style": "slim",
+    },
     # Low fastback sedan: long WB, long hood/deck, low sleek roof
     "sedan": {
         "L": 4.78,

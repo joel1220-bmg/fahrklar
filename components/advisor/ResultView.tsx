@@ -510,7 +510,7 @@ export function ResultView({
                 <input
                   type="range"
                   min={100}
-                  max={140}
+                  max={150}
                   step={10}
                   className="mt-2 w-full"
                   value={draft.speedKph}

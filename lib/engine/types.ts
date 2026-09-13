@@ -13,7 +13,7 @@ export type LongTrip = "none" | "hamMuc" | "berCgn" | "strBer" | "unknown";
 export type ChargeOption = "home" | "work" | "public" | "unknown";
 /** @deprecated chip budget — kept for old localStorage only */
 export type PriceOption = "to35" | "to45" | "to60" | "over" | "unknown";
-export type SpeedKph = 100 | 110 | 120 | 130 | 140;
+export type SpeedKph = 100 | 110 | 120 | 130 | 140 | 150;
 
 export interface Car {
   id: string;

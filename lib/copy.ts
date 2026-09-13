@@ -111,12 +111,29 @@ export const COPY = {
     "Gezeigt wird die Route des ersten Autos. Tippen Sie ein anderes an, um dessen Fahrt zu sehen.",
   qSpeed: "Welches Tempo auf der Autobahn?",
   /*
-   * The one piece of advice this screen can honestly give. Faster is not
-   * simply slower overall: past about 130 the extra consumption forces more
-   * stops, and the stops cost more time than the speed saved.
+   * Rewritten 13.09.2026, because the engine disagreed with it.
+   *
+   * It used to say that most cars are best off between 110 and 130, and that
+   * going much faster means arriving later. The first half is true about
+   * energy and false about time; the second half is false for more than half
+   * the catalogue. Measured over the 790 km route at -0.5 °C, full at the
+   * start: 110 km/h is slower in total than 130 for all but the two weakest
+   * cars in the list, and at 150 km/h 33 of the 61 cars still arrive no later
+   * than they would at 130 - the Audi A6 e-tron 34 minutes earlier, the
+   * Ioniq 6 25, the EQS 26.
+   *
+   * What actually splits the catalogue is charging speed, and it splits it
+   * cleanly. Sorted by 10->80 %, every car under about 35 minutes gains time
+   * at 150; every car over about 40 minutes loses it, and the slowest lose
+   * enormously - the Leapmotor T03 is 99 minutes worse, the Dacia Spring 184.
+   * So the honest sentence is not a speed limit, it is "it depends on the car,
+   * and here is the thing it depends on", which is also the one question this
+   * whole site exists to answer.
+   *
+   * If the charging model changes, re-measure before touching this text.
    */
   qSpeedHint:
-    "Am günstigsten fahren die meisten Autos zwischen 110 und 130 km/h. Deutlich schneller heißt bei den meisten so viel Mehrverbrauch, dass Sie öfter nachladen müssen und unterm Strich später ankommen.",
+    "Bei 110 km/h verbraucht das Auto am wenigsten Strom. Ob Sie schneller auch früher ankommen, hängt davon ab, wie schnell es nachlädt. Autos, die schnell laden, sind auch bei 150 km/h meist früher da. Autos, die langsam laden, verlieren die gewonnene Zeit an der Säule wieder.",
   qStart: "Wie voll ist das Auto am Start?",
   qStartHint: "Voll ist der übliche Start. Mit weniger Ladung kommt der erste Stopp früher.",
   tableWhen: "Gilt für diesen Monat und diesen Start, nicht für jedes Wetter.",

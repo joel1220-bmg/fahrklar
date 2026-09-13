@@ -6,7 +6,8 @@ const speedSchema = z.union([
   z.literal(120),
   z.literal(130),
   z.literal(140),
-  z.number().min(100).max(140),
+  z.literal(150),
+  z.number().min(100).max(150),
 ]);
 
 /*

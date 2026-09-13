@@ -10,7 +10,7 @@ export const STORAGE_KEY = "fahrklar-draft-v1";
 export const REMEMBER_KEY = "fahrklar-remember-v1";
 
 function clampSpeed(n: number): SpeedKph {
-  const steps: SpeedKph[] = [100, 110, 120, 130, 140];
+  const steps: SpeedKph[] = [100, 110, 120, 130, 140, 150];
   let best: SpeedKph = 120;
   let bestD = Infinity;
   for (const s of steps) {

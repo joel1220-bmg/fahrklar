@@ -42,18 +42,18 @@ export const COPY = {
    * directly under landingLead, before the CTA.
    */
   longDistancePromise:
-    "Die größte Sorge beim Umstieg ist meist die Langstrecke. Daher beantworten wir genau das für Ihre Auswahl an Autos: wie weit Sie je nach Jahreszeit wirklich kommen und wie viel Zeit Sie unterwegs mehr einplanen müssen.",
+    "Die größte Sorge beim Umstieg ist meist die Langstrecke. Daher beantworten wir genau das für Ihre Auswahl an Autos. Sie sehen, wie weit Sie je nach Jahreszeit wirklich kommen und wie viel Pause Sie unterwegs mehr einplanen müssen.",
 
   privacy: "Ihre Angaben bleiben in diesem Browser.",
   cta: "Passende Autos ansehen",
   underCta:
-    "Kein Verkauf, kein Leasing-Vergleich. Orientierung zum Kauf eines Neuwagens: Spannen, keine Zusage.",
+    "Kein Verkauf, kein Leasing-Vergleich. Orientierung zum Kauf eines Neuwagens. Wir nennen Spannen und geben keine Zusage.",
   unknownHelp:
     "Kein Problem. Wir rechnen mit einer vorsichtigen Annahme und markieren sie.",
   remember: "Angaben merken. Nur in diesem Browser, kein Konto.",
   rememberOff: "Ohne Haken bleibt nichts gespeichert.",
   notCertified: "Keine zertifizierte Beratung. Kein Angebot.",
-  assumedBanner: "Grau markiert = von uns angenommen, nicht von Ihnen eingegeben.",
+  assumedBanner: "Kursiv bedeutet von uns angenommen, nicht von Ihnen eingegeben.",
 
   wltpAlways:
     "Prüfstand (WLTP) ist ein Laborwert, nicht Ihre Autobahn- oder Alltagsreichweite.",
@@ -76,7 +76,7 @@ export const COPY = {
   qDayUnknownChip: UNKNOWN,
 
   qBody: "Welche Form soll das Auto haben?",
-  qBodyHint: "Mehrere gehen. Ohne Angabe zeigen wir alle Formen.",
+  qBodyHint: "Mehrere Formen sind möglich. Ohne Angabe zeigen wir alle.",
   qBodyEmpty: "Ohne Angabe zeigen wir alle Formen und markieren das.",
 
   /** @deprecated Langstrecke is not an intake question (`intake-lock.md`). */
@@ -86,7 +86,7 @@ export const COPY = {
   qLongEmpty: "Ohne Angabe spielen wir keine Langstrecke durch.",
 
   qTrip: "Wie weit soll die Autobahnfahrt ungefähr sein?",
-  qTripHint: "Regler in Kilometern. Monat und Tempo ändern die Zeit.",
+  qTripHint: "Der Regler zählt in Kilometern. Monat und Tempo ändern die Fahrzeit.",
   qTripEmpty: "Ohne Strecke bleibt die Karte leer.",
 
   tripDrive: "Fahrt",
@@ -99,7 +99,7 @@ export const COPY = {
     "Ihre Autos nebeneinander, sortiert nach Ladestopps. Orientierung, kein Navi.",
   compareStops: "Ladestopps",
   compareTotal: "Gesamt",
-  spanNote: "Spanne darunter: von vorsichtig gerechnet bis zu guten Bedingungen.",
+  spanNote: "Die Spanne darunter reicht von vorsichtig gerechnet bis zu guten Bedingungen.",
   /*
    * Changed 13.09.2026: the Autobahn check no longer waits for a selection, so
    * the old wording ("Wählen Sie ein Auto, dann erscheint der Autobahn-Check
@@ -111,24 +111,24 @@ export const COPY = {
     "Gezeigt wird die Route des ersten Autos. Tippen Sie ein anderes an, um dessen Fahrt zu sehen.",
   qSpeed: "Welches Tempo auf der Autobahn?",
   qStart: "Wie voll ist das Auto am Start?",
-  qStartHint: "Voll ist der übliche Start. Weniger voll heißt oft ein früherer erster Stopp.",
+  qStartHint: "Voll ist der übliche Start. Mit weniger Ladung kommt der erste Stopp früher.",
   tableWhen: "Gilt für diesen Monat und diesen Start, nicht für jedes Wetter.",
   chargeWindow: "Unterwegs von etwa 10 auf 80 Prozent, nicht die Werbe-Ladegeschwindigkeit.",
   precondAssumed: "Wir rechnen damit, dass das Auto an der Säule schon warm ist. Sonst dauert der Stopp im Winter oft länger.",
 
   qMonth: "Für welchen Monat rechnen wir Reichweite und Ladestopps?",
   qMonthHint:
-    "Im Winter ist die Fahrt oft kürzer und der Stopp an der Säule oft länger.",
+    "Im Winter ist die Reichweite je nach Modell kürzer und die Ladestopps dauern länger.",
   qMonthEmpty: "Ohne Angabe nehmen wir den aktuellen Monat und markieren das.",
 
   qCharge: "Wo können Sie das Auto laden?",
   qChargeEmpty: "Ohne Angabe rechnen wir vorsichtig mit öffentlichem Laden und markieren das.",
   qChargeHomeHint:
-    "Zu Hause laden macht den Alltag ruhiger. Fehlt das, rechnen wir grob mit öffentlichen Säulen.",
+    "Zu Hause laden macht den Alltag ruhiger. Wenn das nicht geht, rechnen wir grob mit öffentlichen Säulen.",
 
   qPrice: "Was darf der Neuwagen ungefähr kosten? Kaufpreis, nicht Leasingrate.",
   qPriceHint:
-    "Listenpreis grob. Leasingraten blenden wir absichtlich aus, die verstecken oft den Preis.",
+    "Listenpreis grob. Leasingraten blenden wir absichtlich aus, denn sie verstecken oft den Preis.",
   qPriceEmpty: "Ohne Angabe zeigen wir eine grobe Preisspanne und markieren teure Ausreißer.",
   /**
    * Added 13.09.2026 (copy-guard audit). `components/advisor/QuestionForm.tsx`
@@ -156,7 +156,7 @@ export const COPY = {
   priceToLabel: "Bis",
 
   morningStep:
-    "Morgen: auf Ihrem üblichen Weg notieren, wo Sie laden könnten. Steckdose oder Wallbox zu Hause, sonst eine Säule. Das bleibt bei Ihnen, kein Upload.",
+    "Notieren Sie morgen auf Ihrem üblichen Weg, wo Sie laden könnten. Steckdose oder Wallbox zu Hause, sonst eine Säule. Das bleibt bei Ihnen, kein Upload.",
 
   skipCheck: "Sie dürfen das auch weglassen.",
   skipTrip: "Autobahnfahrt weglassen",

@@ -373,6 +373,11 @@ export function ResultView({
           </div>
         ) : null}
 
+          {/* Sliders and route side by side: every one of these knobs changes
+              what the map shows, so watching it move is the whole point. They
+              stack on a narrow screen, where beside each other would mean
+              neither is readable. */}
+          <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
           <div className="space-y-4 rounded-2xl border border-graphite-line bg-graphite-card p-4">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
@@ -485,6 +490,42 @@ export function ResultView({
               </label>
               </>
             ) : null}
+          </div>
+
+          {tripActive && detail ? (
+            <div className="space-y-3">
+              {/* One route can only be drawn for one car. With nothing chosen
+                  the first of the list stands in, named clearly, so the map is
+                  never an empty box waiting for a click. */}
+              <GermanyMap
+                polyline={detail.trip.polyline}
+                routeKm={detail.trip.tripKm}
+                rangeMid={detail.trip.rangeMid}
+                stops={detail.trip.stops}
+              />
+              <div className="space-y-2 rounded-2xl border border-graphite-line bg-graphite-card p-4">
+                <p className="text-xs uppercase tracking-[0.14em] text-gold">
+                  {formatCarName(detail.car)} · Strecke {detail.trip.tripKm} km
+                </p>
+                {detail.trip.stops.length > 0 ? (
+                  <ul className="space-y-1 text-sm text-muted">
+                    {detail.trip.stops.map((s, i) => (
+                      <li key={i}>
+                        nach {s.afterKm} km · ca. {s.minutes} Min
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-muted">
+                    Ohne Ladehalt auf dieser Strecke (mit Puffer).
+                  </p>
+                )}
+                {!selected ? (
+                  <p className="text-xs text-muted">{COPY.pickCarFirst}</p>
+                ) : null}
+              </div>
+            </div>
+          ) : null}
           </div>
 
           {tripActive ? (
@@ -649,41 +690,6 @@ export function ResultView({
                 </div>
               </div>
 
-              {/* One route can only be drawn for one car. With nothing chosen
-                  the first of the list stands in, named clearly, so the map is
-                  never an empty box waiting for a click. */}
-              {detail ? (
-                <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
-                  <GermanyMap
-                    polyline={detail.trip.polyline}
-                    routeKm={detail.trip.tripKm}
-                    rangeMid={detail.trip.rangeMid}
-                    stops={detail.trip.stops}
-                  />
-                  <div className="space-y-3 rounded-2xl border border-graphite-line bg-graphite-card p-4">
-                    <p className="text-xs uppercase tracking-[0.14em] text-gold">
-                      {formatCarName(detail.car)} · Strecke{" "}
-                      {detail.trip.tripKm} km
-                    </p>
-                    {detail.trip.stops.length > 0 ? (
-                      <ul className="space-y-1 text-sm text-muted">
-                        {detail.trip.stops.map((s, i) => (
-                          <li key={i}>
-                            nach {s.afterKm} km · ca. {s.minutes} Min
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p className="text-sm text-muted">
-                        Ohne Ladehalt auf dieser Strecke (mit Puffer).
-                      </p>
-                    )}
-                    {!selected ? (
-                      <p className="text-xs text-muted">{COPY.pickCarFirst}</p>
-                    ) : null}
-                  </div>
-                </div>
-              ) : null}
             </div>
           ) : null}
       </section>

@@ -1,6 +1,11 @@
 import { emptyDraft, type BodyStyle, type Draft, type SpeedKph } from "@/lib/engine/types";
 import { draftSchema } from "@/lib/schema";
 
+/*
+ * Still "fahrklar" after the site was renamed to Stromstrecke on 13.09.2026.
+ * Renaming this key would orphan every draft a reader had asked us to keep,
+ * which is a worse outcome than an inconsistent string nobody ever sees.
+ */
 export const STORAGE_KEY = "fahrklar-draft-v1";
 export const REMEMBER_KEY = "fahrklar-remember-v1";
 

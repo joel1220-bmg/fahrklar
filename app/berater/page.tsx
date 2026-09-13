@@ -3,7 +3,7 @@ import { AdvisorApp } from "@/components/advisor/AdvisorApp";
 import { COPY } from "@/lib/copy";
 
 export const metadata: Metadata = {
-  title: "Berater · Fahrklar",
+  title: "Berater · Stromstrecke",
   description: COPY.underCta,
 };
 

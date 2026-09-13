@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-export const metadata: Metadata = { title: "Impressum · Fahrklar" };
+export const metadata: Metadata = { title: "Impressum · Stromstrecke" };
 
 export default function ImpressumPage() {
   return (

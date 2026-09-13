@@ -212,10 +212,14 @@ export function ResultView({
               >
                 ×
               </button>
+              {/* Red, and big enough to hit. It was grey and set in the
+                  smallest type on the page, so the one control that changes
+                  the selection looked like a caption. Red says "this does
+                  something" before anyone reads the words. */}
               <button
                 type="button"
                 onClick={() => onDismiss(r.car.id)}
-                className="mt-2 w-full text-center text-xs text-muted underline hover:text-paper"
+                className="mt-2 min-h-11 w-full text-center text-sm font-medium text-danger underline underline-offset-2 hover:text-danger-strong"
               >
                 {COPY.dismissCar}
               </button>

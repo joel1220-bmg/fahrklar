@@ -5,7 +5,7 @@ import { COPY } from "@/lib/copy";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Fahrklar: Neuwagen-Orientierung für E-Autos",
+  title: "Stromstrecke: Neuwagen-Orientierung für E-Autos",
   description: COPY.underCta,
   robots: { index: true, follow: true },
 };

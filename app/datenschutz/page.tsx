@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { COPY } from "@/lib/copy";
 
-export const metadata: Metadata = { title: "Datenschutz · Fahrklar" };
+export const metadata: Metadata = { title: "Datenschutz · Stromstrecke" };
 
 export default function DatenschutzPage() {
   return (
@@ -14,7 +14,7 @@ export default function DatenschutzPage() {
       <p className="mt-2 text-paper">[Name, Anschrift, Kontakt: Platzhalter]</p>
       <h2 className="serif mt-8 text-xl text-gold">Verarbeitung</h2>
       <p className="mt-2 text-paper">
-        Fahrklar rechnet ausschließlich in Ihrem Browser. Nur wenn Sie „Angaben merken“ ankreuzen,
+        Stromstrecke rechnet ausschließlich in Ihrem Browser. Nur wenn Sie „Angaben merken“ ankreuzen,
         speichert dieser Browser den Entwurf in <code>localStorage</code>. Ohne Haken wird nichts
         geschrieben. Es gibt kein Nutzerkonto, keinen Server für Ihre Fahrdaten, keinen Newsletter
         und keine Tracker oder Werbung.

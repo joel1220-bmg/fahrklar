@@ -63,6 +63,14 @@
   --color-gold: #15578a;
   --color-gold-dim: #0f4269;
 
+  /* ---- red, for the one action that removes something ----
+         #b3261e measures 6.54:1 on --color-surface and 5.94:1 on
+         --color-canvas, so it is safe on the small text it is used for.
+         Deliberately a true red rather than a softer brick: the point is that
+         the reader spots it as an action without being told. ---- */
+  --color-danger: #b3261e;
+  --color-danger-strong: #8e1e17;
+
   /* ---- data encodings: range bars, comparisons ----
      Audited against WCAG 1.4.11 (non-text contrast, 3:1) for the elements
      that actually carry meaning; a passive background doesn't need it.

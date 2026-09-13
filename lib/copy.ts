@@ -26,7 +26,7 @@ export const COPY = {
   // carries the pre-audit WLTP paraphrase and lost the „…“ quotes around
   // "Weiß ich nicht". Found in the 12.09.2026 copy-guard audit; app/page.tsx
   // is outside this file's ownership, so left for whoever owns it to rewire.
-  eyebrow: "Fahrklar",
+  eyebrow: "Stromstrecke",
   landingLead:
     "Ein neues E-Auto, das zu Ihrem Alltag passt. Mit ehrlicher Reichweite, nicht mit Prüfstandszahlen.",
   /**

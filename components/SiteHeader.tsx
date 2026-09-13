@@ -13,7 +13,7 @@ export function SiteHeader() {
           href="/"
           className="serif inline-flex min-h-11 items-center text-lg tracking-wide text-ink"
         >
-          Fahrklar
+          Stromstrecke
         </Link>
         <nav aria-label="Hauptnavigation" className="flex gap-5 text-sm text-muted">
           <Link href="/berater" className="inline-flex min-h-11 items-center hover:text-accent">

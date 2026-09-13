@@ -82,6 +82,10 @@ export function ResultView({
     [assumptions],
   );
 
+  /* The map needs exactly one car. Fall back to the first so the check is
+     useful before anything is chosen. */
+  const detail = selected ?? results[0] ?? null;
+
   const compareCols = useMemo(
     () => (tripActive ? sortForCompare(results) : []),
     [tripActive, results],
@@ -344,10 +348,15 @@ export function ResultView({
         ) : null}
       </div>
 
-      {!selected ? (
-        <p className="text-sm text-muted">{COPY.pickCarFirst}</p>
-      ) : (
-        <section className="space-y-6">
+      {/*
+        The Autobahn check is not behind a selection any more. Long distance is
+        the reason this reader came, and gating it on a click they had no reason
+        to make meant most of them never saw it. The trip, month and speed are
+        one setting for the whole comparison anyway, not a property of one car.
+        Only the per-car detail below still needs a car.
+      */}
+      <section className="space-y-6">
+        {selected ? (
           <div>
             <h3 className="serif text-2xl text-paper sm:text-3xl">
               {formatCarName(selected.car)}
@@ -362,6 +371,7 @@ export function ResultView({
             </p>
             <p className="mt-1 text-sm text-paper">{selected.car.seats} Sitze</p>
           </div>
+        ) : null}
 
           <div className="space-y-4 rounded-2xl border border-graphite-line bg-graphite-card p-4">
             <div className="flex flex-wrap items-start justify-between gap-3">
@@ -373,10 +383,10 @@ export function ResultView({
               </div>
               <button
                 type="button"
-                onClick={() => {
-                  onChange({ ...draft, tripKm: null });
-                  onSelect(null);
-                }}
+                /* Drops the trip only. It used to clear the car as well,
+                   which made sense while the whole check hung off the
+                   selection; now that would throw away an unrelated choice. */
+                onClick={() => onChange({ ...draft, tripKm: null })}
                 className="min-h-10 rounded-full border border-graphite-line px-4 text-sm text-muted hover:text-paper"
               >
                 {COPY.skipTrip}
@@ -505,7 +515,7 @@ export function ResultView({
                         <span className="sr-only">Merkmal</span>
                       </th>
                       {compareCols.map((r) => {
-                        const isSel = r.car.id === selected.car.id;
+                        const isSel = r.car.id === selected?.car.id;
                         return (
                           <th
                             key={r.car.id}
@@ -540,7 +550,7 @@ export function ResultView({
                         {COPY.compareStops}
                       </th>
                       {compareCols.map((r) => {
-                        const isSel = r.car.id === selected.car.id;
+                        const isSel = r.car.id === selected?.car.id;
                         const n = r.trip.stops.length;
                         return (
                           <td
@@ -565,7 +575,7 @@ export function ResultView({
                         {COPY.tripCharge}
                       </th>
                       {compareCols.map((r) => {
-                        const isSel = r.car.id === selected.car.id;
+                        const isSel = r.car.id === selected?.car.id;
                         const mid = r.trip.extraSpan?.mid ?? r.trip.extraMin;
                         const lo = r.trip.extraSpan.low;
                         const hi = r.trip.extraSpan.high;
@@ -599,7 +609,7 @@ export function ResultView({
                         {COPY.compareTotal}
                       </th>
                       {compareCols.map((r) => {
-                        const isSel = r.car.id === selected.car.id;
+                        const isSel = r.car.id === selected?.car.id;
                         const mid = tripTotalMid(r);
                         return (
                           <td
@@ -639,38 +649,44 @@ export function ResultView({
                 </div>
               </div>
 
-              {/* Map + stop list — selected/highlighted car only */}
-              <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
-                <GermanyMap
-                  polyline={selected.trip.polyline}
-                  routeKm={selected.trip.tripKm}
-                  rangeMid={selected.trip.rangeMid}
-                  stops={selected.trip.stops}
-                />
-                <div className="space-y-3 rounded-2xl border border-graphite-line bg-graphite-card p-4">
-                  <p className="text-xs uppercase tracking-[0.14em] text-gold">
-                    {formatCarName(selected.car)} · Strecke{" "}
-                    {selected.trip.tripKm} km
-                  </p>
-                  {selected.trip.stops.length > 0 ? (
-                    <ul className="space-y-1 text-sm text-muted">
-                      {selected.trip.stops.map((s, i) => (
-                        <li key={i}>
-                          nach {s.afterKm} km · ca. {s.minutes} Min
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="text-sm text-muted">
-                      Ohne Ladehalt auf dieser Strecke (mit Puffer).
+              {/* One route can only be drawn for one car. With nothing chosen
+                  the first of the list stands in, named clearly, so the map is
+                  never an empty box waiting for a click. */}
+              {detail ? (
+                <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
+                  <GermanyMap
+                    polyline={detail.trip.polyline}
+                    routeKm={detail.trip.tripKm}
+                    rangeMid={detail.trip.rangeMid}
+                    stops={detail.trip.stops}
+                  />
+                  <div className="space-y-3 rounded-2xl border border-graphite-line bg-graphite-card p-4">
+                    <p className="text-xs uppercase tracking-[0.14em] text-gold">
+                      {formatCarName(detail.car)} · Strecke{" "}
+                      {detail.trip.tripKm} km
                     </p>
-                  )}
+                    {detail.trip.stops.length > 0 ? (
+                      <ul className="space-y-1 text-sm text-muted">
+                        {detail.trip.stops.map((s, i) => (
+                          <li key={i}>
+                            nach {s.afterKm} km · ca. {s.minutes} Min
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-sm text-muted">
+                        Ohne Ladehalt auf dieser Strecke (mit Puffer).
+                      </p>
+                    )}
+                    {!selected ? (
+                      <p className="text-xs text-muted">{COPY.pickCarFirst}</p>
+                    ) : null}
+                  </div>
                 </div>
-              </div>
+              ) : null}
             </div>
           ) : null}
-        </section>
-      )}
+      </section>
 
       {results.length === 0 ? (
         <p className="text-muted">Mit diesen Angaben finden wir gerade kein Auto.</p>

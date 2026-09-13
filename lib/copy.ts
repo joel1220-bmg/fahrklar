@@ -100,8 +100,15 @@ export const COPY = {
   compareStops: "Ladestopps",
   compareTotal: "Gesamt",
   spanNote: "Spanne darunter: von vorsichtig gerechnet bis zu guten Bedingungen.",
+  /*
+   * Changed 13.09.2026: the Autobahn check no longer waits for a selection, so
+   * the old wording ("Wählen Sie ein Auto, dann erscheint der Autobahn-Check
+   * daneben.") promised something that is already on screen. It now explains
+   * whose route is being drawn, since with nothing chosen the first car stands
+   * in and the reader has to know that.
+   */
   pickCarFirst:
-    "Wählen Sie ein Auto, dann erscheint der Autobahn-Check daneben.",
+    "Gezeigt wird die Route des ersten Autos. Tippen Sie ein anderes an, um dessen Fahrt zu sehen.",
   qSpeed: "Welches Tempo auf der Autobahn?",
   qStart: "Wie voll ist das Auto am Start?",
   qStartHint: "Voll ist der übliche Start. Weniger voll heißt oft ein früherer erster Stopp.",

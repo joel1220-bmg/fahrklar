@@ -59,7 +59,7 @@ export const COPY = {
     "Prüfstand (WLTP) ist ein Laborwert, nicht Ihre Autobahn- oder Alltagsreichweite.",
 
   qUse: "Wofür brauchen Sie das Auto vor allem?",
-  qUseEmpty: "Ohne Angabe rechnen wir mit Alltag und markieren das.",
+  qUseEmpty: "Ohne Angabe rechnen wir mit Stadtverkehr und markieren das.",
 
   qDay: "Wie weit fahren Sie an einem normalen Tag, hin und zurück?",
   qDayHint: "Kilometer, grob reicht. „Weiß ich nicht“ ist erlaubt.",
@@ -264,11 +264,12 @@ export const LANDING_TILES = [
   },
 ] as const;
 
+/* Changed 13.09.2026: one axis, how far the car has to go. "Familie" is gone;
+   it asked about space, which the body-shape question already asks outright. */
 export const USE_CHIP = {
-  everyday: "Alltag",
-  family: "Familie",
-  highway: "Lange Autobahnfahrten",
-  mixed: "Alles etwas",
+  city: "Fast nur Stadt",
+  cityTrips: "Stadt und Urlaubsfahrten",
+  longDistance: "Regelmäßig weite Strecken",
 } as const;
 
 export const BODY_CHIP = {

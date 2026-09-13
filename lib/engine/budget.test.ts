@@ -19,7 +19,7 @@ import {
 import type { Draft } from "./types";
 
 function draft(patch: Partial<Draft>): Draft {
-  return { ...emptyDraft(), use: "everyday", charge: "home", ...patch };
+  return { ...emptyDraft(), use: "city", charge: "home", ...patch };
 }
 
 describe("priceInWindow", () => {

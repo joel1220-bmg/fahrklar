@@ -14,7 +14,24 @@ const bodyStyleSchema = z.enum(["hatch", "compact", "sedan", "crossover"]);
 /** Optional fields + passthrough so old localStorage drafts still parse. */
 export const draftSchema = z
   .object({
-    use: z.enum(["everyday", "family", "highway", "mixed"]).nullable(),
+    /*
+     * A draft saved before 13.09.2026 carries one of the four old use cases.
+     * Rejecting it would silently drop the reader's whole saved answer set over
+     * one field, so the retired values are translated onto the new axis instead:
+     * "Alltag" was the city end, "Lange Autobahnfahrten" the far end, and both
+     * "Familie" and "Alles etwas" sat in between.
+     */
+    use: z
+      .preprocess((v) => {
+        const legacy: Record<string, string> = {
+          everyday: "city",
+          family: "cityTrips",
+          mixed: "cityTrips",
+          highway: "longDistance",
+        };
+        return typeof v === "string" && v in legacy ? legacy[v] : v;
+      }, z.enum(["city", "cityTrips", "longDistance"]).nullable())
+      .nullable(),
     dayKm: z.string(),
     dayUnknown: z.boolean(),
     bodies: z.array(bodyStyleSchema).optional(),

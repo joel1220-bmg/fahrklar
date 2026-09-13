@@ -63,7 +63,7 @@ export function getRoutes(): RouteDef[] {
 
 export function resolveDraft(draft: Draft): ResolvedInput {
   const useAssumed = draft.use === null;
-  const use: UseCase = draft.use ?? "everyday";
+  const use: UseCase = draft.use ?? "city";
 
   let dayKm = 50;
   let dayAssumed = true;
@@ -324,17 +324,13 @@ export function evaluateCars(draft: Draft): {
   results.sort((a, b) => {
     if (a.priceFits !== b.priceFits) return a.priceFits ? -1 : 1;
     if (a.priceOutlier !== b.priceOutlier) return a.priceOutlier ? 1 : -1;
-    // Soft preference: family → crossover (never hides explicit body picks)
-    if (resolved.use === "family") {
-      const aC = a.car.body === "crossover" ? 0 : 1;
-      const bC = b.car.body === "crossover" ? 0 : 1;
-      if (aC !== bC) return aC - bC;
-    }
-    if (resolved.use === "highway") {
+    /* The crossover preference that used to hang off "family" is gone with it:
+       it guessed at a need the body-shape question now asks outright. */
+    if (resolved.use === "longDistance") {
       const d = b.range.midKm - a.range.midKm;
       if (d !== 0) return d;
     }
-    if (resolved.use === "everyday" || resolved.dayKm <= 80) {
+    if (resolved.use === "city" || resolved.dayKm <= 80) {
       const d = a.car.listEur - b.car.listEur;
       if (Math.abs(d) > 500) return d;
     }

@@ -66,3 +66,25 @@ Morgen-Schritt (einer):
 > Morgen: auf Ihrem üblichen Weg notieren, wo Sie laden könnten — Steckdose oder Wallbox zu Hause, sonst eine Säule. Das bleibt bei Ihnen, kein Upload.
 
 Locked strings: `lib/copy.ts`
+
+## Geändert 13.09.2026 — Slot 1 hat eine neue Achse
+
+Vorher: Alltag · Familie · Lange Autobahnfahrten · Alles etwas.
+Jetzt: **Fast nur Stadt · Stadt und Urlaubsfahrten · Regelmäßig weite Strecken.**
+
+Grund: die alte Liste mischte zwei Achsen. Drei Optionen fragten, wie weit
+gefahren wird, „Familie" fragte nach Platz. Platz wird in Slot 3 ohnehin
+ausdrücklich abgefragt (Kleinwagen / Kompakt / Limousine / SUV), also hat der
+Slot dort nichts verloren. Übrig bleibt eine einzige Achse: wie viel
+Langstrecke. Genau die, um die sich das Produkt dreht.
+
+Mit „Familie" entfällt die sanfte SUV-Bevorzugung in der Sortierung. Das ist
+Absicht: sie riet an einem Bedürfnis herum, das die Formfrage direkt erfragt.
+
+Gespeicherte Entwürfe mit den alten Werten werden übersetzt, nicht verworfen
+(`lib/schema.ts`): Alltag → Stadt, Familie und Alles etwas → Stadt und
+Urlaubsfahrten, Lange Autobahnfahrten → Regelmäßig weite Strecken.
+Belegt in `lib/usecase.test.ts`.
+
+Offen: Slot 1 bietet weiterhin kein „Weiß ich nicht" (siehe Eintrag oben).
+Leer lassen geht, wird als Annahme markiert.

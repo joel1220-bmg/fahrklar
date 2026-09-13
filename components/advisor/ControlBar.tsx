@@ -17,7 +17,7 @@ import type { BodyStyle, ChargeOption, Draft, UseCase } from "@/lib/engine/types
  * where the reader can actually correct it.
  */
 
-const USE_ORDER: UseCase[] = ["everyday", "family", "highway", "mixed"];
+const USE_ORDER: UseCase[] = ["city", "cityTrips", "longDistance"];
 const BODY_ORDER: BodyStyle[] = ["hatch", "compact", "sedan", "crossover"];
 const CHARGE_ORDER: ChargeOption[] = ["home", "work", "public", "unknown"];
 
@@ -169,7 +169,7 @@ export function ControlBar({ draft, onChange, assumedBy, resolvedDayKm }: Props)
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
         <Control
           label="Nutzung"
-          value={USE_CHIP[draft.use ?? "everyday"]}
+          value={USE_CHIP[draft.use ?? "city"]}
           assumed={!!assumedBy.use}
         >
           {(close) => (

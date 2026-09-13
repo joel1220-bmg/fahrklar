@@ -2,7 +2,12 @@
 
 export type BodyStyle = "hatch" | "compact" | "sedan" | "crossover";
 
-export type UseCase = "everyday" | "family" | "highway" | "mixed";
+/**
+ * How much long distance the car has to do. One axis, deliberately: the old
+ * list mixed distance ("Alltag", "Lange Autobahnfahrten") with space
+ * ("Familie"), and space is already asked separately as the body shape.
+ */
+export type UseCase = "city" | "cityTrips" | "longDistance";
 /** @deprecated city-pair presets — kept for old localStorage only */
 export type LongTrip = "none" | "hamMuc" | "berCgn" | "strBer" | "unknown";
 export type ChargeOption = "home" | "work" | "public" | "unknown";

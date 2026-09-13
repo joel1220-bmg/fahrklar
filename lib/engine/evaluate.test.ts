@@ -55,7 +55,7 @@ describe("resolveDraft defaults", () => {
 describe("evaluateCars", () => {
   it("returns catalog results with range spans", () => {
     const draft = emptyDraft();
-    draft.use = "everyday";
+    draft.use = "city";
     draft.dayKm = "40";
     draft.tripKm = 300;
     draft.month = 1;
@@ -72,7 +72,7 @@ describe("evaluateCars", () => {
 
   it("no tripKm → trip inactive, no Strecke assumption", () => {
     const draft = emptyDraft();
-    draft.use = "everyday";
+    draft.use = "city";
     const { results, assumptions } = evaluateCars(draft);
     expect(results[0]!.trip.active).toBe(false);
     expect(assumptions.some((a) => a.key === "trip")).toBe(false);
@@ -80,7 +80,7 @@ describe("evaluateCars", () => {
 
   it("no trip when tripKm is null", () => {
     const draft = emptyDraft();
-    draft.use = "highway";
+    draft.use = "longDistance";
     draft.tripKm = null;
     const { results, resolved } = evaluateCars(draft);
     expect(resolved.tripActive).toBe(false);

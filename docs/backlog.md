@@ -11,8 +11,8 @@ Status: `offen` · `läuft` · `fertig` · `blockiert`
 | # | Aufgabe | Besitzer | Status |
 |---|---|---|---|
 | 1 | ControlBar in ResultView + AdvisorApp einhängen; alte Lesekacheln entfernen | advisor-ux | **fertig** |
-| 2 | Erst-Audit: Kontrast, Tastatur, 390 px, Datenehrlichkeit | quality | offen (Agent am Limit gestorben) |
-| 3 | Copy gegen `intake-lock.md` und `copy-v1.md` prüfen | copy-guard | teilweise |
+| 2 | Erst-Audit: Kontrast, Tastatur, 390 px, Datenehrlichkeit | quality | **fertig** (`docs/audit-2026-09-12.md`) |
+| 3 | Copy gegen `intake-lock.md` und `copy-v1.md` prüfen | copy-guard | **fertig** |
 | 4 | Helles Studio-Licht im Showroom wiederherstellen (lag im Scratchpad) | showroom | **fertig** |
 
 ## Welle 2 — Das Ergebnis als Daten lesbar machen
@@ -20,7 +20,7 @@ Status: `offen` · `läuft` · `fertig` · `blockiert`
 | # | Aufgabe | Besitzer | Status |
 |---|---|---|---|
 | 5 | Reichweiten-Spanne als Balken statt als Text | advisor-ux | offen |
-| 6 | Tabellen-Umschalter nach SMARD-Vorbild („Tabelle anzeigen") | advisor-ux | offen |
+| 6 | Tabellen-Umschalter nach SMARD-Vorbild („Tabelle anzeigen") | advisor-ux | **fertig** |
 | 7 | Balken-, Spur- und Markierungs-Tokens für Datenvisualisierung | design-system | teilweise (`Num.tsx`) |
 | 8 | Auto-Karten: Auswahl, Verwerfen und Vergleich schärfen | advisor-ux | offen |
 
@@ -28,11 +28,11 @@ Status: `offen` · `läuft` · `fertig` · `blockiert`
 
 | # | Aufgabe | Besitzer | Status |
 |---|---|---|---|
-| 9 | `compact` bekommt eigene Maße und einen Generator-Eintrag | showroom | offen |
+| 9 | `compact` bekommt eigene Maße und einen Generator-Eintrag | showroom | **fertig**, dazu `kombi` |
 | 10 | Reichweiten-Modell prüfen: Tempo, Temperatur, Verbrauch | engine | **fertig** (Luftdichte ergänzt) |
 | 11 | Ladekurve gegen `ladekurve-lock.md` prüfen | engine | **fertig** (Stopps nach Bedarf) |
 | 12 | Seed-Zahlen in `data/**` belegen oder als ungeprüft markieren | engine | offen — `AVG_KW_10_80` markiert |
-| 13 | Testlücken schließen (Grenzfälle, leere Auswahl, Extremwerte) | engine | offen |
+| 13 | Testlücken schließen (Grenzfälle, leere Auswahl, Extremwerte) | engine | **fertig** (145 Tests) |
 
 ## Welle 4 — Schliff
 
@@ -78,6 +78,35 @@ Status: `offen` · `läuft` · `fertig` · `blockiert`
   Dezemberfahrt: Ladestopps luden pauschal 70 % des Akkus statt nach Bedarf
   (44 Minuten 12 km vor dem Ziel), und die Kaltluftdichte fehlte im Verbrauch
   ganz. 65 Tests.
+
+## Seit dem 13.09. dazugekommen
+
+| Aufgabe | Status |
+|---|---|
+| Preis als Spanne mit zwei Griffen, Grenzen aus dem Katalog | **fertig** |
+| Karosserie-Umrisse als 2D-Icons, fünf Formen inklusive Kombi | **fertig** |
+| Erste Frage auf eine Achse: wie viel Langstrecke | **fertig** |
+| Autobahn-Check ohne vorherige Autowahl sichtbar | **fertig** |
+| Gedankenstriche und Doppelpunkte aus allen UI-Texten | **fertig** |
+| Gezeichnete Strecke wächst bis zum Reglerende | **fertig** |
+| Route bleibt innerhalb der Landesgrenze, mit Punkt-in-Polygon-Test | **fertig** |
+| Regler, Karte und Vergleich auf einem Schirm, 663 px | **fertig** |
+| Städtische Reichweite als zweite Spanne | **fertig** |
+| Ladezeit 10 auf 80 Prozent statt Spitzenleistung als Vergleichswert | **fertig** |
+
+## Was jetzt am meisten stört
+
+1. **Handy.** Nach dem Absenden sieht man kein einziges Auto ohne zu scrollen,
+   624 px Kopfbereich stehen davor. `components/ui/Disclosure.tsx` liegt fertig
+   da, ist aber nicht eingehängt.
+2. **Katalog gegen echte Quellen prüfen.** 18 Autos sind als ungeprüft
+   markiert, und bei zweien im Altbestand war die Ladeleistung nachweislich
+   falsch. Größter offener Posten, braucht Daten von außen.
+3. **Farbe allein als Signal.** Angenommene Werte stehen kursiv und grau, sonst
+   nichts. `components/ui/AssumedMarker.tsx` liegt fertig da, nicht eingehängt.
+4. **Nutzung bietet kein Weiß-ich-nicht**, ein Verstoß gegen `intake-lock.md`.
+5. **Touch-Ziele unter 44 px** in `ResultView` und `ControlBar`, dazu ein
+   ungültiges `role="radio"` ohne `radiogroup` in `QuestionForm`.
 
 ## Nächster Halt
 

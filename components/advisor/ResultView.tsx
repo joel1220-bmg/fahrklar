@@ -1,10 +1,10 @@
 "use client";
 
-import { useId, useMemo, useState } from "react";
-import { COPY, MONTH_LABEL } from "@/lib/copy";
+import { useMemo } from "react";
+import { BODY_CHIP, COPY, MONTH_LABEL } from "@/lib/copy";
 import { formatEUR, formatRangeKm } from "@/lib/engine/parse";
 import { formatCarName } from "@/lib/engine/labels";
-import { formatDeUnit, Num, NumSpan } from "@/components/ui/Num";
+import { formatDeUnit } from "@/components/ui/Num";
 import type {
   Assumption,
   CarResult,
@@ -13,9 +13,7 @@ import type {
   SpeedKph,
 } from "@/lib/engine/types";
 import { tripTotalMid } from "@/lib/advisor/compare";
-import { BodyIcon } from "@/components/showroom/BodyIcon";
 import { GermanyMap } from "@/components/showroom/GermanyMap";
-import { charge1080Min } from "@/lib/engine/charge";
 import { Disclosure } from "@/components/ui/Disclosure";
 import { tripMaxKm } from "@/lib/engine/evaluate";
 import { ControlBar } from "./ControlBar";
@@ -72,8 +70,6 @@ export function ResultView({
 
   // SMARD's second manner: the cards are the picture, this table is the
   // evidence behind it — same figures, real markup, checkable.
-  const [tableOpen, setTableOpen] = useState(false);
-  const tableId = useId();
 
   // The engine already decided what was taken from the reader and what it had
   // to assume; the control bar only needs that verdict keyed by control.
@@ -183,13 +179,16 @@ export function ResultView({
                       {formatRangeKm(r.cityRange.lowKm, r.cityRange.highKm)}
                     </p>
                   </div>
-                  {/* The silhouette says "small / saloon / tall" faster than
-                      the model name does, for a reader who does not yet know
-                      these names. */}
-                  <BodyIcon
-                    body={r.car.body}
-                    className="mt-0.5 h-7 w-auto shrink-0 text-muted"
-                  />
+                  {/* The silhouette was here until 13.09.2026. It said
+                      "small / saloon / tall" faster than a model name does,
+                      but only to a reader who already reads car silhouettes,
+                      and at 236 px it was a grey blob that several people took
+                      for a button. The word is the same information without
+                      the decoding step, and it is the same word the form asked
+                      the question with. */}
+                  <span className="mt-1 shrink-0 rounded-full border border-graphite-line px-2 py-0.5 text-xs text-muted">
+                    {BODY_CHIP[r.car.body]}
+                  </span>
                 </div>
                 {/* Still directly under both ranges, though the sentence
                     that required it is gone (13.09.2026): the battery is what
@@ -224,170 +223,6 @@ export function ResultView({
           );
         })}
       </ul>
-
-      <div>
-        <button
-          type="button"
-          aria-expanded={tableOpen}
-          aria-controls={tableId}
-          onClick={() => setTableOpen((o) => !o)}
-          className="min-h-10 rounded-full border border-graphite-line px-4 text-sm text-paper hover:border-gold"
-        >
-          {tableOpen ? "Tabelle ausblenden" : "Tabelle anzeigen"}
-        </button>
-
-        {tableOpen ? (
-          <div
-            id={tableId}
-            className="mt-4 overflow-x-auto rounded-2xl border border-graphite-line bg-graphite-card"
-          >
-            <table className="w-full min-w-[32rem] border-collapse text-sm">
-              <caption className="border-b border-graphite-line px-3 py-3 text-left text-sm text-paper">
-                Die Zahlen hinter den Karten oben, je eine Spalte pro Auto.
-                {tripActive ? (
-                  <span className="mt-1 block text-xs font-normal text-muted">
-                    Ladestopps und Gesamtzeit gelten für {draft.tripKm} km bei{" "}
-                    {draft.speedKph} km/h.
-                  </span>
-                ) : null}
-              </caption>
-              <thead>
-                <tr className="border-b border-graphite-line text-left">
-                  <th
-                    scope="col"
-                    className="px-3 py-3 text-xs uppercase tracking-wide text-muted"
-                  >
-                    <span className="sr-only">Merkmal</span>
-                  </th>
-                  {results.map((r) => (
-                    <th key={r.car.id} scope="col" className="px-3 py-3 align-bottom">
-                      <span className="serif block text-base text-paper">
-                        {formatCarName(r.car)}
-                      </span>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="border-b border-graphite-line">
-                  <th scope="row" className="px-3 py-3 text-left text-muted">
-                    {COPY.highwayRangeLabel}
-                  </th>
-                  {results.map((r) => (
-                    <td key={r.car.id} className="px-3 py-3 text-paper">
-                      <NumSpan low={r.range.lowKm} high={r.range.highKm} unit="km" />
-                    </td>
-                  ))}
-                </tr>
-                <tr className="border-b border-graphite-line">
-                  <th scope="row" className="px-3 py-3 text-left text-muted">
-                    {COPY.cityRangeLabel}
-                  </th>
-                  {results.map((r) => (
-                    <td key={r.car.id} className="px-3 py-3 text-paper">
-                      <NumSpan
-                        low={r.cityRange.lowKm}
-                        high={r.cityRange.highKm}
-                        unit="km"
-                      />
-                    </td>
-                  ))}
-                </tr>
-                <tr className="border-b border-graphite-line">
-                  <th scope="row" className="px-3 py-3 text-left text-muted">
-                    Listenpreis
-                  </th>
-                  {results.map((r) => (
-                    <td key={r.car.id} className="px-3 py-3 text-paper">
-                      <Num value={r.car.listEur} unit="€" />
-                    </td>
-                  ))}
-                </tr>
-                <tr className="border-b border-graphite-line">
-                  <th scope="row" className="px-3 py-3 text-left text-muted">
-                    Sitze
-                  </th>
-                  {results.map((r) => (
-                    <td key={r.car.id} className="px-3 py-3 text-paper">
-                      <Num value={r.car.seats} />
-                    </td>
-                  ))}
-                </tr>
-                <tr className="border-b border-graphite-line">
-                  <th scope="row" className="px-3 py-3 text-left text-muted">
-                    {COPY.batteryLabel}
-                  </th>
-                  {results.map((r) => (
-                    <td key={r.car.id} className="px-3 py-3 text-paper">
-                      <Num value={r.car.usableKwh} unit="kWh" decimals={1} />
-                    </td>
-                  ))}
-                </tr>
-                <tr className="border-b border-graphite-line">
-                  <th scope="row" className="px-3 py-3 text-left text-muted">
-                    Verbrauch Autobahn
-                  </th>
-                  {results.map((r) => (
-                    <td key={r.car.id} className="px-3 py-3 text-paper">
-                      <Num value={r.car.highwayKwhPer100} unit="kWh/100 km" decimals={1} />
-                    </td>
-                  ))}
-                </tr>
-                {/* Time first, peak second. ladekurve-lock.md calls dcPeakKw
-                    "nur Referenz, nie Zeitbasis", and this table is exactly
-                    where a reader would otherwise compare by it. */}
-                <tr className="border-b border-graphite-line">
-                  <th scope="row" className="px-3 py-3 text-left text-muted">
-                    {COPY.charge1080Label}
-                  </th>
-                  {results.map((r) => {
-                    const m = charge1080Min(r.car, resolved.outdoorC);
-                    return (
-                      <td key={r.car.id} className="px-3 py-3 text-paper">
-                        <NumSpan low={m.low} high={m.high} unit="Min" />
-                      </td>
-                    );
-                  })}
-                </tr>
-                <tr className={tripActive ? "border-b border-graphite-line" : undefined}>
-                  <th scope="row" className="px-3 py-3 text-left text-muted">
-                    {COPY.peakLabel}
-                  </th>
-                  {results.map((r) => (
-                    <td key={r.car.id} className="px-3 py-3 text-assumed">
-                      <Num value={r.car.dcPeakKw} unit="kW" />
-                    </td>
-                  ))}
-                </tr>
-                {tripActive ? (
-                  <>
-                    <tr className="border-b border-graphite-line">
-                      <th scope="row" className="px-3 py-3 text-left text-muted">
-                        {COPY.compareStops}
-                      </th>
-                      {results.map((r) => (
-                        <td key={r.car.id} className="px-3 py-3 text-paper">
-                          <Num value={r.trip.stops.length} />
-                        </td>
-                      ))}
-                    </tr>
-                    <tr>
-                      <th scope="row" className="px-3 py-3 text-left font-medium text-paper">
-                        {COPY.compareTotal}
-                      </th>
-                      {results.map((r) => (
-                        <td key={r.car.id} className="px-3 py-3 text-paper">
-                          {formatSpanFootnote(r.trip.totalSpan.low, r.trip.totalSpan.high)}
-                        </td>
-                      ))}
-                    </tr>
-                  </>
-                ) : null}
-              </tbody>
-            </table>
-          </div>
-        ) : null}
-      </div>
 
       {/*
         The Autobahn check is not behind a selection any more. Long distance is

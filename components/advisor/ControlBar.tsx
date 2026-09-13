@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { BODY_CHIP, CHARGE_CHIP, COPY, USE_CHIP } from "@/lib/copy";
+import { priceWindowLabel } from "@/lib/engine/evaluate";
 import type { BodyStyle, ChargeOption, Draft, UseCase } from "@/lib/engine/types";
 
 /**
@@ -18,6 +19,11 @@ import type { BodyStyle, ChargeOption, Draft, UseCase } from "@/lib/engine/types
 const USE_ORDER: UseCase[] = ["everyday", "family", "highway", "mixed"];
 const BODY_ORDER: BodyStyle[] = ["hatch", "compact", "sedan", "crossover"];
 const CHARGE_ORDER: ChargeOption[] = ["home", "work", "public", "unknown"];
+
+/* Slider ends. Sitting on an end means "open at that end", not "exactly this
+   much" - otherwise the reader could never express "no upper limit" again. */
+const PRICE_FLOOR = 25000;
+const PRICE_CEIL = 90000;
 
 function Chevron() {
   return (
@@ -141,10 +147,7 @@ export function ControlBar({ draft, onChange, assumedBy, resolvedDayKm }: Props)
   const chargeValue: ChargeOption =
     draft.charge === null || draft.charge === "unknown" ? "public" : draft.charge;
 
-  const priceValue =
-    draft.priceMax && draft.priceMax > 0
-      ? `bis ${Math.round(draft.priceMax).toLocaleString("de-DE")} €`
-      : "offen";
+  const priceValue = priceWindowLabel(draft.priceMin, draft.priceMax);
 
   const toggleBody = (b: BodyStyle) =>
     set({
@@ -264,24 +267,47 @@ export function ControlBar({ draft, onChange, assumedBy, resolvedDayKm }: Props)
         <Control label="Kaufpreis" value={priceValue} assumed={!!assumedBy.price}>
           {() => (
             <div>
+              {/* Two separate sliders rather than one two-handle control: a
+                  range input with two thumbs has no native equivalent, and
+                  every hand-rolled version loses keyboard and screen-reader
+                  behaviour that these two get for free. The engine sorts a
+                  window entered back to front, so crossing them is harmless. */}
               <label className="block text-sm text-ink">
-                Obergrenze Listenpreis
+                Mindestens
                 <input
                   type="range"
-                  min={25000}
-                  max={90000}
+                  min={PRICE_FLOOR}
+                  max={PRICE_CEIL}
                   step={1000}
-                  value={draft.priceMax && draft.priceMax > 0 ? draft.priceMax : 90000}
-                  onChange={(e) => set({ priceMax: Number(e.target.value) })}
+                  value={draft.priceMin && draft.priceMin > 0 ? draft.priceMin : PRICE_FLOOR}
+                  onChange={(e) => {
+                    const v = Number(e.target.value);
+                    set({ priceMin: v <= PRICE_FLOOR ? null : v });
+                  }}
                   className="mt-2 w-full"
                 />
               </label>
-              <div className="mt-2 flex items-center justify-between text-sm">
+              <label className="mt-3 block text-sm text-ink">
+                Höchstens
+                <input
+                  type="range"
+                  min={PRICE_FLOOR}
+                  max={PRICE_CEIL}
+                  step={1000}
+                  value={draft.priceMax && draft.priceMax > 0 ? draft.priceMax : PRICE_CEIL}
+                  onChange={(e) => {
+                    const v = Number(e.target.value);
+                    set({ priceMax: v >= PRICE_CEIL ? null : v });
+                  }}
+                  className="mt-2 w-full"
+                />
+              </label>
+              <div className="mt-3 flex items-center justify-between gap-3 text-sm">
                 <span className="tnum text-ink">{priceValue}</span>
                 <button
                   type="button"
-                  onClick={() => set({ priceMax: null })}
-                  className="text-accent underline underline-offset-2"
+                  onClick={() => set({ priceMin: null, priceMax: null })}
+                  className="shrink-0 text-accent underline underline-offset-2"
                 >
                   offen lassen
                 </button>

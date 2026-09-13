@@ -70,8 +70,10 @@ export interface Draft {
   charge: ChargeOption | null;
   /** @deprecated chip budget */
   price: PriceOption | null;
-  /** Slider max list price; null / 0 = open */
+  /** Slider max list price; null / 0 = open at the top */
   priceMax: number | null;
+  /** Slider min list price; null / 0 = open at the bottom */
+  priceMin: number | null;
   speedKph: SpeedKph;
   startSoc: number;
   persons: number;
@@ -142,6 +144,7 @@ export interface ResolvedInput {
   charge: ChargeOption;
   chargeAssumed: boolean;
   priceMax: number | null;
+  priceMin: number | null;
   priceAssumed: boolean;
   speedKph: SpeedKph;
   startSoc: number;
@@ -161,6 +164,7 @@ export function emptyDraft(): Draft {
     charge: null,
     price: null,
     priceMax: null,
+  priceMin: null,
     speedKph: 120,
     startSoc: 1.0,
     persons: 2,

@@ -4,7 +4,7 @@ import { useId, useMemo, useState } from "react";
 import { COPY, MONTH_LABEL } from "@/lib/copy";
 import { formatEUR, formatRangeKm } from "@/lib/engine/parse";
 import { formatCarName } from "@/lib/engine/labels";
-import { Num, NumSpan } from "@/components/ui/Num";
+import { formatDeUnit, Num, NumSpan } from "@/components/ui/Num";
 import type {
   Assumption,
   CarResult,
@@ -13,6 +13,7 @@ import type {
   SpeedKph,
 } from "@/lib/engine/types";
 import { sortForCompare, tripTotalMid } from "@/lib/advisor/compare";
+import { BodyIcon } from "@/components/showroom/BodyIcon";
 import { GermanyMap } from "@/components/showroom/GermanyMap";
 import { ControlBar } from "./ControlBar";
 
@@ -21,6 +22,8 @@ type Props = {
   onChange: (next: Draft) => void;
   resolved: ResolvedInput;
   assumptions: Assumption[];
+  /** No car falls inside the chosen budget window; what is shown is outside it. */
+  budgetEmpty: boolean;
   results: CarResult[];
   selectedId: string | null;
   onSelect: (id: string | null) => void;
@@ -51,6 +54,7 @@ export function ResultView({
   onChange,
   resolved,
   assumptions,
+  budgetEmpty,
   results,
   selectedId,
   onSelect,
@@ -122,6 +126,15 @@ export function ResultView({
         </div>
       </div>
 
+      {budgetEmpty ? (
+        /* Say it, rather than quietly showing cars outside the window and
+           letting the reader assume they fit. */
+        <p className="rounded-lg border border-line bg-accent-tint px-3 py-2 text-sm text-ink">
+          In dieser Preisspanne finden wir gerade kein Auto. Wir zeigen Ihnen
+          die nächstgelegenen — sie liegen außerhalb Ihrer Spanne.
+        </p>
+      ) : null}
+
       <p className="text-sm text-muted">{COPY.skipCheck}</p>
 
       <ul className="grid gap-4 sm:grid-cols-3">
@@ -139,7 +152,7 @@ export function ResultView({
                 }`}
               >
                 <div className="flex items-start justify-between gap-2">
-                  <div>
+                  <div className="min-w-0">
                     <p className="serif text-lg text-paper">
                       {formatCarName(r.car)}
                     </p>
@@ -148,13 +161,21 @@ export function ResultView({
                       {formatRangeKm(r.range.lowKm, r.range.highKm)}
                     </p>
                   </div>
-                  <span
-                    className="mt-1 inline-block h-3 w-3 shrink-0 rounded-full"
-                    style={{ background: r.car.colorHex }}
-                    aria-hidden
+                  {/* The silhouette says "small / saloon / tall" faster than
+                      the model name does, for a reader who does not yet know
+                      these names. */}
+                  <BodyIcon
+                    body={r.car.body}
+                    className="mt-0.5 h-7 w-auto shrink-0 text-muted"
                   />
                 </div>
                 <p className="mt-2 text-sm text-paper">{r.car.seats} Sitze</p>
+                {/* The battery size on its own means nothing to a beginner -
+                    it is only worth showing because the Autobahn range right
+                    above it is what that number buys. */}
+                <p className="mt-1 text-sm text-muted tnum">
+                  {formatDeUnit(r.car.usableKwh, "kWh", 1)} Batterie
+                </p>
                 <p className="mt-1 text-sm text-muted">
                   {formatEUR(r.car.listEur)}
                 </p>

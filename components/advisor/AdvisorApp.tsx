@@ -107,6 +107,7 @@ export function AdvisorApp() {
           onChange={setDraft}
           resolved={evaluation.resolved}
           assumptions={evaluation.assumptions}
+          budgetEmpty={evaluation.budgetEmpty}
           results={visible}
           selectedId={activeId}
           onSelect={setSelectedId}

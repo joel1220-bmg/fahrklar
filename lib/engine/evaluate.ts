@@ -75,9 +75,15 @@ export function resolveDraft(draft: Draft): ResolvedInput {
   const charge: ChargeOption =
     draft.charge === null || draft.charge === "unknown" ? "public" : draft.charge;
 
-  const priceMax =
+  const rawMax =
     draft.priceMax !== null && draft.priceMax > 0 ? draft.priceMax : null;
-  const priceAssumed = priceMax === null;
+  const rawMin =
+    draft.priceMin !== null && draft.priceMin > 0 ? draft.priceMin : null;
+  /* A window entered back to front is a slip, not a preference - read it the
+     way it was meant rather than returning nothing. */
+  const priceMin = rawMin !== null && rawMax !== null ? Math.min(rawMin, rawMax) : rawMin;
+  const priceMax = rawMin !== null && rawMax !== null ? Math.max(rawMin, rawMax) : rawMax;
+  const priceAssumed = priceMax === null && priceMin === null;
 
   return {
     use,
@@ -93,6 +99,7 @@ export function resolveDraft(draft: Draft): ResolvedInput {
     charge,
     chargeAssumed,
     priceMax,
+    priceMin,
     priceAssumed,
     speedKph: draft.speedKph,
     startSoc: draft.startSoc,
@@ -103,6 +110,29 @@ export function resolveDraft(draft: Draft): ResolvedInput {
 
 export function budgetCap(priceMax: number | null): number | null {
   return priceMax !== null && priceMax > 0 ? priceMax : null;
+}
+
+/** Does a list price fall inside the chosen window? An open end never excludes. */
+export function priceInWindow(
+  listEur: number,
+  priceMin: number | null,
+  priceMax: number | null,
+): boolean {
+  if (priceMin !== null && listEur < priceMin) return false;
+  if (priceMax !== null && listEur > priceMax) return false;
+  return true;
+}
+
+/** "offen" / "bis 45.000 €" / "ab 30.000 €" / "30.000-45.000 €" */
+export function priceWindowLabel(
+  priceMin: number | null,
+  priceMax: number | null,
+): string {
+  const eur = (n: number) => `${Math.round(n).toLocaleString("de-DE")} €`;
+  if (priceMin === null && priceMax === null) return "offen";
+  if (priceMin === null) return `bis ${eur(priceMax!)}`;
+  if (priceMax === null) return `ab ${eur(priceMin)}`;
+  return `${Math.round(priceMin).toLocaleString("de-DE")}–${eur(priceMax)}`;
 }
 
 export function buildAssumptions(r: ResolvedInput): Assumption[] {
@@ -181,9 +211,7 @@ export function buildAssumptions(r: ResolvedInput): Assumption[] {
     {
       key: "price",
       label: "Kaufpreis",
-      value: r.priceAssumed
-        ? "offen"
-        : `bis ${Math.round(r.priceMax!).toLocaleString("de-DE")} €`,
+      value: priceWindowLabel(r.priceMin, r.priceMax),
       assumed: r.priceAssumed,
     },
   ];
@@ -212,6 +240,8 @@ export function evaluateCars(draft: Draft): {
   resolved: ResolvedInput;
   assumptions: Assumption[];
   results: CarResult[];
+  /** True when a two-sided budget window matched no car at all. */
+  budgetEmpty: boolean;
 } {
   const resolved = resolveDraft(draft);
   const assumptions = buildAssumptions(resolved);
@@ -267,7 +297,7 @@ export function evaluateCars(draft: Draft): {
       };
     }
 
-    const priceFits = cap === null ? true : car.listEur <= cap;
+    const priceFits = priceInWindow(car.listEur, resolved.priceMin, resolved.priceMax);
     const priceOutlier = resolved.priceAssumed && car.listEur > 55000;
 
     return { car, range, trip, priceFits, priceOutlier };
@@ -293,14 +323,45 @@ export function evaluateCars(draft: Draft): {
     return b.range.midKm - a.range.midKm;
   });
 
-  const filtered =
-    cap !== null
-      ? results.filter((r) => r.priceFits)
-      : results.filter((r) => !r.priceOutlier || resolved.priceAssumed);
+  const hasWindow = resolved.priceMin !== null || resolved.priceMax !== null;
+  const filtered = hasWindow
+    ? results.filter((r) => r.priceFits)
+    : results.filter((r) => !r.priceOutlier || resolved.priceAssumed);
 
-  const finalList = filtered.length > 0 ? filtered : results;
+  /*
+   * A two-sided window can legitimately contain no car at all. Falling back to
+   * the unfiltered list would answer a question nobody asked and quietly hide
+   * the fact that the budget does not meet this market - so the fallback still
+   * happens (an empty screen helps nobody), but `budgetEmpty` says plainly that
+   * what is shown is outside the window. Every row is already marked
+   * `priceFits: false`, so the UI can show both truths at once.
+   */
+  const budgetEmpty = hasWindow && filtered.length === 0;
 
-  return { resolved, assumptions, results: finalList };
+  /*
+   * When nothing fits, the fallback has to be the *nearest* cars, not the
+   * default ordering - otherwise a 70-75k window answers with the cheapest car
+   * in the catalogue while the copy claims these are the closest ones. Distance
+   * to the window, ascending.
+   */
+  const distanceToWindow = (listEur: number): number => {
+    if (resolved.priceMin !== null && listEur < resolved.priceMin) {
+      return resolved.priceMin - listEur;
+    }
+    if (resolved.priceMax !== null && listEur > resolved.priceMax) {
+      return listEur - resolved.priceMax;
+    }
+    return 0;
+  };
+
+  const finalList =
+    filtered.length > 0
+      ? filtered
+      : [...results].sort(
+          (a, b) => distanceToWindow(a.car.listEur) - distanceToWindow(b.car.listEur),
+        );
+
+  return { resolved, assumptions, results: finalList, budgetEmpty };
 }
 
 export { cars, climate, routes };

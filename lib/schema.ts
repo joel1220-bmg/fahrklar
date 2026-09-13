@@ -30,6 +30,7 @@ export const draftSchema = z
       .nullable()
       .optional(),
     priceMax: z.number().nullable().optional(),
+    priceMin: z.number().nullable().optional(),
     speedKph: speedSchema,
     startSoc: z.number().min(0.1).max(1),
     persons: z.number().int().min(1).max(7),

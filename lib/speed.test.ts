@@ -68,7 +68,7 @@ function totalAt(carIdx: number, kph: SpeedKph): number {
 
 describe("what the speed hint claims", () => {
   it("names 110, 150 and charging speed, since that is what it rests on", () => {
-    expect(COPY.qSpeedHint).toContain("110 km/h");
+    expect(COPY.qSpeedHint).toContain("100 km/h");
     expect(COPY.qSpeedHint).toContain("150 km/h");
     expect(COPY.qSpeedHint).toMatch(/nachlädt|laden/);
   });
@@ -121,14 +121,14 @@ describe("what the speed hint claims", () => {
     expect(worse / slow.length).toBeGreaterThan(0.6);
   });
 
-  it("does not claim 110 is the quickest way there, because it is not", () => {
-    /* The old wording implied it. Over this route 110 is slower in total than
-       130 for all but the weakest cars, so the hint may only say 110 uses the
-       least energy. */
+  it("does not claim the slowest step is the quickest way there, because it is not", () => {
+    /* The old wording implied it. Over this route the bottom of the slider is
+       slower in total than 130 for all but the weakest cars, so the hint may
+       only say that it uses the least energy. */
     const cars = getCars();
     let slowerAt110 = 0;
     for (let i = 0; i < cars.length; i++) {
-      if (totalAt(i, 110) > totalAt(i, 130)) slowerAt110++;
+      if (totalAt(i, 100) > totalAt(i, 130)) slowerAt110++;
     }
     expect(slowerAt110 / cars.length).toBeGreaterThan(0.8);
     expect(COPY.qSpeedHint).not.toMatch(/am günstigsten fahren/i);

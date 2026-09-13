@@ -322,26 +322,49 @@ export function computeTripPlan(
     kw.mid,
     preconditioned,
   );
-  const pessimistic = planAtRange(
-    car,
-    rangeLow ?? rangeMid * 0.88,
-    tripKm,
-    speedKph,
-    startSoc,
-    outdoorC,
-    kw.low,
-    preconditioned,
-  );
-  const optimistic = planAtRange(
-    car,
-    rangeHigh ?? rangeMid * 1.1,
-    tripKm,
-    speedKph,
-    startSoc,
-    outdoorC,
-    kw.high,
-    preconditioned,
-  );
+
+  /*
+   * A scenario that stops a different number of times is describing a
+   * different journey, and the table prints the two side by side: the stop
+   * count from `mid` on one row, this span on the next. Before 13.09.2026 the
+   * BYD Seal showed "Ladestopps 1" above "0 bis 18 Min", because the
+   * optimistic range happened to clear 520 km without stopping. A reader
+   * cannot repair that contradiction, and the zero reads as a broken figure
+   * rather than as a lucky case.
+   *
+   * So a scenario whose stop count disagrees with `mid` is recomputed on the
+   * mid range and keeps only its charging power. The remaining width is what
+   * this model is genuinely unsure about at a fixed number of stops, which is
+   * how fast the car takes the energy. Range uncertainty has not gone
+   * anywhere; it is stated on its own row, in kilometres, where it means
+   * something.
+   */
+  const atMidStops = (avgKw: number, rangeKm: number) => {
+    const alt = planAtRange(
+      car,
+      rangeKm,
+      tripKm,
+      speedKph,
+      startSoc,
+      outdoorC,
+      avgKw,
+      preconditioned,
+    );
+    if (alt.stops.length === mid.stops.length) return alt;
+    return planAtRange(
+      car,
+      rangeMid,
+      tripKm,
+      speedKph,
+      startSoc,
+      outdoorC,
+      avgKw,
+      preconditioned,
+    );
+  };
+
+  const pessimistic = atMidStops(kw.low, rangeLow ?? rangeMid * 0.88);
+  const optimistic = atMidStops(kw.high, rangeHigh ?? rangeMid * 1.1);
   const driveHigh = Math.round(mid.driveMin * 1.08);
   const driveLow = Math.round(mid.driveMin * 0.95);
   const extraLow = Math.min(optimistic.extraMin, Math.round(mid.extraMin * 0.9));

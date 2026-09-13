@@ -191,11 +191,12 @@ export function ResultView({
                     className="mt-0.5 h-7 w-auto shrink-0 text-muted"
                   />
                 </div>
-                {/* Directly under both ranges on purpose: the sentence says
-                    "daraus ergeben sich die beiden Reichweiten oben", so nothing
-                    may sit between them or the word "oben" stops being true. A
-                    bare kWh figure means nothing to someone buying their first
-                    electric car. */}
+                {/* Still directly under both ranges, though the sentence
+                    that required it is gone (13.09.2026): the battery is what
+                    the two spans above are computed from, and a reader who
+                    wonders why one car reaches further looks here next. The
+                    word "nutzbar" stays, because a bare kWh figure invites the
+                    comparison with the gross number in the brochure. */}
                 <p className="mt-2 text-sm text-muted">
                   <span className="tnum">
                     {formatDeUnit(r.car.usableKwh, "kWh", 1)}

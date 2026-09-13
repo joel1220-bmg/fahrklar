@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { computeRange, computeTrip, computeTripPlan, tempFactor, tempFactorCharge, tripLegs } from "./range";
 import type { Car } from "./types";
+import { getCars } from "./evaluate";
 
 const base: Car = {
   id: "t",
@@ -151,5 +152,53 @@ describe("computeTripPlan charge temperature", () => {
     const a = computeTripPlan(base, 250, 600, 120, 0.9, undefined, undefined, 20);
     const b = computeTripPlan(base, 250, 600, 120, 0.9, undefined, undefined, 22);
     expect(Math.abs(a.stops[0]!.minutes - b.stops[0]!.minutes)).toBeLessThanOrEqual(1);
+  });
+});
+
+/**
+ * The comparison table prints the stop count and the extra-time span on two
+ * rows, one above the other. Before 13.09.2026 they could disagree: the BYD
+ * Seal showed "Ladestopps 1" over "0 bis 18 Min", because the optimistic range
+ * cleared the route without stopping. A reader has no way to reconcile that,
+ * and a lower bound of zero under a stop count of one reads as a broken
+ * figure, not as a lucky case.
+ */
+describe("the extra-time span describes the journey above it", () => {
+  it("never offers zero extra minutes when the plan stops", () => {
+    for (const car of getCars()) {
+      for (const km of [300, 520, 790]) {
+        const r = computeRange(car, 14, 120, 1, 1);
+        const p = computeTripPlan(car, r.midKm, km, 120, 1, r.lowKm, r.highKm, 14, true);
+        if (p.stops.length > 0) {
+          expect(p.extraSpan.low, `${car.id} at ${km} km`).toBeGreaterThan(0);
+        }
+      }
+    }
+  });
+
+  it("offers no extra minutes at all when the plan does not stop", () => {
+    for (const car of getCars()) {
+      const r = computeRange(car, 14, 120, 1, 1);
+      const p = computeTripPlan(car, r.midKm, 200, 120, 1, r.lowKm, r.highKm, 14, true);
+      if (p.stops.length === 0) {
+        expect(p.extraSpan.high, car.id).toBe(0);
+      }
+    }
+  });
+
+  it("keeps the span inside what the charging data can justify", () => {
+    /* Everything left in the width comes from AVG_KW_10_80's own low-to-high
+       range. If a span ever grows past twice its middle again, a scenario has
+       started describing a different trip. */
+    for (const car of getCars()) {
+      const r = computeRange(car, 14, 120, 1, 1);
+      const p = computeTripPlan(car, r.midKm, 520, 120, 1, r.lowKm, r.highKm, 14, true);
+      if (p.extraMin > 0) {
+        expect(
+          (p.extraSpan.high - p.extraSpan.low) / p.extraMin,
+          `${car.id} span is ${p.extraSpan.low}-${p.extraSpan.high} around ${p.extraMin}`,
+        ).toBeLessThan(1.5);
+      }
+    }
   });
 });

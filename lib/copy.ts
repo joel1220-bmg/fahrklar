@@ -133,7 +133,7 @@ export const COPY = {
    * If the charging model changes, re-measure before touching this text.
    */
   qSpeedHint:
-    "Bei 110 km/h verbraucht das Auto am wenigsten Strom. Ob Sie schneller auch früher ankommen, hängt davon ab, wie schnell es nachlädt. Autos, die schnell laden, sind auch bei 150 km/h meist früher da. Autos, die langsam laden, verlieren die gewonnene Zeit an der Säule wieder.",
+    "Bei 100 km/h verbraucht das Auto am wenigsten Strom. Ob Sie schneller auch früher ankommen, hängt davon ab, wie schnell es nachlädt. Autos, die schnell laden, sind auch bei 150 km/h meist früher da. Autos, die langsam laden, verlieren die gewonnene Zeit an der Säule wieder.",
   qStart: "Wie voll ist das Auto am Start?",
   qStartHint: "Voll ist der übliche Start. Mit weniger Ladung kommt der erste Stopp früher.",
   tableWhen: "Gilt für diesen Monat und diesen Start, nicht für jedes Wetter.",
@@ -265,8 +265,13 @@ export const COPY = {
    * carried the gross figure in their own model name while the card showed the
    * net one. Saying which of the two this is, every time, is what stops the
    * reader thinking two different numbers describe two different cars.
+   *
+   * The second sentence, "Daraus ergeben sich die beiden Reichweiten oben",
+   * was dropped 13.09.2026. It explained the arithmetic of the card to a
+   * reader who had not asked, cost three lines on each of four cards, and said
+   * the same thing four times on one screen.
    */
-  batteryHint: "nutzbare Batterie. Daraus ergeben sich die beiden Reichweiten oben.",
+  batteryHint: "nutzbare Batterie",
   batteryLabel: "Nutzbare Batterie",
   batteryTableHint:
     "Nutzbar heißt der Teil der Batterie, mit dem Sie wirklich fahren. Hersteller nennen oft die größere Bruttozahl.",

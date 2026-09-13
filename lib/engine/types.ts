@@ -127,9 +127,19 @@ export interface TripResult {
   polyline: [number, number][] | null;
 }
 
+/** City range: a wide span from a seed model, see computeCityRange. */
+export interface CitySpan {
+  lowKm: number;
+  midKm: number;
+  highKm: number;
+  kwhPer100: number;
+  outdoorC: number;
+}
+
 export interface CarResult {
   car: Car;
   range: RangeSpan;
+  cityRange: CitySpan;
   trip: TripResult;
   priceFits: boolean;
   priceOutlier: boolean;

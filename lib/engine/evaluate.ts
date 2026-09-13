@@ -4,6 +4,7 @@ import routesJson from "@/data/routes.de.json";
 import { BODY_CHIP, CHARGE_CHIP, MONTH_LABEL, USE_CHIP } from "@/lib/copy";
 import { parseDeNumber } from "./parse";
 import {
+  computeCityRange,
   computeRange,
   computeTripPlan,
   outdoorForMonth,
@@ -286,6 +287,7 @@ export function evaluateCars(draft: Draft): {
     : cars;
 
   const results: CarResult[] = pool.map((car) => {
+    const cityRange = computeCityRange(car, resolved.outdoorC, resolved.startSoc);
     const range = computeRange(
       car,
       resolved.outdoorC,
@@ -331,7 +333,7 @@ export function evaluateCars(draft: Draft): {
     const priceFits = priceInWindow(car.listEur, resolved.priceMin, resolved.priceMax);
     const priceOutlier = resolved.priceAssumed && car.listEur > 55000;
 
-    return { car, range, trip, priceFits, priceOutlier };
+    return { car, range, cityRange, trip, priceFits, priceOutlier };
   });
 
   results.sort((a, b) => {

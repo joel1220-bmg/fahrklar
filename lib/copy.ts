@@ -207,7 +207,17 @@ export const COPY = {
    * make "oben" literally true rather than approximately true — flagged to
    * whoever owns that component.
    */
-  batteryHint: "Batterie. Daraus ergibt sich die Reichweite oben.",
+  /*
+   * Added 13.09.2026. The Autobahn figure alone answers the long-distance
+   * worry but says nothing about the drive this reader does every day, where
+   * the same car goes noticeably further. Both spans together are the honest
+   * picture; either alone is a half-truth.
+   */
+  cityRangeLabel: "In der Stadt",
+  highwayRangeLabel: "Autobahn-Reichweite",
+  cityRangeHint:
+    "In der Stadt reicht dieselbe Batterie weiter als auf der Autobahn, oft auch weiter als der Prüfstandswert. Das liegt nicht an schöngerechneten Zahlen, sondern daran, dass der Prüfstand Autobahn mitmisst, und genau dort verbraucht ein E-Auto am meisten. Langsam fahren kostet wenig Luft, und beim Bremsen fließt Strom zurück.",
+  batteryHint: "Batterie. Daraus ergeben sich die beiden Reichweiten oben.",
 
   // --- Leerzustände -------------------------------------------------------
   // Simplified 13.09.2026 (copy-guard audit): "in der engeren Auswahl" is

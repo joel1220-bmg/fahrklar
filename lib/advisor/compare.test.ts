@@ -45,6 +45,13 @@ function fake(id: string, stops: number, totalMid: number): CarResult {
       speedKph: 140,
       kwhPer100: 17,
     },
+    cityRange: {
+      lowKm: 330,
+      midKm: 400,
+      highKm: 470,
+      kwhPer100: 13,
+      outdoorC: 15,
+    },
     trip,
     priceFits: true,
     priceOutlier: false,

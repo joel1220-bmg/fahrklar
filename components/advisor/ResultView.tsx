@@ -161,8 +161,15 @@ export function ResultView({
                       {formatCarName(r.car)}
                     </p>
                     <p className="mt-1 text-sm text-gold">
-                      Autobahn-Reichweite{" "}
+                      {COPY.highwayRangeLabel}{" "}
                       {formatRangeKm(r.range.lowKm, r.range.highKm)}
+                    </p>
+                    {/* The same battery goes further in town. Showing only the
+                        motorway span answers the long-distance worry and hides
+                        the drive this reader actually does most days. */}
+                    <p className="mt-0.5 text-sm text-muted">
+                      {COPY.cityRangeLabel}{" "}
+                      {formatRangeKm(r.cityRange.lowKm, r.cityRange.highKm)}
                     </p>
                   </div>
                   {/* The silhouette says "small / saloon / tall" faster than
@@ -173,10 +180,11 @@ export function ResultView({
                     className="mt-0.5 h-7 w-auto shrink-0 text-muted"
                   />
                 </div>
-                {/* Directly under the range on purpose: the sentence says
-                    "daraus ergibt sich die Reichweite oben", so nothing may sit
-                    between the two or the word "oben" stops being true. A bare
-                    kWh figure means nothing to someone buying their first EV. */}
+                {/* Directly under both ranges on purpose: the sentence says
+                    "daraus ergeben sich die beiden Reichweiten oben", so nothing
+                    may sit between them or the word "oben" stops being true. A
+                    bare kWh figure means nothing to someone buying their first
+                    electric car. */}
                 <p className="mt-2 text-sm text-muted">
                   <span className="tnum">
                     {formatDeUnit(r.car.usableKwh, "kWh", 1)}
@@ -261,11 +269,25 @@ export function ResultView({
               <tbody>
                 <tr className="border-b border-graphite-line">
                   <th scope="row" className="px-3 py-3 text-left text-muted">
-                    Autobahn-Reichweite
+                    {COPY.highwayRangeLabel}
                   </th>
                   {results.map((r) => (
                     <td key={r.car.id} className="px-3 py-3 text-paper">
                       <NumSpan low={r.range.lowKm} high={r.range.highKm} unit="km" />
+                    </td>
+                  ))}
+                </tr>
+                <tr className="border-b border-graphite-line">
+                  <th scope="row" className="px-3 py-3 text-left text-muted">
+                    {COPY.cityRangeLabel}
+                  </th>
+                  {results.map((r) => (
+                    <td key={r.car.id} className="px-3 py-3 text-paper">
+                      <NumSpan
+                        low={r.cityRange.lowKm}
+                        high={r.cityRange.highKm}
+                        unit="km"
+                      />
                     </td>
                   ))}
                 </tr>
@@ -401,10 +423,15 @@ export function ResultView({
             </div>
 
             {/* km slider is the opt-in; other knobs stay closed until tripKm is set */}
+            {/* Question and value on separate lines. Joined by a middle dot on
+                one line, the value's length decided where the question wrapped,
+                so picking December made the whole toolbar re-flow and the
+                blocks below jump. The question is fixed text and now wraps the
+                same way whatever the value says. */}
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <label className="block text-sm">
-              <span className="text-muted">
-                {COPY.qTrip} ·{" "}
+              <span className="block text-muted">{COPY.qTrip}</span>
+              <span className="mt-0.5 block font-medium text-ink tnum">
                 {draft.tripKm !== null ? `${draft.tripKm} km` : "noch offen"}
               </span>
               <input
@@ -433,11 +460,13 @@ export function ResultView({
                  change it without scrolling. */
               <>
               <label className="block text-sm">
-                <span className="text-muted">
-                  {COPY.qMonth} ·{" "}
-                  {draft.month !== null
-                    ? MONTH_LABEL[draft.month]
-                    : `angenommen: ${MONTH_LABEL[resolved.month]}`}
+                <span className="block text-muted">{COPY.qMonth}</span>
+                <span
+                  className={`mt-0.5 block font-medium ${
+                    draft.month !== null ? "text-ink" : "italic text-assumed"
+                  }`}
+                >
+                  {MONTH_LABEL[draft.month ?? resolved.month]}
                 </span>
                 <input
                   type="range"
@@ -457,8 +486,9 @@ export function ResultView({
               </label>
 
               <label className="block text-sm">
-                <span className="text-muted">
-                  {COPY.qSpeed} · {draft.speedKph} km/h
+                <span className="block text-muted">{COPY.qSpeed}</span>
+                <span className="mt-0.5 block font-medium text-ink tnum">
+                  {draft.speedKph} km/h
                 </span>
                 <input
                   type="range"
@@ -477,8 +507,9 @@ export function ResultView({
               </label>
 
               <label className="block text-sm">
-                <span className="text-muted">
-                  {COPY.qStart} · {Math.round(draft.startSoc * 100)} %
+                <span className="block text-muted">{COPY.qStart}</span>
+                <span className="mt-0.5 block font-medium text-ink tnum">
+                  {Math.round(draft.startSoc * 100)} %
                 </span>
                 <input
                   type="range"
@@ -704,6 +735,10 @@ export function ResultView({
                 </table>
                 <div className="space-y-1 border-t border-graphite-line px-3 py-2 text-xs text-muted">
                   <p>{COPY.spanNote}</p>
+                  {/* Without this, a city figure above the brochure number
+                      reads as inflation rather than as the reason an electric
+                      car suits town driving. */}
+                  <p>{COPY.cityRangeHint}</p>
                   <p>{COPY.chargeWindow}</p>
                   {resolved.outdoorC < 10 ? (
                     <p>{COPY.precondAssumed}</p>

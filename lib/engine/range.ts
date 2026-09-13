@@ -88,6 +88,77 @@ export function highwayConsumption(
   );
 }
 
+/**
+ * City range, as a span.
+ *
+ * Deliberately NOT the Autobahn model with a low speed put in. `speedFactor` is
+ * a drag power law anchored at 130 km/h; feed it 40 and it returns 0.15, which
+ * would promise a city range six times the motorway one. At town speed the
+ * energy does not go into pushing air aside — it goes into rolling resistance,
+ * which is roughly constant per kilometre, and into heating, which costs per
+ * HOUR and therefore hurts far more per kilometre when you are slow.
+ *
+ * So this is anchored on the catalogue's own WLTP figure instead, which already
+ * contains an urban phase:
+ *
+ *   implied WLTP consumption = usableKwh / wltpKm
+ *   mild-weather city         = that, times CITY_VS_WLTP (regen and low speed
+ *                               make town driving a little better than the
+ *                               combined cycle)
+ *   cold weather              = the cabin-heat excess from tempFactor, scaled
+ *                               up because a kilometre in town takes roughly
+ *                               CITY_TIME_MULTIPLIER longer than on the
+ *                               motorway, so the heater runs that much longer
+ *                               for it
+ *
+ * SEED MODEL, not measured. The band is wide on purpose: city consumption
+ * varies more between drivers, traffic and terrain than motorway consumption
+ * does, and a narrow band here would be the kind of false precision this
+ * product exists to avoid.
+ */
+export const CITY_VS_WLTP = 0.92;
+export const CITY_TIME_MULTIPLIER = 2.5;
+const CITY_BAND = 0.18;
+
+export function computeCityRange(
+  car: Car,
+  outdoorC: number,
+  startSoc = 1,
+): { lowKm: number; midKm: number; highKm: number; kwhPer100: number; outdoorC: number } {
+  const soc = Math.max(0.1, Math.min(1, startSoc));
+  const wltpPer100 = (car.usableKwh / Math.max(1, car.wltpKm)) * 100;
+
+  const heatExcess = Math.max(0, tempFactor(outdoorC, car.heatPump) - 1);
+  const cityTemp = 1 + heatExcess * CITY_TIME_MULTIPLIER;
+
+  const kwhPer100 = wltpPer100 * CITY_VS_WLTP * cityTemp;
+  const mid = ((car.usableKwh * soc) / kwhPer100) * 100;
+
+  /*
+   * No ceiling at wltpKm, deliberately, though it is tempting. WLTP is a
+   * COMBINED cycle with a motorway share, and motorway is where an electric
+   * car is worst. Pure town driving genuinely beats the combined figure, so
+   * capping the span there would misstate the physics to make a number look
+   * modest. An earlier attempt at that cap pushed the BYD Seal's city range
+   * below its own motorway range, which is nonsense.
+   *
+   * What the reader needs instead is the sentence explaining why town beats
+   * the brochure - COPY.cityRangeHint carries it.
+   *
+   * One dependency worth naming: this is anchored on wltpKm, and the catalogue
+   * audit of 13.09.2026 found every car's implied WLTP consumption sitting at
+   * 10.4-14.7 kWh/100 km, below the 15-20 band such figures normally occupy.
+   * If those numbers are optimistic, these are too, by the same factor.
+   */
+  return {
+    lowKm: Math.round(mid * (1 - CITY_BAND)),
+    midKm: Math.round(mid),
+    highKm: Math.round(mid * (1 + CITY_BAND)),
+    kwhPer100: Math.round(kwhPer100 * 10) / 10,
+    outdoorC,
+  };
+}
+
 export function computeRange(
   car: Car,
   outdoorC: number,

@@ -213,6 +213,17 @@ export const COPY = {
    * the same car goes noticeably further. Both spans together are the honest
    * picture; either alone is a half-truth.
    */
+  /*
+   * Added 13.09.2026. The table used to show dcPeakKw under the heading
+   * "DC-Ladeleistung", which ladekurve-lock.md explicitly forbids as a time
+   * basis: a flat curve with a lower peak can finish sooner than a peaky one
+   * with a higher peak. The reader compares by whatever number is put in front
+   * of them, so the number in front of them is now the time.
+   */
+  charge1080Label: "Laden von 10 auf 80 Prozent",
+  peakLabel: "Spitzenleistung",
+  peakHint:
+    "Die Spitzenleistung steht nur zum Vergleich da. Sie sagt wenig darüber, wie lange Sie wirklich an der Säule stehen: manche Autos halten eine niedrigere Leistung lange durch und sind schneller fertig als Autos mit hoher Spitze.",
   cityRangeLabel: "In der Stadt",
   highwayRangeLabel: "Autobahn-Reichweite",
   cityRangeHint:

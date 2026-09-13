@@ -15,6 +15,7 @@ import type {
 import { sortForCompare, tripTotalMid } from "@/lib/advisor/compare";
 import { BodyIcon } from "@/components/showroom/BodyIcon";
 import { GermanyMap } from "@/components/showroom/GermanyMap";
+import { charge1080Min } from "@/lib/engine/charge";
 import { tripMaxKm } from "@/lib/engine/evaluate";
 import { ControlBar } from "./ControlBar";
 
@@ -331,12 +332,28 @@ export function ResultView({
                     </td>
                   ))}
                 </tr>
+                {/* Time first, peak second. ladekurve-lock.md calls dcPeakKw
+                    "nur Referenz, nie Zeitbasis", and this table is exactly
+                    where a reader would otherwise compare by it. */}
+                <tr className="border-b border-graphite-line">
+                  <th scope="row" className="px-3 py-3 text-left text-muted">
+                    {COPY.charge1080Label}
+                  </th>
+                  {results.map((r) => {
+                    const m = charge1080Min(r.car, resolved.outdoorC);
+                    return (
+                      <td key={r.car.id} className="px-3 py-3 text-paper">
+                        <NumSpan low={m.low} high={m.high} unit="Min" />
+                      </td>
+                    );
+                  })}
+                </tr>
                 <tr className={tripActive ? "border-b border-graphite-line" : undefined}>
                   <th scope="row" className="px-3 py-3 text-left text-muted">
-                    DC-Ladeleistung
+                    {COPY.peakLabel}
                   </th>
                   {results.map((r) => (
-                    <td key={r.car.id} className="px-3 py-3 text-paper">
+                    <td key={r.car.id} className="px-3 py-3 text-assumed">
                       <Num value={r.car.dcPeakKw} unit="kW" />
                     </td>
                   ))}
@@ -739,6 +756,7 @@ export function ResultView({
                       reads as inflation rather than as the reason an electric
                       car suits town driving. */}
                   <p>{COPY.cityRangeHint}</p>
+                  <p>{COPY.peakHint}</p>
                   <p>{COPY.chargeWindow}</p>
                   {resolved.outdoorC < 10 ? (
                     <p>{COPY.precondAssumed}</p>

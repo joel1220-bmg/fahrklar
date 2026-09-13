@@ -161,5 +161,35 @@ export function tempFactorCharge(
   return 1;
 }
 
+/**
+ * Minutes to take a pack from 10 to 80 %, as a span.
+ *
+ * This is the figure `ladekurve-lock.md` says belongs in front of a reader:
+ * "Unterwegs zählt, wie schnell das Auto von etwa 10 auf 80 Prozent nachlädt,
+ * nicht die große Peak-Zahl auf dem Datenblatt", and `dcPeakKw` is marked there
+ * as "nur Referenz, nie Zeitbasis". A flat curve with a lower peak can finish
+ * sooner than a peaky one with a higher peak, so a reader comparing cars by
+ * peak alone draws exactly the wrong conclusion.
+ *
+ * Charging only. The eight minutes of pulling in, plugging and paying belong to
+ * a stop, not to the battery, and are added in the trip planner instead.
+ */
+export function charge1080Min(
+  car: Car,
+  outdoorC = 20,
+  preconditioned = true,
+): { low: number; mid: number; high: number } {
+  const kw = avgKwSpanForCar(car);
+  const f = tempFactorCharge(outdoorC, preconditioned);
+  const energy = car.usableKwh * STOP_ENERGY_FRAC;
+  const minutes = (avgKw: number) => (energy / Math.max(1, avgKw * f)) * 60;
+  /* Faster average means fewer minutes, so the spans invert. */
+  return {
+    low: Math.round(minutes(kw.high)),
+    mid: Math.round(minutes(kw.mid)),
+    high: Math.round(minutes(kw.low)),
+  };
+}
+
 export const OVERHEAD_MIN = 8;
 export const STOP_ENERGY_FRAC = 0.7;

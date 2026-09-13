@@ -93,33 +93,67 @@ export function GermanyMap({ polyline, routeKm, rangeMid, stops }: Props) {
 
   if (!polyline) {
     return (
-      <div className="rounded-2xl border border-graphite-line bg-graphite-card p-4 text-sm text-muted">
+      <div className="rounded-2xl border border-line bg-surface p-4 text-sm text-muted">
         Ohne Strecke bleibt die Karte leer.
       </div>
     );
   }
 
   return (
-    <figure className="rounded-2xl border border-graphite-line bg-graphite-card p-3">
+    <figure className="rounded-2xl border border-line bg-surface p-3">
       <svg
         viewBox={`0 0 ${W} ${H}`}
         className="mx-auto h-auto w-full max-w-xs"
         role="img"
         aria-label={`Strecke ${routeKm} km`}
       >
+        {/*
+         * Visual hierarchy, quietest to loudest — the reader's anxiety is "where
+         * do I have to stop," so the stops must win the eye, not the landmass.
+         *
+         * 1. Country shape: --color-sunken fill / --color-line-strong stroke.
+         *    Deliberately low-contrast (1.18:1 fill-on-card, 1.65-1.95:1 stroke)
+         *    — the same quiet register --color-data-track already sits in
+         *    (see the comment by the token definitions in globals.css). It is
+         *    context, not information; the route and stops below carry the
+         *    facts, so the shape doesn't need to fight for attention.
+         * 2. Corridor (reachable before the first stop): --color-data-range-soft,
+         *    full opacity so the token's own audited color is what's on screen,
+         *    not a faded blend nobody computed. This is literally RangeBar's
+         *    span technique reused: a soft fill that can't (and needn't) carry
+         *    3:1 on its own, with a solid stroke on top carrying the boundary
+         *    — here that solid stroke is the route line itself (step 3).
+         * 3. Route: --color-accent. 6.43:1 on the country fill, 7.60:1 on the
+         *    white card — clears both AA text and 1.4.11 non-text contrast
+         *    against either background the line can cross, so it stays legible
+         *    however the route bends relative to the coarse outline. (The old
+         *    gold, #d4a84b, was only 2.21:1 off the landmass — it was already
+         *    failing 1.4.11 wherever a route ran near the card, not just where
+         *    the label did.)
+         * 4. Stops: --color-accent-strong ring + dot, 8.86:1 on the country
+         *    fill and 10.48:1 on the card — the boldest thing in the frame,
+         *    which is the point: this is the answer to "where do I stop."
+         *    The time label sits in an opaque --color-accent-strong pill with
+         *    white text (10.48:1) instead of colored text on whatever the map
+         *    happens to render behind it. That was finding 1.2 in
+         *    docs/audit-2026-09-12.md: the old near-white label (#ebe6dc) was
+         *    12.85:1 on the dark landmass but only 1.24:1 the moment a stop
+         *    (or a differently-shaped route) put it on the card instead — an
+         *    opaque pill makes the label's contrast constant, not a bet on
+         *    where the polyline happens to run.
+         */}
         <polygon
           points={outlinePts}
-          fill="#1f2225"
-          stroke="#3a3e42"
-          strokeWidth="1.5"
+          fill="var(--color-sunken)"
+          stroke="var(--color-line-strong)"
+          strokeWidth="1.25"
         />
         {corridor ? (
           <path
             d={corridor}
             fill="none"
-            stroke="#d4a84b"
+            stroke="var(--color-data-range-soft)"
             strokeWidth="14"
-            strokeOpacity="0.22"
             strokeLinecap="round"
           />
         ) : null}
@@ -127,33 +161,56 @@ export function GermanyMap({ polyline, routeKm, rangeMid, stops }: Props) {
           <path
             d={routePath}
             fill="none"
-            stroke="#d4a84b"
+            stroke="var(--color-accent)"
             strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
         ) : null}
-        {stopPoints.map((s, i) => (
-          <g key={i}>
-            <circle
-              cx={s.x}
-              cy={s.y}
-              r="7"
-              fill="#1a1c1e"
-              stroke="#d4a84b"
-              strokeWidth="2"
-            />
-            <text
-              x={s.x}
-              y={s.y - 12}
-              textAnchor="middle"
-              fill="#ebe6dc"
-              fontSize="9"
-            >
-              {s.minutes}′
-            </text>
-          </g>
-        ))}
+        {stopPoints.map((s, i) => {
+          const label = `${s.minutes}′`;
+          // No text-measurement API in server-rendered SVG: estimate pill
+          // width from character count. Generous per-char budget (digits +
+          // the prime mark, 9px) so the estimate over- rather under-shoots —
+          // a slightly wide pill is invisible, a clipped label is the bug
+          // this pill exists to prevent.
+          const pillWidth = label.length * 6.2 + 8;
+          const pillHeight = 13;
+          const labelY = s.y - 13;
+          return (
+            <g key={i}>
+              <rect
+                x={s.x - pillWidth / 2}
+                y={labelY - pillHeight / 2}
+                width={pillWidth}
+                height={pillHeight}
+                rx={pillHeight / 2}
+                fill="var(--color-accent-strong)"
+                stroke="var(--color-surface)"
+                strokeWidth="1"
+              />
+              <text
+                x={s.x}
+                y={labelY}
+                textAnchor="middle"
+                dominantBaseline="central"
+                fill="var(--color-surface)"
+                fontSize="9"
+              >
+                {label}
+              </text>
+              <circle
+                cx={s.x}
+                cy={s.y}
+                r="7"
+                fill="var(--color-surface)"
+                stroke="var(--color-accent-strong)"
+                strokeWidth="2.5"
+              />
+              <circle cx={s.x} cy={s.y} r="2.25" fill="var(--color-accent-strong)" />
+            </g>
+          );
+        })}
       </svg>
       <figcaption className="mt-2 text-center text-xs text-muted">
         Orientierung, kein Navi.

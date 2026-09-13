@@ -31,6 +31,24 @@ const routes = (routesJson as unknown as { routes: RouteDef[] }).routes;
 
 const SPINE = routes.find((r) => r.id === "hamMuc")!;
 
+/**
+ * Slider stops for any budget control, derived from the catalogue rather than
+ * typed into each screen. The intake form and the control bar used to carry
+ * their own hardcoded pairs (28.000-75.000 and 25.000-90.000), so a budget set
+ * on one screen could not be expressed on the other, and neither covered the
+ * catalogue after it doubled. Rounded outward to whole thousands so the ends
+ * are readable numbers rather than a car's exact list price.
+ */
+export function priceBounds(): { min: number; max: number } {
+  const prices = cars.map((c) => c.listEur);
+  const lo = Math.min(...prices);
+  const hi = Math.max(...prices);
+  return {
+    min: Math.floor(lo / 1000) * 1000,
+    max: Math.ceil(hi / 1000) * 1000,
+  };
+}
+
 export function getCars(): Car[] {
   return cars;
 }

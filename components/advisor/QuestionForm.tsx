@@ -13,6 +13,8 @@ import type {
   UseCase,
 } from "@/lib/engine/types";
 import { ChipGroup, Field, MultiChipGroup, inputClass } from "@/components/ui/ChipGroup";
+import { RangeSlider } from "@/components/ui/RangeSlider";
+import { priceBounds, priceWindowLabel } from "@/lib/engine/evaluate";
 
 type Props = {
   draft: Draft;
@@ -30,7 +32,10 @@ export function QuestionForm({ draft, onChange, remember, onRemember, onSubmit }
     ? 50
     : Math.min(200, Math.max(10, Number(draft.dayKm) || 50));
 
-  const priceVal = draft.priceMax && draft.priceMax > 0 ? draft.priceMax : 0;
+  /* One source for the stops, shared with the control bar on the result screen:
+     a budget set here has to be expressible there and the other way round. */
+  const PRICE = priceBounds();
+  const formatEur = (n: number) => `${Math.round(n).toLocaleString("de-DE")} €`;
 
   return (
     <form
@@ -141,30 +146,34 @@ export function QuestionForm({ draft, onChange, remember, onRemember, onSubmit }
       <fieldset>
         <legend className="serif text-lg text-paper">{COPY.qPrice}</legend>
         <p className="mt-2 text-sm text-muted">{COPY.qPriceHint}</p>
-        <label className="mt-3 block text-sm">
-          <span className="text-muted">
-            {priceVal > 0
-              ? `bis ${priceVal.toLocaleString("de-DE")} €`
-              : "offen"}
-          </span>
-          <input
-            type="range"
-            min={28000}
-            max={75000}
-            step={1000}
-            className="mt-2 w-full"
-            value={priceVal > 0 ? priceVal : 50000}
-            onChange={(e) => set("priceMax", Number(e.target.value))}
-          />
-        </label>
+        <p className="mt-3 text-sm text-muted">
+          {priceWindowLabel(draft.priceMin, draft.priceMax)}
+        </p>
+        <RangeSlider
+          className="mt-1"
+          min={PRICE.min}
+          max={PRICE.max}
+          step={1000}
+          valueMin={draft.priceMin}
+          valueMax={draft.priceMax}
+          onChange={(next) =>
+            onChange({ ...draft, priceMin: next.min, priceMax: next.max })
+          }
+          label="Kaufpreis"
+          format={formatEur}
+        />
+        <div className="flex justify-between text-xs text-muted">
+          <span className="tnum">{formatEur(PRICE.min)}</span>
+          <span className="tnum">ab {formatEur(PRICE.max)}</span>
+        </div>
         <button
           type="button"
-          className="mt-2 text-sm text-muted underline hover:text-paper"
-          onClick={() => set("priceMax", null)}
+          className="mt-2 min-h-11 text-sm text-muted underline hover:text-paper"
+          onClick={() => onChange({ ...draft, priceMin: null, priceMax: null })}
         >
-          Budget offen lassen
+          {COPY.priceOpenLink}
         </button>
-        {draft.priceMax === null || draft.priceMax === 0 ? (
+        {draft.priceMin === null && (draft.priceMax === null || draft.priceMax === 0) ? (
           <p className="mt-2 text-sm text-muted">{COPY.qPriceEmpty}</p>
         ) : null}
       </fieldset>

@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { BODY_CHIP, CHARGE_CHIP, COPY, USE_CHIP } from "@/lib/copy";
 import { RangeSlider } from "@/components/ui/RangeSlider";
-import { priceWindowLabel } from "@/lib/engine/evaluate";
+import { priceBounds, priceWindowLabel } from "@/lib/engine/evaluate";
 import type { BodyStyle, ChargeOption, Draft, UseCase } from "@/lib/engine/types";
 
 /**
@@ -21,10 +21,11 @@ const USE_ORDER: UseCase[] = ["everyday", "family", "highway", "mixed"];
 const BODY_ORDER: BodyStyle[] = ["hatch", "compact", "sedan", "crossover"];
 const CHARGE_ORDER: ChargeOption[] = ["home", "work", "public", "unknown"];
 
-/* Slider ends. Sitting on an end means "open at that end", not "exactly this
-   much" - otherwise the reader could never express "no upper limit" again. */
-const PRICE_FLOOR = 25000;
-const PRICE_CEIL = 90000;
+/* Slider stops come from the catalogue, not from a number typed here: the
+   intake form uses the same ones, so a budget set on one screen can always be
+   expressed on the other. Sitting on a stop means "open at that end", not
+   "exactly this much" - otherwise a reader could never take a limit off
+   again. */
 
 function Chevron() {
   return (
@@ -136,6 +137,7 @@ type Props = {
 
 export function ControlBar({ draft, onChange, assumedBy, resolvedDayKm }: Props) {
   const set = (patch: Partial<Draft>) => onChange({ ...draft, ...patch });
+  const PRICE = priceBounds();
 
   const bodyValue =
     draft.bodies.length === 0
@@ -272,8 +274,8 @@ export function ControlBar({ draft, onChange, assumedBy, resolvedDayKm }: Props)
                   handle parked on its stop means "no limit on this side", so a
                   reader who once set a ceiling can always take it off again. */}
               <RangeSlider
-                min={PRICE_FLOOR}
-                max={PRICE_CEIL}
+                min={PRICE.min}
+                max={PRICE.max}
                 step={1000}
                 valueMin={draft.priceMin}
                 valueMax={draft.priceMax}
@@ -283,10 +285,10 @@ export function ControlBar({ draft, onChange, assumedBy, resolvedDayKm }: Props)
               />
               <div className="flex justify-between text-xs text-muted">
                 <span className="tnum">
-                  {PRICE_FLOOR.toLocaleString("de-DE")} €
+                  {PRICE.min.toLocaleString("de-DE")} €
                 </span>
                 <span className="tnum">
-                  ab {PRICE_CEIL.toLocaleString("de-DE")} €
+                  ab {PRICE.max.toLocaleString("de-DE")} €
                 </span>
               </div>
               <div className="mt-3 flex items-center justify-between gap-3 text-sm">

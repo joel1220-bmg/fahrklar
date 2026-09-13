@@ -9,7 +9,13 @@
 
 import { describe, expect, it } from "vitest";
 import { emptyDraft } from "./types";
-import { evaluateCars, getCars, priceInWindow, priceWindowLabel } from "./evaluate";
+import {
+  evaluateCars,
+  getCars,
+  priceBounds,
+  priceInWindow,
+  priceWindowLabel,
+} from "./evaluate";
 import type { Draft } from "./types";
 
 function draft(patch: Partial<Draft>): Draft {
@@ -116,5 +122,25 @@ describe("a budget window in evaluateCars", () => {
       expect(r.car.listEur).toBeLessThanOrEqual(40_000);
     }
     expect(withField.budgetEmpty).toBe(false);
+  });
+});
+
+describe("priceBounds", () => {
+  it("brackets every car in the catalogue", () => {
+    const b = priceBounds();
+    for (const c of getCars()) {
+      expect(c.listEur).toBeGreaterThanOrEqual(b.min);
+      expect(c.listEur).toBeLessThanOrEqual(b.max);
+    }
+  });
+
+  it("sits on whole thousands, so the slider ends read as round numbers", () => {
+    const b = priceBounds();
+    expect(b.min % 1000).toBe(0);
+    expect(b.max % 1000).toBe(0);
+  });
+
+  it("is one source, so both screens cannot drift apart", () => {
+    expect(priceBounds()).toEqual(priceBounds());
   });
 });

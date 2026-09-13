@@ -47,8 +47,8 @@ scripts/             the GLB generator (trimesh; no Blender on this machine)
 ## The loop
 
 ```bash
-pwsh ./verify.ps1 -Quick     # types + 83 tests, ~15 s, run constantly
-pwsh ./verify.ps1            # adds lint + production build
+pwsh ./verify.ps1 -Quick     # types + 95 tests, ~15 s, run constantly
+pwsh ./verify.ps1            # adds lint + build - stop `next dev` first, see trap 6
 npx next dev -p 3001         # then actually look at it
 ```
 
@@ -94,7 +94,7 @@ That boundary is the whole mechanism; parallel work without it eats itself.
 
 Open work is in `docs/backlog.md`.
 
-## Five traps this project already fell into
+## Six traps this project already fell into
 
 **1. Two agents, one working tree, nothing committed.** On 12.09. a second
 process restored the tree from an archive and an hour of finished work vanished
@@ -131,6 +131,15 @@ entirely. The symptom is not a half-drawn car: it is an empty canvas on a
 correct background, a live WebGL context, and no console error — which is why
 it cost four screenshots and a bisect to find. `fit observe` without `clip` is
 what ships.
+
+**6. This machine runs out of RAM before it runs out of patience.** 7.4 GB
+total, and a dev server plus a production build plus a couple of agents is over
+the line: Turbopack dies with `memory allocation of 16777216 bytes failed` and
+exit code 127, which reads like a missing binary and is nothing of the sort.
+**Do not run the full `verify.ps1` while `next dev` is up** — use `-Quick`
+(types + tests, no build) during development, and stop the dev server before the
+full gate. Same reason parallel agents are capped at a handful rather than a
+fleet.
 
 ## One false alarm, so nobody chases it twice
 

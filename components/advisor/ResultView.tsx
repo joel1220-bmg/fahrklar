@@ -503,10 +503,14 @@ export function ResultView({
             </div>
           </div>
 
+          {/* Flex with standard width classes rather than an arbitrary grid
+              template: Turbopack twice failed to regenerate the CSS for a
+              changed arbitrary value, and the map silently rendered at full
+              page width. w-80 and max-w-xs are always in the stylesheet. */}
           {tripActive ? (
-          <div className="grid items-start gap-5 lg:grid-cols-[16rem_minmax(0,1fr)]">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-start">
           {detail ? (
-            <div className="space-y-2">
+            <div className="space-y-2 lg:w-80 lg:shrink-0">
               {/* One route can only be drawn for one car. With nothing chosen
                   the first of the list stands in, named clearly, so the map is
                   never an empty box waiting for a click. */}
@@ -546,7 +550,7 @@ export function ResultView({
             </div>
           ) : null}
 
-          <div className="space-y-3">
+          <div className="space-y-3 lg:min-w-0 lg:flex-1">
               {/* Comparison table — all visible cars, sorted by stops then time */}
               <div className="overflow-x-auto rounded-2xl border border-graphite-line bg-graphite-card">
                 <h3 className="serif border-b border-graphite-line px-3 py-2.5 text-lg text-paper">

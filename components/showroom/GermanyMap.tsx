@@ -113,7 +113,7 @@ export function GermanyMap({ polyline, routeKm, rangeMid, stops }: Props) {
     <figure className="rounded-2xl border border-line bg-surface p-3">
       <svg
         viewBox={`0 0 ${W} ${H}`}
-        className="mx-auto h-auto w-full max-w-[15rem]"
+        className="mx-auto h-auto w-full max-w-xs"
         role="img"
         aria-label={`Strecke ${routeKm} km`}
       >
@@ -179,14 +179,21 @@ export function GermanyMap({ polyline, routeKm, rangeMid, stops }: Props) {
         ) : null}
         {stopPoints.map((s, i) => {
           const label = `${s.minutes}′`;
-          // No text-measurement API in server-rendered SVG: estimate pill
-          // width from character count. Generous per-char budget (digits +
-          // the prime mark, 9px) so the estimate over- rather under-shoots —
-          // a slightly wide pill is invisible, a clipped label is the bug
-          // this pill exists to prevent.
-          const pillWidth = label.length * 6.2 + 8;
-          const pillHeight = 13;
-          const labelY = s.y - 13;
+          /*
+           * Sized in viewBox units, so what matters is how big this ends up
+           * after the SVG is scaled into its column. The map renders about
+           * 232px wide against a 320-unit box, so roughly 0.72x: a fontSize of
+           * 9 arrived as 6.5px on screen, which is not a readable number. 15
+           * lands near 11px, which is.
+           *
+           * No text-measurement API in server-rendered SVG, so the pill width
+           * is estimated from the character count with a generous per-character
+           * budget. A slightly wide pill is invisible; a clipped label is the
+           * bug the pill exists to prevent.
+           */
+          const pillWidth = label.length * 9 + 10;
+          const pillHeight = 20;
+          const labelY = s.y - 17;
           return (
             <g key={i}>
               <rect
@@ -205,27 +212,31 @@ export function GermanyMap({ polyline, routeKm, rangeMid, stops }: Props) {
                 textAnchor="middle"
                 dominantBaseline="central"
                 fill="var(--color-surface)"
-                fontSize="9"
+                fontSize="15"
+                fontWeight="600"
               >
                 {label}
               </text>
               <circle
                 cx={s.x}
                 cy={s.y}
-                r="7"
+                r="8"
                 fill="var(--color-surface)"
                 stroke="var(--color-accent-strong)"
                 strokeWidth="2.5"
               />
-              <circle cx={s.x} cy={s.y} r="2.25" fill="var(--color-accent-strong)" />
+              <circle cx={s.x} cy={s.y} r="2.75" fill="var(--color-accent-strong)" />
             </g>
           );
         })}
       </svg>
       <figcaption className="mt-2 text-center text-xs text-muted">
         Orientierung, kein Navi.
+        {/* The pills carry a bare number with a prime mark. For a reader who
+            has never charged a car that could just as easily be kilometres,
+            so the caption says once what the number is. */}
         {stops.length > 0
-          ? ` ${stops.length} Ladehalt${stops.length === 1 ? "" : "e"}.`
+          ? ` ${stops.length} Ladehalt${stops.length === 1 ? "" : "e"}, Zahl in Minuten.`
           : routeKm
             ? " Ohne Ladehalt auf dieser Strecke (mit Puffer)."
             : ""}

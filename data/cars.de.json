@@ -530,15 +530,15 @@
       "model": "ID. Polo",
       "body": "hatch",
       "seats": 5,
-      "listEur": 29990,
-      "usableKwh": 51.0,
-      "wltpKm": 450,
+      "listEur": 33795,
+      "usableKwh": 51.7,
+      "wltpKm": 454,
       "highwayKwhPer100": 17.2,
-      "dcPeakKw": 125,
+      "dcPeakKw": 105,
       "heatPump": true,
       "colorHex": "#3A5C8A",
       "asOf": "2026-09-18",
-      "notes": "Korrigiert 18.09.2026 nach Hinweis des Betreibers: die Version 'Pro' gibt es nicht, und der nutzbare Akku hat 51 kWh, nicht 56. Die 56 waren die Bruttokapazitaet - genau der Brutto-Netto-Fehler, den meta.disclaimer fuer diesen Katalog beschreibt, hier von mir selbst gemacht. WEITERHIN UNVERIFIED: wltpKm (450), dcPeakKw (125), listEur (29990) und highwayKwhPer100 (17.2) stammen unveraendert aus dem Gedaechtnis. 51 kWh auf 450 km ergeben 11,3 kWh/100 km implizit, was am unteren Rand des ohnehin verdaechtigen Bandes dieses Katalogs liegt - wltpKm ist damit die unsicherste Zahl der Zeile."
+      "notes": "GEPRUEFT 18.09.2026 gegen zwei Quellen. Primaer: VW Newsroom 'At a glance: ID. Polo' (52 kWh netto NMC, bis 454 km WLTP, bis 105 kW DC, 10 auf 80 Prozent rund 24 Minuten, Ausstattungslinien Trend, Life, Style). Zweitquelle EV Database 3581 (brutto 56,0 / nutzbar 51,7 kWh, WLTP 454 km, Realreichweite 335 km, 105 kW, 24 min, Listenpreis 33.795 Euro). Vorher stand hier 56 kWh, das war die BRUTTOkapazitaet, dazu 125 kW und 29.990 Euro, beides falsch. Es gibt auch eine Variante mit 37,5 kWh nutzbar und 329 km WLTP, die hier bewusst nicht als eigene Zeile steht, solange nicht belegt ist, welche Ausstattungslinie welchen Akku fuehrt."
     },
     {
       "id": "mini-cooper-se",

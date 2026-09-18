@@ -147,6 +147,18 @@ const AVG_KW_10_80: Record<string, KwSpan> = {
   // Zeit von rund 22 Minuten fuer 10 auf 80 Prozent, also (0.7*85)/(22/60)
   // etwa 162 kW, nur 51 % vom Peak - die Spitze steht sehr kurz an.
   "mercedes-cla-sb": { low: 145, mid: 162, high: 180 },
+
+  /* --- 18.09.2026, der erste belegte Eintrag dieser Tabelle ----------------
+     Alles darueber ist abgeleitet oder geraten. Dieser hier nicht: VW nennt im
+     eigenen Newsroom fuer den ID. Polo mit 52 kWh netto rund 24 Minuten von 10
+     auf 80 Prozent, EV Database bestaetigt dieselbe Zahl. Daraus
+     (0,7 * 51,7) / (24/60) = 90,5 kW Schnitt, also 86 Prozent des 105-kW-Peaks.
+
+     Das ist der Beleg dafuer, dass der Peak-Fallback von 0,55 zu pessimistisch
+     ist: er haette 58 kW ergeben und damit einen Stopp um zwei Drittel zu lang.
+     Die Spanne ist eng gesetzt, weil die Zeit aus einer Quelle stammt und nicht
+     aus einer Bandbreite. */
+  "vw-id-polo": { low: 82, mid: 90, high: 98 },
 };
 
 const FALLBACK_TYPICAL = 0.55;

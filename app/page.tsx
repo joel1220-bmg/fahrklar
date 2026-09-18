@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ChargingScene } from "@/components/showroom/ChargingScene";
 import { COPY, LANDING_TILES } from "@/lib/copy";
+
+/* Per page, never in the layout: a canonical set on the root element is
+   inherited by every route, so /berater would name the home page as the
+   original and ask to be dropped from the index. It also settles the
+   www-versus-bare-domain duplicate, which serves both without redirecting. */
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 function CtaBlock({ className = "" }: { className?: string }) {
   return (

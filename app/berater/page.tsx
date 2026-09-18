@@ -5,6 +5,7 @@ import { COPY } from "@/lib/copy";
 export const metadata: Metadata = {
   title: "Berater · Stromstrecke",
   description: COPY.underCta,
+  alternates: { canonical: "/berater" },
 };
 
 export default function BeraterPage() {
@@ -13,7 +14,7 @@ export default function BeraterPage() {
       <p className="text-sm font-medium uppercase tracking-[0.14em] text-gold">Berater</p>
       <h1 className="serif mt-2 text-3xl text-paper sm:text-4xl">Passende Neuwagen finden</h1>
       <p className="mt-3 max-w-xl text-muted">{COPY.underCta}</p>
-      <div className="mt-10">
+      <div className="mt-6 sm:mt-10">
         <AdvisorApp />
       </div>
     </div>

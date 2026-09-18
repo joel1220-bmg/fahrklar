@@ -8,13 +8,30 @@ export function ChipGroup<T extends string>({
   onChange,
   options,
   help,
+  unknownLabel,
 }: {
   legend: string;
   value: T | null;
-  onChange: (v: T) => void;
+  onChange: (v: T | null) => void;
   options: { value: T; label: string }[];
   help?: string;
+  /**
+   * Adds a chip that puts the answer back to null, the way MultiChipGroup's
+   * already does. Added 18.09.2026: the landing page promises that
+   * "Weiß ich nicht" is always allowed, and the very first question was the
+   * one place in the intake that did not offer it.
+   *
+   * Null, not a new union member. `lib/copy.ts` carried a note proposing that
+   * `UseCase` grow an "unknown" variant, with every consumer changed in the
+   * same commit. That is the more dangerous of the two routes and it is not
+   * needed: `Draft.use` is already `UseCase | null`, and null already means
+   * "assumed" to the engine, the schema, the stored draft and the marker in
+   * the control bar. This chip only gives the reader a way back to a state
+   * the whole chain already understands.
+   */
+  unknownLabel?: string;
 }) {
+  const unknownSelected = value === null;
   return (
     <fieldset className="min-w-0">
       <legend className="serif text-lg text-ink">{legend}</legend>
@@ -38,6 +55,21 @@ export function ChipGroup<T extends string>({
             </button>
           );
         })}
+        {unknownLabel ? (
+          <button
+            type="button"
+            role="radio"
+            aria-checked={unknownSelected}
+            onClick={() => onChange(null)}
+            className={`min-h-11 rounded-full border px-3.5 text-sm transition-colors ${
+              unknownSelected
+                ? "border-accent bg-accent font-medium text-white"
+                : "border-line bg-surface text-ink hover:border-accent hover:text-accent"
+            }`}
+          >
+            {unknownLabel}
+          </button>
+        ) : null}
       </div>
       {help ? <p className="mt-2 text-sm text-muted">{help}</p> : null}
     </fieldset>

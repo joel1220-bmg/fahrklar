@@ -138,6 +138,9 @@ type Props = {
 export function ControlBar({ draft, onChange, assumedBy, resolvedDayKm }: Props) {
   const set = (patch: Partial<Draft>) => onChange({ ...draft, ...patch });
   const PRICE = priceBounds();
+  /* Phone only. See the wrapper below for why. */
+  const [openOnPhone, setOpenOnPhone] = useState(false);
+  const gridId = useId();
 
   const bodyValue =
     draft.bodies.length === 0
@@ -159,14 +162,62 @@ export function ControlBar({ draft, onChange, assumedBy, resolvedDayKm }: Props)
         : [...draft.bodies, b],
     });
 
+  /* One line of the current answers, for the collapsed state on a phone.
+     Without it the trigger would be a button that hides five values and
+     names none of them. */
+  const summary = [
+    USE_CHIP[draft.use ?? "city"],
+    `${Math.round(resolvedDayKm)} km`,
+    bodyValue,
+    CHARGE_CHIP[chargeValue],
+    priceValue,
+  ].join(" · ");
+
   return (
     <section
-      aria-label="Angaben ändern"
+      /* "Ihre Angaben", not "Angaben ändern". `COPY.editQuestions` already
+         puts a button reading "Angaben ändern" on the same screen, and that
+         one goes back to the full intake form while this region edits in
+         place. Two controls with one name doing two things is the confusion,
+         renamed 18.09.2026 when the collapsed trigger below made them sit
+         four centimetres apart on a phone. */
+      aria-label="Ihre Angaben"
       /* Pinned from sm up. Stacked one-per-row on a phone the bar is ~300 px
          tall, and pinning that would eat a third of the viewport for good. */
       className="no-print z-20 -mx-4 border-b border-line bg-canvas/95 px-4 py-3 backdrop-blur-sm sm:sticky sm:top-0"
     >
-      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+      {/*
+        Collapsed by default on a phone, always open from `sm` up.
+
+        Measured 18.09.2026 on the live site at 390 px: this bar was 297 px of
+        the 924 px a reader had to scroll past before the first car appeared,
+        which is more than a whole screen of preamble on the page that is
+        supposed to answer their question. Folded away it costs one 44 px row.
+
+        It stays open on every wider screen on purpose. The whole point of the
+        smard.de arrangement is that the controls are visible and the result
+        moves when you touch them; a drawer would undo that. That requirement
+        is also why this is plain CSS rather than the `Disclosure` component,
+        which mounts its children only while open - the grid has to stay in
+        the DOM so `sm:grid` can show it without JavaScript deciding anything.
+      */}
+      <button
+        type="button"
+        aria-expanded={openOnPhone}
+        aria-controls={gridId}
+        onClick={() => setOpenOnPhone((o) => !o)}
+        className="flex min-h-11 w-full items-center justify-between gap-2 text-left text-sm text-ink sm:hidden"
+      >
+        <span className="min-w-0 truncate">
+          <span className="text-muted">Ihre Angaben</span>{" "}
+          <span className="text-ink">{summary}</span>
+        </span>
+        <Chevron />
+      </button>
+      <div
+        id={gridId}
+        className={`${openOnPhone ? "grid" : "hidden"} gap-2 sm:grid sm:grid-cols-2 lg:grid-cols-5`}
+      >
         <Control
           label="Nutzung"
           value={USE_CHIP[draft.use ?? "city"]}
@@ -186,6 +237,19 @@ export function ControlBar({ draft, onChange, assumedBy, resolvedDayKm }: Props)
                   {USE_CHIP[u]}
                 </OptionButton>
               ))}
+              {/* Same chip the intake offers since 18.09.2026. A reader who
+                  can say "weiß ich nicht" on the form but cannot take the
+                  answer back here would be stuck with a guess they never
+                  made. */}
+              <OptionButton
+                selected={draft.use === null}
+                onClick={() => {
+                  set({ use: null });
+                  close();
+                }}
+              >
+                {COPY.qDayUnknownChip}
+              </OptionButton>
             </div>
           )}
         </Control>
@@ -305,7 +369,9 @@ export function ControlBar({ draft, onChange, assumedBy, resolvedDayKm }: Props)
           )}
         </Control>
       </div>
-      <p className="mt-2 text-xs text-muted">{COPY.assumedBanner}</p>
+      <p className={`mt-2 text-xs text-muted ${openOnPhone ? "" : "hidden"} sm:block`}>
+        {COPY.assumedBanner}
+      </p>
     </section>
   );
 }

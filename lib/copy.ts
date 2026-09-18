@@ -4,17 +4,25 @@
 const UNKNOWN = "Weiß ich nicht";
 
 /**
- * Known gap (copy-guard audit, 12.09.2026): `USE_CHIP` below has no
- * "unknown" entry, and `UseCase` (`lib/engine/types.ts`) has no "unknown"
- * member either — so the Nutzung question is the one place in the intake
- * with no affirmative "Weiß ich nicht". `copy-v1.md`'s original qUse table
- * had `unknown | Weiß ich nicht`; that got lost, not deliberately dropped.
- * Fixing it needs `UseCase` to gain the member (engine), `QuestionForm.tsx`
- * / `ControlBar.tsx` to render it (advisor-ux), and this file to add
- * `unknown: UNKNOWN` to `USE_CHIP` — in one commit, per CLAUDE.md's "a new
- * variant means every consumer changes together" trap. Do not add the key
- * here alone; an untyped "unknown" UseCase reaching the engine is a crash,
- * not a feature.
+ * Closed 18.09.2026, and not the way this note used to prescribe.
+ *
+ * The gap was real: the Nutzung question was the one place in the intake with
+ * no affirmative "Weiß ich nicht", while the landing page promised that it is
+ * always allowed. `copy-v1.md`'s original qUse table had
+ * `unknown | Weiß ich nicht` and it had been lost, not dropped on purpose.
+ *
+ * This note proposed growing `UseCase` an "unknown" member and changing every
+ * consumer in one commit. That route was not taken, because it was the
+ * dangerous one and it was unnecessary. `Draft.use` is already
+ * `UseCase | null`, and null already means "assumed" to the engine, the zod
+ * schema, the stored draft and the italics in the control bar — `qUseEmpty`
+ * right below has been describing that state all along. The chip therefore
+ * sets null, `USE_CHIP` stays exactly as wide as `UseCase`, and nothing
+ * untyped can reach the engine.
+ *
+ * The warning at the end of the old note still stands and is worth keeping:
+ * do not add `unknown: UNKNOWN` to `USE_CHIP` on its own. An "unknown"
+ * UseCase arriving at the engine is a crash, not a feature.
  */
 
 export const COPY = {
@@ -82,7 +90,7 @@ export const COPY = {
   /** @deprecated Langstrecke is not an intake question (`intake-lock.md`). */
   qLong: "Welche Langstrecke sollen wir grob durchspielen?",
   qLongHint:
-    "Größtenteils Autobahn. Ein Ladehalt nur, wenn er nötig wäre. Keine Zusage.",
+    "Größtenteils Autobahn. Ein Ladestopp nur, wenn er nötig wäre. Keine Zusage.",
   qLongEmpty: "Ohne Angabe spielen wir keine Langstrecke durch.",
 
   qTrip: "Wie weit soll die Autobahnfahrt ungefähr sein?",
@@ -95,8 +103,13 @@ export const COPY = {
   dismissCar: "Passt nicht",
 
   autobahnTitle: "Autobahn-Check",
+  /* Sagte bis zum 18.09.2026 "sortiert nach Ladestopps". Diese Sortierung
+     wurde am 13.09. entfernt, weil Ladestopps und Gesamtzeit ohnehin je eine
+     eigene Zeile haben und die Spalten sonst bei jedem Reglerzug unter dem
+     Finger des Lesers wegsprangen. Der Satz behauptete seitdem etwas, das die
+     Tabelle nicht tut. */
   autobahnHint:
-    "Ihre Autos nebeneinander, sortiert nach Ladestopps. Orientierung, kein Navi.",
+    "Ihre Autos nebeneinander, in der Reihenfolge der Karten oben. Orientierung, kein Navi.",
   compareStops: "Ladestopps",
   compareTotal: "Gesamt",
   spanNote: "Die Spanne darunter reicht von vorsichtig gerechnet bis zu guten Bedingungen.",

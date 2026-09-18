@@ -236,9 +236,9 @@ export function GermanyMap({ polyline, routeKm, rangeMid, stops }: Props) {
             has never charged a car that could just as easily be kilometres,
             so the caption says once what the number is. */}
         {stops.length > 0
-          ? ` ${stops.length} Ladehalt${stops.length === 1 ? "" : "e"}, Zahl in Minuten.`
+          ? ` ${stops.length} Ladestopp${stops.length === 1 ? "" : "s"}, Zahl in Minuten.`
           : routeKm
-            ? " Ohne Ladehalt auf dieser Strecke (mit Puffer)."
+            ? " Ohne Ladestopp auf dieser Strecke (mit Puffer)."
             : ""}
       </figcaption>
     </figure>

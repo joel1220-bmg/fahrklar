@@ -96,7 +96,7 @@ export function ResultView({
   );
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-6 sm:space-y-10">
       {/* The inputs stay on screen and stay editable: every control carries its
           own value, and changing one redraws everything below it at once. */}
       <ControlBar
@@ -417,7 +417,7 @@ export function ResultView({
               </p>
               {detail.trip.stops.length === 0 ? (
                 <p className="px-1 text-sm text-muted">
-                  Ohne Ladehalt auf dieser Strecke (mit Puffer).
+                  Ohne Ladestopp auf dieser Strecke (mit Puffer).
                 </p>
               ) : null}
             </div>

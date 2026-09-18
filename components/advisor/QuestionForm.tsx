@@ -53,6 +53,7 @@ export function QuestionForm({ draft, onChange, remember, onRemember, onSubmit }
           value: k,
           label: USE_CHIP[k],
         }))}
+        unknownLabel={COPY.qDayUnknownChip}
         help={draft.use === null ? COPY.qUseEmpty : undefined}
       />
 
